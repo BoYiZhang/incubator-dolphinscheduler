@@ -37,6 +37,13 @@ public interface ProjectMapper extends BaseMapper<Project> {
 
     /**
      * query project by name
+     * @param code project code
+     * @return project
+     */
+    Project queryByCode(@Param("code") String code);
+
+    /**
+     * query project by name
      * @param projectName projectName
      * @return project
      */

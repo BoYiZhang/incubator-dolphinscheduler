@@ -63,28 +63,46 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     ProcessDefinition queryByDefineId(@Param("processDefineId") int processDefineId);
 
     /**
+     * query process definition by code
+     *
+     * @param processDefineCode processDefineCode
+     * @return process definition
+     */
+    ProcessDefinition queryByDefineCode(@Param("processDefineCode") String processDefineCode);
+
+
+    /**
+     * query process definition by code
+     *
+     * @param code code
+     *
+     * @return process definition
+     */
+    ProcessDefinition queryByCode(@Param("code") String code);
+
+    /**
      * process definition page
      *
      * @param page page
      * @param searchVal searchVal
      * @param userId userId
-     * @param projectId projectId
+     * @param projectCode projectCode
      * @param isAdmin isAdmin
      * @return process definition IPage
      */
     IPage<ProcessDefinition> queryDefineListPaging(IPage<ProcessDefinition> page,
                                                    @Param("searchVal") String searchVal,
                                                    @Param("userId") int userId,
-                                                   @Param("projectId") int projectId,
+                                                   @Param("projectCode") String projectCode,
                                                    @Param("isAdmin") boolean isAdmin);
 
     /**
      * query all process definition list
      *
-     * @param projectId projectId
+     * @param projectCode projectCode
      * @return process definition list
      */
-    List<ProcessDefinition> queryAllDefinitionList(@Param("projectId") int projectId);
+    List<ProcessDefinition> queryAllDefinitionList(@Param("projectCode") String projectCode);
 
     /**
      * query process definition by ids
@@ -93,6 +111,13 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      * @return process definition list
      */
     List<ProcessDefinition> queryDefinitionListByIdList(@Param("ids") Integer[] ids);
+
+    /**
+     * query process definition by codes
+     * @param codes codes
+     * @return process definition list
+     */
+    List<ProcessDefinition> queryDefinitionListByCodeList(@Param("codes") String[] codes);
 
     /**
      * query process definition by tenant
@@ -138,4 +163,5 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      * @param version version
      */
     void updateVersionByProcessDefinitionId(@Param("processDefinitionId") int processDefinitionId, @Param("version") long version);
+
 }

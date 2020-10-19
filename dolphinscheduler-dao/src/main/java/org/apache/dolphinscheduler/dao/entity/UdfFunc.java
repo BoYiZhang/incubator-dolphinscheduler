@@ -39,6 +39,13 @@ public class UdfFunc {
      */
     @TableId(value="id", type=IdType.AUTO)
     private int id;
+
+
+    /**
+     * union code
+     */
+    private String code;
+
     /**
      * user id
      */
@@ -70,9 +77,9 @@ public class UdfFunc {
     private String description;
 
     /**
-     * resource id
+     * resource code
      */
-    private int resourceId;
+    private String resourceCode;
 
     /**
      * resource name
@@ -102,6 +109,14 @@ public class UdfFunc {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public int getUserId() {
@@ -152,12 +167,12 @@ public class UdfFunc {
         this.description = description;
     }
 
-    public int getResourceId() {
-        return resourceId;
+    public String getResourceCode() {
+        return resourceCode;
     }
 
-    public void setResourceId(int resourceId) {
-        this.resourceId = resourceId;
+    public void setResourceCode(String resourceCode) {
+        this.resourceCode = resourceCode;
     }
 
     public String getResourceName() {

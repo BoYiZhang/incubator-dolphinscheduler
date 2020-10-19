@@ -72,20 +72,7 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
     /**
      * process instance page
      * @param page page
-     * @param projectId projectId
-     * @param processDefinitionId processDefinitionId
-     * @param searchVal searchVal
-     * @param statusArray statusArray
-     * @param host host
-     * @param startTime startTime
-     * @param endTime endTime
-     * @return process instance IPage
-     */
-
-    /**
-     * process instance page
-     * @param page page
-     * @param projectId projectId
+     * @param projectCode projectCode
      * @param processDefinitionId processDefinitionId
      * @param searchVal searchVal
      * @param executorId executorId
@@ -93,10 +80,10 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
      * @param host host
      * @param startTime startTime
      * @param endTime endTime
-     * @return process instance page
+     * @return process instance IPage
      */
     IPage<ProcessInstance> queryProcessInstanceListPaging(Page<ProcessInstance> page,
-                                                          @Param("projectId") int projectId,
+                                                          @Param("projectCode") String projectCode,
                                                           @Param("processDefinitionId") Integer processDefinitionId,
                                                           @Param("searchVal") String searchVal,
                                                           @Param("executorId") Integer executorId,
@@ -150,7 +137,7 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
     List<ExecuteStatusCount> countInstanceStateByUser(
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime,
-            @Param("projectIds") Integer[] projectIds);
+            @Param("projectCodes") Integer[] projectIds);
 
     /**
      * query process instance by processDefinitionId

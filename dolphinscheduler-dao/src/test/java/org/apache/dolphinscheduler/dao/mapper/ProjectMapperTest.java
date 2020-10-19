@@ -53,6 +53,7 @@ public class ProjectMapperTest {
     private Project insertOne(){
         //insertOne
         Project project = new Project();
+        project.setCode("1");
         project.setName("ut project");
         project.setUserId(111);
         projectMapper.insert(project);

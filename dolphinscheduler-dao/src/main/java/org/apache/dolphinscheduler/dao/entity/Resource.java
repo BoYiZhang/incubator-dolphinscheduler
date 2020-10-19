@@ -33,10 +33,12 @@ public class Resource {
   @TableId(value="id", type=IdType.AUTO)
   private int id;
 
+  private String code;
+
   /**
-   * parent id
+   * parent code
    */
-  private int pid;
+  private String parentCode;
 
   /**
    * resource alias
@@ -93,10 +95,11 @@ public class Resource {
   public Resource() {
   }
 
-  public Resource(int id, String alias, String fileName, String description, int userId,
+  public Resource(int id,String code, String alias, String fileName, String description, int userId,
                   ResourceType type, long size,
                   Date createTime, Date updateTime) {
     this.id = id;
+    this.code = code;
     this.alias = alias;
     this.fileName = fileName;
     this.description = description;
@@ -107,9 +110,10 @@ public class Resource {
     this.updateTime = updateTime;
   }
 
-  public Resource(int id, int pid, String alias, String fullName, boolean isDirectory) {
+  public Resource(int id, String code,String parentCode, String alias, String fullName, boolean isDirectory) {
     this.id = id;
-    this.pid = pid;
+    this.code = code;
+    this.parentCode = parentCode;
     this.alias = alias;
     this.fullName = fullName;
     this.isDirectory = isDirectory;
@@ -126,13 +130,14 @@ public class Resource {
     this.updateTime = updateTime;
   }*/
 
-  public Resource(int pid, String alias, String fullName, boolean isDirectory, String description, String fileName, int userId, ResourceType type, long size, Date createTime, Date updateTime) {
-    this.pid = pid;
+  public Resource(String code, String alias, String fullName, boolean isDirectory, String description, String fileName,String parentCode, int userId, ResourceType type, long size, Date createTime, Date updateTime) {
+    this.code = code;
     this.alias = alias;
     this.fullName = fullName;
     this.isDirectory = isDirectory;
     this.description = description;
     this.fileName = fileName;
+    this.parentCode = parentCode;
     this.userId = userId;
     this.type = type;
     this.size = size;
@@ -148,20 +153,28 @@ public class Resource {
     this.id = id;
   }
 
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public String getParentCode() {
+    return parentCode;
+  }
+
+  public void setParentCode(String parentCode) {
+    this.parentCode = parentCode;
+  }
+
   public String getAlias() {
     return alias;
   }
 
   public void setAlias(String alias) {
     this.alias = alias;
-  }
-
-  public int getPid() {
-    return pid;
-  }
-
-  public void setPid(int pid) {
-    this.pid = pid;
   }
 
   public String getFullName() {
@@ -241,7 +254,8 @@ public class Resource {
   public String toString() {
     return "Resource{" +
             "id=" + id +
-            ", pid=" + pid +
+            ", code='" + code + '\'' +
+            ", parentCode='" + parentCode + '\'' +
             ", alias='" + alias + '\'' +
             ", fullName='" + fullName + '\'' +
             ", isDirectory=" + isDirectory +

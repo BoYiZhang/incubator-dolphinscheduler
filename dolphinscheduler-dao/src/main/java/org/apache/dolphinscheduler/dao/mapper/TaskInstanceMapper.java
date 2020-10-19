@@ -59,7 +59,7 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
                                                           @Param("projectIds") Integer[] projectIds);
 
     IPage<TaskInstance> queryTaskInstanceListPaging(IPage<TaskInstance> page,
-                                                    @Param("projectId") int projectId,
+                                                    @Param("projectCode") String projectCode,
                                                     @Param("processInstanceId") Integer processInstanceId,
                                                     @Param("searchVal") String searchVal,
                                                     @Param("taskName") String taskName,

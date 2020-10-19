@@ -20,10 +20,10 @@
 <mapper namespace="org.apache.dolphinscheduler.dao.mapper.ErrorCommandMapper">
     <select id="countCommandState" resultType="org.apache.dolphinscheduler.dao.entity.CommandCount">
         select cmd.command_type as command_type, count(1) as count
-        from t_ds_error_command cmd, t_ds_process_definition process
-        where cmd.process_definition_id = process.id
+        from t_ds_error_command cmd, t_ds_process_definition process, t_ds_project project
+        where cmd.process_definition_id = process.id and process.project_code = project.code
         <if test="projectIdArray != null and projectIdArray.length != 0">
-            and process.project_id in
+            and project.id in
             <foreach collection="projectIdArray" index="index" item="i" open="(" close=")" separator=",">
                 #{i}
             </foreach>

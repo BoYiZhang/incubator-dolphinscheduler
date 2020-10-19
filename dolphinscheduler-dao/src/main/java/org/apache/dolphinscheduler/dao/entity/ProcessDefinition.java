@@ -49,6 +49,11 @@ public class ProcessDefinition {
     private int id;
 
     /**
+     * unique code
+     * */
+    private String code;
+
+    /**
      * name
      */
     private String name;
@@ -64,9 +69,9 @@ public class ProcessDefinition {
     private ReleaseState releaseState;
 
     /**
-     * project id
+     * project code
      */
-    private int projectId;
+    private String projectCode;
 
     /**
      * definition json string
@@ -171,9 +176,9 @@ public class ProcessDefinition {
     private String modifyBy;
 
     /**
-     * resource ids
+     * resource codes
      */
-    private String resourceIds;
+    private String resourceCodes;
 
 
     public String getName() {
@@ -200,6 +205,14 @@ public class ProcessDefinition {
         this.id = id;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public ReleaseState getReleaseState() {
         return releaseState;
     }
@@ -224,12 +237,12 @@ public class ProcessDefinition {
         this.createTime = createTime;
     }
 
-    public int getProjectId() {
-        return projectId;
+    public String getProjectCode() {
+        return projectCode;
     }
 
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
+    public void setProjectCode(String projectCode) {
+        this.projectCode = projectCode;
     }
 
     public Date getUpdateTime() {
@@ -348,12 +361,12 @@ public class ProcessDefinition {
         this.scheduleReleaseState = scheduleReleaseState;
     }
 
-    public String getResourceIds() {
-        return resourceIds;
+    public String getResourceCodes() {
+        return resourceCodes;
     }
 
-    public void setResourceIds(String resourceIds) {
-        this.resourceIds = resourceIds;
+    public void setResourceCodes(String resourceCodes) {
+        this.resourceCodes = resourceCodes;
     }
 
     public int getTimeout() {
@@ -392,10 +405,11 @@ public class ProcessDefinition {
     public String toString() {
         return "ProcessDefinition{" +
                 "id=" + id +
+                ", code='" + code + '\'' +
                 ", name='" + name + '\'' +
                 ", version=" + version +
                 ", releaseState=" + releaseState +
-                ", projectId=" + projectId +
+                ", projectCode='" + projectCode + '\'' +
                 ", processDefinitionJson='" + processDefinitionJson + '\'' +
                 ", description='" + description + '\'' +
                 ", globalParams='" + globalParams + '\'' +
@@ -415,7 +429,7 @@ public class ProcessDefinition {
                 ", timeout=" + timeout +
                 ", tenantId=" + tenantId +
                 ", modifyBy='" + modifyBy + '\'' +
-                ", resourceIds='" + resourceIds + '\'' +
+                ", resourceCodes='" + resourceCodes + '\'' +
                 '}';
     }
 

@@ -34,6 +34,11 @@ public class DataSource {
   private int id;
 
   /**
+   * code 编码
+   */
+  private String code;
+
+  /**
    * user id
    */
   private int userId;
@@ -86,6 +91,14 @@ public class DataSource {
 
   public void setId(int id) {
     this.id = id;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
   }
 
   public int getUserId() {
@@ -157,6 +170,7 @@ public class DataSource {
   public String toString() {
     return "DataSource{" +
             "id=" + id +
+            ", code='" + code + '\'' +
             ", userId=" + userId +
             ", userName='" + userName + '\'' +
             ", name='" + name + '\'' +

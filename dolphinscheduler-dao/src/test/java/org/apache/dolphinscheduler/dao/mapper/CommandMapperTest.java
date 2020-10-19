@@ -22,6 +22,7 @@ import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.CommandCount;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.common.enums.*;
+import org.apache.dolphinscheduler.dao.entity.Project;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +56,8 @@ public class CommandMapperTest {
     @Autowired
     ProcessDefinitionMapper processDefinitionMapper;
 
+    @Autowired
+    ProjectMapper projectMapper;
 
     /**
      * test insert
@@ -151,12 +154,12 @@ public class CommandMapperTest {
     @Test
     public void testCountCommandState() {
         Integer count = 10;
-
+        Project project = createProject();
         ProcessDefinition processDefinition = createProcessDefinition();
 
         CommandCount expectedCommandCount = createCommandMap(count, CommandType.START_PROCESS, processDefinition.getId());
 
-        Integer[] projectIdArray = {processDefinition.getProjectId()};
+        Integer[] projectIdArray = {project.getId()};
 
         Date startTime = DateUtils.stringToDate("2019-12-29 00:10:00");
 
@@ -165,6 +168,14 @@ public class CommandMapperTest {
         List<CommandCount> actualCommandCounts = commandMapper.countCommandState(0, startTime, endTime, projectIdArray);
 
         assertThat(actualCommandCounts.size(),greaterThanOrEqualTo(1));
+    }
+
+    private Project createProject() {
+        Project project = new Project();
+        project.setCode("1");
+        project.setName("ut test");
+        projectMapper.insert(project);
+        return project ;
     }
 
 
@@ -199,7 +210,7 @@ public class CommandMapperTest {
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setReleaseState(ReleaseState.ONLINE);
         processDefinition.setName("ut test");
-        processDefinition.setProjectId(1);
+        processDefinition.setProjectCode("1");
         processDefinition.setFlag(Flag.YES);
 
         processDefinitionMapper.insert(processDefinition);

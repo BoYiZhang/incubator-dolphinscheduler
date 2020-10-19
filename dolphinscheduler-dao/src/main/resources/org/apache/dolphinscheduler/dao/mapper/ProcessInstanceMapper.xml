@@ -81,7 +81,7 @@
         join t_ds_process_definition define ON instance.process_definition_id = define.id
         where 1=1
         and instance.is_sub_process=0
-        and define.project_id = #{projectId}
+        and define.project_code = #{projectCode}
         <if test="processDefinitionId != 0">
             and instance.process_definition_id = #{processDefinitionId}
         </if>
@@ -135,7 +135,7 @@
         select t.state, count(0) as count
         from t_ds_process_instance t
         join t_ds_process_definition d on d.id=t.process_definition_id
-        join t_ds_project p on p.id=d.project_id
+        join t_ds_project p on p.code=d.project_code
         where 1 = 1
         and t.is_sub_process = 0
         <if test="startTime != null and endTime != null">

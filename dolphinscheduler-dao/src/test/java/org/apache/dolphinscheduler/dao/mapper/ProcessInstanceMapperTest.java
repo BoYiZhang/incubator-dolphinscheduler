@@ -168,7 +168,7 @@ public class ProcessInstanceMapperTest {
                 ExecutionStatus.SUCCESS.ordinal()};
 
         ProcessDefinition processDefinition = new ProcessDefinition();
-        processDefinition.setProjectId(1010);
+        processDefinition.setProjectCode("1010");
         processDefinition.setReleaseState(ReleaseState.ONLINE);
         processDefinitionMapper.insert(processDefinition);
 
@@ -185,7 +185,7 @@ public class ProcessInstanceMapperTest {
 
         IPage<ProcessInstance> processInstanceIPage = processInstanceMapper.queryProcessInstanceListPaging(
                 page,
-                processDefinition.getProjectId(),
+                processDefinition.getProjectCode(),
                 processInstance.getProcessDefinitionId(),
                 processInstance.getName(),
                 0,
@@ -252,17 +252,18 @@ public class ProcessInstanceMapperTest {
 
         Project project = new Project();
         project.setName("testProject");
+        project.setCode("1");
         projectMapper.insert(project);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
-        processDefinition.setProjectId(project.getId());
+        processDefinition.setProjectCode(project.getCode());
 
         processDefinitionMapper.insert(processDefinition);
         ProcessInstance processInstance = insertOne();
         processInstance.setProcessDefinitionId(processDefinition.getId());
         int update = processInstanceMapper.updateById(processInstance);
 
-        Integer[] projectIds = new Integer[]{processDefinition.getProjectId()};
+        Integer[] projectIds = new Integer[]{project.getId()};
 
         List<ExecuteStatusCount> executeStatusCounts = processInstanceMapper.countInstanceStateByUser(null, null, projectIds);
 

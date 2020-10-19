@@ -87,5 +87,11 @@ public interface DataSourceMapper extends BaseMapper<DataSource> {
      */
     <T> List<DataSource> listAuthorizedDataSource(@Param("userId") int userId,@Param("dataSourceIds")T[] dataSourceIds);
 
+    /**
+     * query datasource by code
+     * @param code datasource code
+     * @return datasource
+     */
+    DataSource queryDataSourceByCode(@Param("code") String code);
 
 }

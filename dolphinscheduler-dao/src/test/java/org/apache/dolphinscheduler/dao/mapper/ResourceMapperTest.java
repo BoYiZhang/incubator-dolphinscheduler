@@ -73,7 +73,7 @@ public class ResourceMapperTest {
         Resource resource = new Resource();
         resource.setAlias("ut-resource");
         resource.setFullName("/ut-resource");
-        resource.setPid(-1);
+        resource.setParentCode("-1");
         resource.setDirectory(false);
         resource.setType(ResourceType.FILE);
         resource.setUserId(111);
@@ -236,14 +236,14 @@ public class ResourceMapperTest {
         IPage<Resource> resourceIPage = resourceMapper.queryResourcePaging(
                 page,
                 0,
-                -1,
+                "-1",
                 resource.getType().ordinal(),
                 ""
         );
         IPage<Resource> resourceIPage1 = resourceMapper.queryResourcePaging(
                 page,
                 1110,
-                -1,
+                "-1",
                 resource.getType().ordinal(),
                 ""
         );

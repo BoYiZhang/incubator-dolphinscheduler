@@ -72,8 +72,9 @@ public class ProcessDefinitionMapperTest {
     private ProcessDefinition insertOne() {
         //insertOne
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setProjectCode("12345");
         processDefinition.setName("def 1");
-        processDefinition.setProjectId(1010);
+        processDefinition.setResourceCodes("1010");
         processDefinition.setUserId(101);
         processDefinition.setUpdateTime(new Date());
         processDefinition.setCreateTime(new Date());
@@ -92,7 +93,7 @@ public class ProcessDefinitionMapperTest {
         //insertOne
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setName("def 2");
-        processDefinition.setProjectId(1010);
+        processDefinition.setProjectCode("1010");
         processDefinition.setUserId(101);
         processDefinition.setUpdateTime(new Date());
         processDefinition.setCreateTime(new Date());
@@ -140,6 +141,7 @@ public class ProcessDefinitionMapperTest {
     @Test
     public void testQueryByDefineName() {
         Project project = new Project();
+        project.setCode("1");
         project.setName("ut project");
         project.setUserId(4);
         projectMapper.insert(project);
@@ -165,7 +167,7 @@ public class ProcessDefinitionMapperTest {
         //insertOne
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setName("def 1");
-        processDefinition.setProjectId(project.getId());
+        processDefinition.setProjectCode(project.getCode());
         processDefinition.setUpdateTime(new Date());
         processDefinition.setCreateTime(new Date());
         processDefinition.setTenantId(tenant.getId());
@@ -185,7 +187,7 @@ public class ProcessDefinitionMapperTest {
     public void testQueryDefineListPaging() {
         ProcessDefinition processDefinition = insertOne();
         Page<ProcessDefinition> page = new Page(1, 3);
-        IPage<ProcessDefinition> processDefinitionIPage = processDefinitionMapper.queryDefineListPaging(page, "def", 101, 1010, true);
+        IPage<ProcessDefinition> processDefinitionIPage = processDefinitionMapper.queryDefineListPaging(page, "def", 101, "1010", true);
         Assert.assertNotEquals(processDefinitionIPage.getTotal(), 0);
     }
 
@@ -195,7 +197,7 @@ public class ProcessDefinitionMapperTest {
     @Test
     public void testQueryAllDefinitionList() {
         ProcessDefinition processDefinition = insertOne();
-        List<ProcessDefinition> processDefinitionIPage = processDefinitionMapper.queryAllDefinitionList(1010);
+        List<ProcessDefinition> processDefinitionIPage = processDefinitionMapper.queryAllDefinitionList("1010");
         Assert.assertNotEquals(processDefinitionIPage.size(), 0);
     }
 
@@ -233,12 +235,20 @@ public class ProcessDefinitionMapperTest {
         user.setUpdateTime(new Date());
         userMapper.insert(user);
 
+
+
+        Project project = new Project();
+        project.setCode("1");
+        project.setName("testProject");
+        projectMapper.insert(project);
+
+
         ProcessDefinition processDefinition = insertOne();
         processDefinition.setUserId(user.getId());
         processDefinitionMapper.updateById(processDefinition);
 
         Integer[] projectIds = new Integer[1];
-        projectIds[0] = processDefinition.getProjectId();
+        projectIds[0] = project.getId();
         List<DefinitionGroupByUser> processDefinitions = processDefinitionMapper.countDefinitionGroupByUser(
                 processDefinition.getUserId(),
                 projectIds,
@@ -250,7 +260,7 @@ public class ProcessDefinitionMapperTest {
     @Test
     public void listResourcesTest() {
         ProcessDefinition processDefinition = insertOne();
-        processDefinition.setResourceIds("3,5");
+        processDefinition.setResourceCodes("3,5");
         processDefinition.setReleaseState(ReleaseState.ONLINE);
         List<Map<String, Object>> maps = processDefinitionMapper.listResources();
         Assert.assertNotNull(maps);
@@ -259,7 +269,7 @@ public class ProcessDefinitionMapperTest {
     @Test
     public void listResourcesByUserTest() {
         ProcessDefinition processDefinition = insertOne();
-        processDefinition.setResourceIds("3,5");
+        processDefinition.setResourceCodes("3,5");
         processDefinition.setReleaseState(ReleaseState.ONLINE);
         List<Map<String, Object>> maps = processDefinitionMapper.listResourcesByUser(processDefinition.getUserId());
         Assert.assertNotNull(maps);

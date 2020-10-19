@@ -21,6 +21,7 @@ import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.dao.entity.CommandCount;
 import org.apache.dolphinscheduler.dao.entity.ErrorCommand;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
+import org.apache.dolphinscheduler.dao.entity.Project;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +46,8 @@ public class ErrorCommandMapperTest {
     @Autowired
     ProcessDefinitionMapper processDefinitionMapper;
 
+    @Autowired
+    ProjectMapper projectMapper;
 
     /**
      * insert
@@ -72,9 +75,14 @@ public class ErrorCommandMapperTest {
     public void testQuery() {
         ErrorCommand errorCommand = insertOne();
 
+        Project project = new Project();
+        project.setCode("1");
+        project.setName("testProject");
+        projectMapper.insert(project);
+
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setName("def 1");
-        processDefinition.setProjectId(1010);
+        processDefinition.setProjectCode("1");
         processDefinition.setUserId(101);
         processDefinition.setUpdateTime(new Date());
         processDefinition.setCreateTime(new Date());
@@ -91,7 +99,7 @@ public class ErrorCommandMapperTest {
         );
 
         Integer[] projectIdArray = new Integer[2];
-        projectIdArray[0] = processDefinition.getProjectId();
+        projectIdArray[0] = project.getId();
         projectIdArray[1] = 200;
         List<CommandCount> commandCounts2 = errorCommandMapper.countCommandState(
                 null,

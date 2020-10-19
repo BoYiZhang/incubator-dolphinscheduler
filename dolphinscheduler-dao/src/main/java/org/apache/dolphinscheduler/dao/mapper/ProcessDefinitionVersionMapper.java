@@ -31,39 +31,39 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 public interface ProcessDefinitionVersionMapper extends BaseMapper<ProcessDefinitionVersion> {
 
     /**
-     * query max version by process definition id
+     * query max version by process definition code
      *
-     * @param processDefinitionId process definition id
-     * @return the max version of this process definition id
+     * @param processDefinitionCode process definition code
+     * @return the max version of this process definition code
      */
-    Long queryMaxVersionByProcessDefinitionId(@Param("processDefinitionId") int processDefinitionId);
+    Long queryMaxVersionByProcessDefinitionCode(@Param("processDefinitionCode") String processDefinitionCode);
 
     /**
      * query the paging process definition version list by pagination info
      *
      * @param page pagination info
-     * @param processDefinitionId process definition id
+     * @param processDefinitionCode process definition code
      * @return the paging process definition version list
      */
     IPage<ProcessDefinitionVersion> queryProcessDefinitionVersionsPaging(Page<ProcessDefinitionVersion> page,
-                                                                         @Param("processDefinitionId") int processDefinitionId);
+                                                                         @Param("processDefinitionCode") String processDefinitionCode);
 
     /**
-     * query the certain process definition version info by process definition id and version number
+     * query the certain process definition version info by process definition code and version number
      *
-     * @param processDefinitionId process definition id
+     * @param processDefinitionCode process definition code
      * @param version version number
      * @return the process definition version info
      */
-    ProcessDefinitionVersion queryByProcessDefinitionIdAndVersion(@Param("processDefinitionId") int processDefinitionId, @Param("version") long version);
+    ProcessDefinitionVersion queryByProcessDefinitionCodeAndVersion(@Param("processDefinitionCode") String processDefinitionCode, @Param("version") long version);
 
     /**
-     * delete the certain process definition version by process definition id and version number
+     * delete the certain process definition version by process definition code and version number
      *
-     * @param processDefinitionId process definition id
+     * @param processDefinitionCode process definition processDefinitionCode
      * @param version version number
      * @return delete result
      */
-    int deleteByProcessDefinitionIdAndVersion(@Param("processDefinitionId") int processDefinitionId, @Param("version") long version);
+    int deleteByProcessDefinitionCodeAndVersion(@Param("processDefinitionCode") String processDefinitionCode, @Param("version") long version);
 
 }

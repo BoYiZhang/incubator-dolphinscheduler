@@ -121,19 +121,21 @@ public class ScheduleMapperTest {
         userMapper.insert(user);
 
         Project project = new Project();
+        project.setCode("1");
         project.setName("ut project");
         project.setUserId(user.getId());
         projectMapper.insert(project);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
-        processDefinition.setProjectId(project.getId());
+        processDefinition.setProjectCode(project.getCode());
+        processDefinition.setCode("12345");
         processDefinition.setUserId(user.getId());
         processDefinition.setLocations("");
         processDefinitionMapper.insert(processDefinition);
 
         Schedule schedule= insertOne();
         schedule.setUserId(user.getId());
-        schedule.setProcessDefinitionId(processDefinition.getId());
+        schedule.setProcessDefinitionCode(processDefinition.getCode());
         scheduleMapper.insert(schedule);
 
         Page<Schedule> page = new Page(1,3);
@@ -157,19 +159,21 @@ public class ScheduleMapperTest {
         userMapper.insert(user);
 
         Project project = new Project();
+        project.setCode("1");
         project.setName("ut project");
         project.setUserId(user.getId());
         projectMapper.insert(project);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
-        processDefinition.setProjectId(project.getId());
+        processDefinition.setProjectCode(project.getCode());
+        processDefinition.setCode("12345");
         processDefinition.setUserId(user.getId());
         processDefinition.setLocations("");
         processDefinitionMapper.insert(processDefinition);
 
         Schedule schedule= insertOne();
         schedule.setUserId(user.getId());
-        schedule.setProcessDefinitionId(processDefinition.getId());
+        schedule.setProcessDefinitionCode(processDefinition.getCode());
         scheduleMapper.insert(schedule);
 
         Page<Schedule> page = new Page(1,3);
@@ -186,12 +190,29 @@ public class ScheduleMapperTest {
     @Test
     public void testSelectAllByProcessDefineArray() {
 
+        User user = new User();
+        user.setUserName("ut name");
+        userMapper.insert(user);
+
+        Project project = new Project();
+        project.setCode("1");
+        project.setName("ut project");
+        project.setUserId(user.getId());
+        projectMapper.insert(project);
+
+        ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setProjectCode(project.getCode());
+        processDefinition.setCode("12345");
+        processDefinition.setUserId(user.getId());
+        processDefinition.setLocations("");
+        processDefinitionMapper.insert(processDefinition);
+
         Schedule schedule = insertOne();
-        schedule.setProcessDefinitionId(12345);
+        schedule.setProcessDefinitionCode("12345");
         schedule.setReleaseState(ReleaseState.ONLINE);
         scheduleMapper.updateById(schedule);
 
-        List<Schedule> schedules= scheduleMapper.selectAllByProcessDefineArray(new int[] {schedule.getProcessDefinitionId()});
+        List<Schedule> schedules = scheduleMapper.selectAllByProcessDefineArray(new int[] {processDefinition.getId()});
         Assert.assertNotEquals(schedules.size(), 0);
     }
 
@@ -201,10 +222,10 @@ public class ScheduleMapperTest {
     @Test
     public void queryByProcessDefinitionId() {
         Schedule schedule = insertOne();
-        schedule.setProcessDefinitionId(12345);
+        schedule.setProcessDefinitionCode("12345");
         scheduleMapper.updateById(schedule);
 
-        List<Schedule> schedules= scheduleMapper.queryByProcessDefinitionId(schedule.getProcessDefinitionId());
+        List<Schedule> schedules= scheduleMapper.queryByProcessDefineCode(schedule.getProcessDefinitionCode());
         Assert.assertNotEquals(schedules.size(), 0);
     }
 }

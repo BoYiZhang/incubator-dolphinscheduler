@@ -23,10 +23,7 @@ import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.enums.TaskType;
-import org.apache.dolphinscheduler.dao.entity.ExecuteStatusCount;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.entity.TaskInstance;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +51,11 @@ public class TaskInstanceMapperTest {
 
     @Autowired
     ProcessInstanceMapper processInstanceMapper;
+
+    @Autowired
+    ProjectMapper projectMapper;
+
+
 
     /**
      * insert
@@ -208,10 +210,16 @@ public class TaskInstanceMapperTest {
      */
     @Test
     public void testCountTask() {
+
+        Project project = new Project();
+        project.setCode("1");
+        project.setName("testProject");
+        projectMapper.insert(project);
+
         TaskInstance task = insertOne();
 
         ProcessDefinition definition = new ProcessDefinition();
-        definition.setProjectId(1111);
+        definition.setProjectCode("12345");
         processDefinitionMapper.insert(definition);
         task.setProcessDefinitionId(definition.getId());
         taskInstanceMapper.updateById(task);
@@ -221,7 +229,7 @@ public class TaskInstanceMapperTest {
                 new int[0]
         );
         int countTask2 = taskInstanceMapper.countTask(
-                new Integer[]{definition.getProjectId()},
+                new Integer[]{project.getId()},
                 new int[]{task.getId()}
         );
         taskInstanceMapper.deleteById(task.getId());
@@ -237,10 +245,14 @@ public class TaskInstanceMapperTest {
      */
     @Test
     public void testCountTaskInstanceStateByUser() {
+        Project project = new Project();
+        project.setCode("1");
+        project.setName("testProject");
+        projectMapper.insert(project);
 
         TaskInstance task = insertOne();
         ProcessDefinition definition = new ProcessDefinition();
-        definition.setProjectId(1111);
+        definition.setProjectCode("12345");
         processDefinitionMapper.insert(definition);
         task.setProcessDefinitionId(definition.getId());
         taskInstanceMapper.updateById(task);
@@ -248,7 +260,7 @@ public class TaskInstanceMapperTest {
 
         List<ExecuteStatusCount> count = taskInstanceMapper.countTaskInstanceStateByUser(
                 null, null,
-                new Integer[]{definition.getProjectId()}
+                new Integer[]{project.getId()}
         );
 
         processDefinitionMapper.deleteById(definition.getId());
@@ -263,7 +275,7 @@ public class TaskInstanceMapperTest {
         TaskInstance task = insertOne();
 
         ProcessDefinition definition = new ProcessDefinition();
-        definition.setProjectId(1111);
+        definition.setProjectCode("12345");
         processDefinitionMapper.insert(definition);
 
         ProcessInstance processInstance = new ProcessInstance();
@@ -282,7 +294,7 @@ public class TaskInstanceMapperTest {
         Page<TaskInstance> page = new Page(1,3);
         IPage<TaskInstance> taskInstanceIPage = taskInstanceMapper.queryTaskInstanceListPaging(
                 page,
-                definition.getProjectId(),
+                definition.getProjectCode(),
                 task.getProcessInstanceId(),
                 "",
                 "",

@@ -107,7 +107,7 @@ public class UDFUserMapperTest {
         udfFunc.setFuncName("dolphin_udf_func");
         udfFunc.setClassName("org.apache.dolphinscheduler.test.mr");
         udfFunc.setType(UdfType.HIVE);
-        udfFunc.setResourceId(1);
+        udfFunc.setResourceCode("1");
         udfFunc.setResourceName("dolphin_resource");
         udfFunc.setCreateTime(new Date());
         udfFunc.setUpdateTime(new Date());

@@ -68,7 +68,7 @@ public class ProcessDefinitionVersionMapperTest {
         // insertOne
         ProcessDefinitionVersion processDefinitionVersion
                 = new ProcessDefinitionVersion();
-        processDefinitionVersion.setProcessDefinitionId(66);
+        processDefinitionVersion.setProcessDefinitionCode("66");
         processDefinitionVersion.setVersion(10);
         processDefinitionVersion.setProcessDefinitionJson(StringUtils.EMPTY);
         processDefinitionVersion.setDescription(StringUtils.EMPTY);
@@ -79,7 +79,7 @@ public class ProcessDefinitionVersionMapperTest {
         processDefinitionVersion.setReceivers(StringUtils.EMPTY);
         processDefinitionVersion.setReceiversCc(StringUtils.EMPTY);
         processDefinitionVersion.setTimeout(10);
-        processDefinitionVersion.setResourceIds("1,2");
+        processDefinitionVersion.setResourceCodes("1,2");
         processDefinitionVersionMapper.insert(processDefinitionVersion);
         return processDefinitionVersion;
     }
@@ -93,7 +93,7 @@ public class ProcessDefinitionVersionMapperTest {
         // insertTwo
         ProcessDefinitionVersion processDefinitionVersion
                 = new ProcessDefinitionVersion();
-        processDefinitionVersion.setProcessDefinitionId(67);
+        processDefinitionVersion.setProcessDefinitionCode("67");
         processDefinitionVersion.setVersion(11);
         processDefinitionVersion.setProcessDefinitionJson(StringUtils.EMPTY);
         processDefinitionVersion.setDescription(StringUtils.EMPTY);
@@ -104,7 +104,7 @@ public class ProcessDefinitionVersionMapperTest {
         processDefinitionVersion.setReceivers(StringUtils.EMPTY);
         processDefinitionVersion.setReceiversCc(StringUtils.EMPTY);
         processDefinitionVersion.setTimeout(10);
-        processDefinitionVersion.setResourceIds("1,2");
+        processDefinitionVersion.setResourceCodes("1,2");
         processDefinitionVersionMapper.insert(processDefinitionVersion);
         return processDefinitionVersion;
     }
@@ -125,8 +125,8 @@ public class ProcessDefinitionVersionMapperTest {
     public void testQueryMaxVersionByProcessDefinitionId() {
         ProcessDefinitionVersion processDefinitionVersion = insertOne();
 
-        Long version = processDefinitionVersionMapper.queryMaxVersionByProcessDefinitionId(
-                processDefinitionVersion.getProcessDefinitionId());
+        Long version = processDefinitionVersionMapper.queryMaxVersionByProcessDefinitionCode(
+                processDefinitionVersion.getProcessDefinitionCode());
         // query
         Assert.assertEquals(10, (long) version);
     }
@@ -139,7 +139,7 @@ public class ProcessDefinitionVersionMapperTest {
         Page<ProcessDefinitionVersion> page = new Page<>(1, 3);
 
         IPage<ProcessDefinitionVersion> processDefinitionVersionIPage =
-                processDefinitionVersionMapper.queryProcessDefinitionVersionsPaging(page, 10);
+                processDefinitionVersionMapper.queryProcessDefinitionVersionsPaging(page, "10");
 
         Assert.assertTrue(processDefinitionVersionIPage.getSize() >= 2);
     }
@@ -147,25 +147,25 @@ public class ProcessDefinitionVersionMapperTest {
     @Test
     public void testDeleteByProcessDefinitionIdAndVersion() {
         ProcessDefinitionVersion processDefinitionVersion = insertOne();
-        int i = processDefinitionVersionMapper.deleteByProcessDefinitionIdAndVersion(
-                processDefinitionVersion.getProcessDefinitionId(), processDefinitionVersion.getVersion());
+        int i = processDefinitionVersionMapper.deleteByProcessDefinitionCodeAndVersion(
+                processDefinitionVersion.getProcessDefinitionCode(), processDefinitionVersion.getVersion());
         Assert.assertEquals(1, i);
     }
 
     @Test
     public void testQueryByProcessDefinitionIdAndVersion() {
         ProcessDefinitionVersion processDefinitionVersion1 = insertOne();
-        ProcessDefinitionVersion processDefinitionVersion3 = processDefinitionVersionMapper.queryByProcessDefinitionIdAndVersion(
-                processDefinitionVersion1.getProcessDefinitionId(), 10);
+        ProcessDefinitionVersion processDefinitionVersion3 = processDefinitionVersionMapper.queryByProcessDefinitionCodeAndVersion(
+                processDefinitionVersion1.getProcessDefinitionCode(), 10);
 
         ProcessDefinitionVersion processDefinitionVersion2 = insertTwo();
-        ProcessDefinitionVersion processDefinitionVersion4 = processDefinitionVersionMapper.queryByProcessDefinitionIdAndVersion(
-                processDefinitionVersion2.getProcessDefinitionId(), 11);
+        ProcessDefinitionVersion processDefinitionVersion4 = processDefinitionVersionMapper.queryByProcessDefinitionCodeAndVersion(
+                processDefinitionVersion2.getProcessDefinitionCode(), 11);
 
-        Assert.assertEquals(processDefinitionVersion1.getProcessDefinitionId(),
-                processDefinitionVersion3.getProcessDefinitionId());
-        Assert.assertEquals(processDefinitionVersion2.getProcessDefinitionId(),
-                processDefinitionVersion4.getProcessDefinitionId());
+        Assert.assertEquals(processDefinitionVersion1.getProcessDefinitionCode(),
+                processDefinitionVersion3.getProcessDefinitionCode());
+        Assert.assertEquals(processDefinitionVersion2.getProcessDefinitionCode(),
+                processDefinitionVersion4.getProcessDefinitionCode());
 
     }
 

@@ -32,7 +32,7 @@ public class UdfFuncTest {
     
     UdfFunc udfFunc = new UdfFunc();
     udfFunc.setResourceName("dolphin_resource_update");
-    udfFunc.setResourceId(2);
+    udfFunc.setResourceCode("2");
     udfFunc.setClassName("org.apache.dolphinscheduler.test.mrUpdate");
 
     Assert.assertEquals("{\"id\":0,\"userId\":0,\"funcName\":null,\"className\":\"org.apache.dolphinscheduler.test.mrUpdate\",\"argTypes\":null,\"database\":null,"
@@ -55,7 +55,7 @@ public class UdfFuncTest {
     //
     UdfFunc udfFunc = new UdfFunc();
     udfFunc.setResourceName("dolphin_resource_update");
-    udfFunc.setResourceId(2);
+    udfFunc.setResourceCode("2");
     udfFunc.setClassName("org.apache.dolphinscheduler.test.mrUpdate");
 
     Assert.assertNotNull(udfFuncDeserializer.deserializeKey(udfFunc.toString(), null));

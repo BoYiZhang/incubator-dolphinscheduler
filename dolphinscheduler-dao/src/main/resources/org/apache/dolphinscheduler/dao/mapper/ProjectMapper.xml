@@ -24,6 +24,15 @@
         join t_ds_user u on p.user_id = u.id
         where p.id = #{projectId}
     </select>
+
+    <select id="queryByCode" resultType="org.apache.dolphinscheduler.dao.entity.Project">
+        select p.*,u.user_name as user_name
+        from t_ds_project p
+        join t_ds_user u on p.user_id = u.id
+        where p.code = #{code}
+        limit 1
+    </select>
+
     <select id="queryByName" resultType="org.apache.dolphinscheduler.dao.entity.Project">
         select p.*,u.user_name as user_name
         from t_ds_project p
@@ -31,6 +40,8 @@
         where p.name = #{projectName}
         limit 1
     </select>
+
+
     <select id="queryProjectListPaging" resultType="org.apache.dolphinscheduler.dao.entity.Project">
         select p.*,u.user_name as user_name,
         (SELECT COUNT(*) FROM t_ds_process_definition AS def WHERE def.project_id = p.id) AS def_count,

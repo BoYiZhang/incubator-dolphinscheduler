@@ -64,7 +64,7 @@ public class UdfFuncMapperTest {
         udfFunc.setFuncName("dolphin_udf_func");
         udfFunc.setClassName("org.apache.dolphinscheduler.test.mr");
         udfFunc.setType(UdfType.HIVE);
-        udfFunc.setResourceId(1);
+        udfFunc.setResourceCode("1");
         udfFunc.setResourceName("dolphin_resource");
         udfFunc.setCreateTime(new Date());
         udfFunc.setUpdateTime(new Date());
@@ -82,7 +82,7 @@ public class UdfFuncMapperTest {
         udfFunc.setFuncName("dolphin_udf_func");
         udfFunc.setClassName("org.apache.dolphinscheduler.test.mr");
         udfFunc.setType(UdfType.HIVE);
-        udfFunc.setResourceId(1);
+        udfFunc.setResourceCode("1");
         udfFunc.setResourceName("dolphin_resource");
         udfFunc.setCreateTime(new Date());
         udfFunc.setUpdateTime(new Date());
@@ -165,7 +165,7 @@ public class UdfFuncMapperTest {
         //insertOne
         UdfFunc udfFunc = insertOne();
         udfFunc.setResourceName("dolphin_resource_update");
-        udfFunc.setResourceId(2);
+        udfFunc.setResourceCode("2");
         udfFunc.setClassName("org.apache.dolphinscheduler.test.mrUpdate");
         udfFunc.setUpdateTime(new Date());
         //update

@@ -59,10 +59,10 @@
         select  state, count(0) as count
         from t_ds_task_instance t
         left join t_ds_process_definition  d on d.id=t.process_definition_id
-        left join t_ds_project p on p.id=d.project_id
+        left join t_ds_project p on p.code=d.project_code
         where 1=1
         <if test="projectIds != null and projectIds.length != 0">
-            and d.project_id in
+            and p.id in
             <foreach collection="projectIds" index="index" item="i" open="(" separator="," close=")">
                 #{i}
             </foreach>
@@ -82,10 +82,10 @@
     </select>
     <select id="countTask" resultType="java.lang.Integer">
         select count(1) as count
-        from t_ds_task_instance task,t_ds_process_definition process
-        where task.process_definition_id=process.id
+        from t_ds_task_instance task,t_ds_process_definition process, t_ds_project project
+        where task.process_definition_id=process.id and process.project_code = project.code
         <if test="projectIds != null and projectIds.length != 0">
-            and process.project_id in
+            and project.id in
             <foreach collection="projectIds" index="index" item="i" open="(" separator="," close=")">
                 #{i}
             </foreach>

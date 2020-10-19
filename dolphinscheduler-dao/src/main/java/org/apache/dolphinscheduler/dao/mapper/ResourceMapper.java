@@ -56,14 +56,14 @@ public interface ResourceMapper extends BaseMapper<Resource> {
      * resource page
      * @param page page
      * @param userId userId
-     * @param id id
+     * @param code code
      * @param type type
      * @param searchVal searchVal
      * @return resource page
      */
     IPage<Resource> queryResourcePaging(IPage<Resource> page,
                                         @Param("userId") int userId,
-                                        @Param("id") int id,
+                                        @Param("code") String code,
                                         @Param("type") int type,
                                         @Param("searchVal") String searchVal);
 
@@ -98,8 +98,6 @@ public interface ResourceMapper extends BaseMapper<Resource> {
      */
     <T> List<Resource> listAuthorizedResource(@Param("userId") int userId,@Param("resNames")T[] resNames);
 
-
-
     /**
      * list authorized resource
      * @param userId userId
@@ -109,6 +107,16 @@ public interface ResourceMapper extends BaseMapper<Resource> {
      */
     <T> List<Resource> listAuthorizedResourceById(@Param("userId") int userId,@Param("resIds")T[] resIds);
 
+
+    /**
+     * list authorized resource by resCodes
+     * @param userId
+     * @param resCodes
+     * @param <T>
+     * @return
+     */
+    <T> List<Resource> listAuthorizedResourceByCode(@Param("userId") int userId,@Param("resCodes")T[] resCodes);
+
     /**
      * delete resource by id array
      * @param resIds resource id array
@@ -117,11 +125,18 @@ public interface ResourceMapper extends BaseMapper<Resource> {
     int deleteIds(@Param("resIds")Integer[] resIds);
 
     /**
+     * delete resource by code array
+     * @param codes resource code array
+     * @return delete num
+     */
+    int deleteByCodes(@Param("codes")String[] codes);
+
+    /**
      * list children
-     * @param direcotyId directory id
+     * @param parentCode directory code
      * @return resource id array
      */
-    List<Integer> listChildren(@Param("direcotyId") int direcotyId);
+    List<Resource> listChildrenByCode(@Param("parentCode") String parentCode);
 
     /**
      * query resource by full name or pid
@@ -139,9 +154,24 @@ public interface ResourceMapper extends BaseMapper<Resource> {
     List<Resource> listResourceByIds(@Param("resIds")Integer[] resIds);
 
     /**
+     * list resource by code array
+     * @param resCodes resource code array
+     * @return resource list
+     */
+    List<Resource> listResourceByCodes(@Param("resCodes")String[] resCodes);
+
+    /**
      * update resource
      * @param resourceList  resource list
      * @return update num
      */
     int batchUpdateResource(@Param("resourceList") List<Resource> resourceList);
+
+    /**
+     * query resource by code
+     * @param code
+     * @return
+     */
+    Resource selectByCode(@Param("code") String code);
+
 }

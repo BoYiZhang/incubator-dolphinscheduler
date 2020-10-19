@@ -38,9 +38,9 @@ public class Schedule {
   @TableId(value="id", type=IdType.AUTO)
   private int id;
   /**
-   * process definition id
+   * process definition code
    */
-  private int processDefinitionId;
+  private String processDefinitionCode;
 
   /**
    * process definition name
@@ -214,12 +214,12 @@ public class Schedule {
 
 
 
-  public int getProcessDefinitionId() {
-    return processDefinitionId;
+  public String getProcessDefinitionCode() {
+    return processDefinitionCode;
   }
 
-  public void setProcessDefinitionId(int processDefinitionId) {
-    this.processDefinitionId = processDefinitionId;
+  public void setProcessDefinitionCode(String processDefinitionCode) {
+    this.processDefinitionCode = processDefinitionCode;
   }
 
   public String getProcessDefinitionName() {
@@ -282,7 +282,7 @@ public class Schedule {
   public String toString() {
     return "Schedule{" +
             "id=" + id +
-            ", processDefinitionId=" + processDefinitionId +
+            ", processDefinitionCode='" + processDefinitionCode + '\'' +
             ", processDefinitionName='" + processDefinitionName + '\'' +
             ", projectName='" + projectName + '\'' +
             ", description='" + definitionDescription + '\'' +

@@ -38,9 +38,9 @@ public class ProcessDefinitionVersion {
     private int id;
 
     /**
-     * process definition id
+     * process definition code
      */
-    private int processDefinitionId;
+    private String processDefinitionCode;
 
     /**
      * version
@@ -73,9 +73,9 @@ public class ProcessDefinitionVersion {
     private int timeout;
 
     /**
-     * resource ids
+     * resource codes
      */
-    private String resourceIds;
+    private String resourceCodes;
 
     /**
      * create time
@@ -114,12 +114,12 @@ public class ProcessDefinitionVersion {
         this.id = id;
     }
 
-    public int getProcessDefinitionId() {
-        return processDefinitionId;
+    public String getProcessDefinitionCode() {
+        return processDefinitionCode;
     }
 
-    public void setProcessDefinitionId(int processDefinitionId) {
-        this.processDefinitionId = processDefinitionId;
+    public void setProcessDefinitionCode(String processDefinitionCode) {
+        this.processDefinitionCode = processDefinitionCode;
     }
 
     public long getVersion() {
@@ -194,19 +194,19 @@ public class ProcessDefinitionVersion {
         this.timeout = timeout;
     }
 
-    public String getResourceIds() {
-        return resourceIds;
+    public String getResourceCodes() {
+        return resourceCodes;
     }
 
-    public void setResourceIds(String resourceIds) {
-        this.resourceIds = resourceIds;
+    public void setResourceCodes(String resourceCodes) {
+        this.resourceCodes = resourceCodes;
     }
 
     @Override
     public String toString() {
         return "ProcessDefinitionVersion{"
                 + "id=" + id
-                + ", processDefinitionId=" + processDefinitionId
+                + ", processDefinitionCode='" + processDefinitionCode + '\''
                 + ", version=" + version
                 + ", processDefinitionJson='" + processDefinitionJson + '\''
                 + ", description='" + description + '\''
@@ -217,7 +217,7 @@ public class ProcessDefinitionVersion {
                 + ", receivers='" + receivers + '\''
                 + ", receiversCc='" + receiversCc + '\''
                 + ", timeout=" + timeout
-                + ", resourceIds='" + resourceIds + '\''
+                + ", resourceCodes='" + resourceCodes + '\''
                 + '}';
     }
 
@@ -227,7 +227,7 @@ public class ProcessDefinitionVersion {
 
     public static final class Builder {
         private int id;
-        private int processDefinitionId;
+        private String processDefinitionCode;
         private long version;
         private String processDefinitionJson;
         private String description;
@@ -238,7 +238,7 @@ public class ProcessDefinitionVersion {
         private String receivers;
         private String receiversCc;
         private int timeout;
-        private String resourceIds;
+        private String resourceCodes;
 
         private Builder() {
         }
@@ -248,8 +248,8 @@ public class ProcessDefinitionVersion {
             return this;
         }
 
-        public Builder processDefinitionId(int processDefinitionId) {
-            this.processDefinitionId = processDefinitionId;
+        public Builder processDefinitionCode(String processDefinitionCode) {
+            this.processDefinitionCode = processDefinitionCode;
             return this;
         }
 
@@ -303,15 +303,15 @@ public class ProcessDefinitionVersion {
             return this;
         }
 
-        public Builder resourceIds(String resourceIds) {
-            this.resourceIds = resourceIds;
+        public Builder resourceCodes(String resourceCodes) {
+            this.resourceCodes = resourceCodes;
             return this;
         }
 
         public ProcessDefinitionVersion build() {
             ProcessDefinitionVersion processDefinitionVersion = new ProcessDefinitionVersion();
             processDefinitionVersion.setId(id);
-            processDefinitionVersion.setProcessDefinitionId(processDefinitionId);
+            processDefinitionVersion.setProcessDefinitionCode(processDefinitionCode);
             processDefinitionVersion.setVersion(version);
             processDefinitionVersion.setProcessDefinitionJson(processDefinitionJson);
             processDefinitionVersion.setDescription(description);
@@ -322,7 +322,7 @@ public class ProcessDefinitionVersion {
             processDefinitionVersion.setReceivers(receivers);
             processDefinitionVersion.setReceiversCc(receiversCc);
             processDefinitionVersion.setTimeout(timeout);
-            processDefinitionVersion.setResourceIds(resourceIds);
+            processDefinitionVersion.setResourceCodes(resourceCodes);
             return processDefinitionVersion;
         }
     }

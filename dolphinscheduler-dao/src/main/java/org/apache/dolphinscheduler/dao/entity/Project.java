@@ -36,6 +36,11 @@ public class Project {
     private int id;
 
     /**
+     * project code
+     */
+    private String code;
+
+    /**
      * user id
      */
     @TableField("user_id")
@@ -109,6 +114,14 @@ public class Project {
         this.id = id;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getName() {
         return name;
     }
@@ -169,6 +182,7 @@ public class Project {
     public String toString() {
         return "Project{" +
                 "id=" + id +
+                ", code='" + code + '\'' +
                 ", userId=" + userId +
                 ", userName='" + userName + '\'' +
                 ", name='" + name + '\'' +
@@ -211,6 +225,7 @@ public class Project {
         private int id;
         private int userId;
         private String userName;
+        private String code ;
         private String name;
         private String description;
         private Date createTime;
@@ -234,6 +249,11 @@ public class Project {
 
         public Builder userName(String userName) {
             this.userName = userName;
+            return this;
+        }
+
+        public Builder code(String code) {
+            this.code = code;
             return this;
         }
 
@@ -275,6 +295,7 @@ public class Project {
         public Project build() {
             Project project = new Project();
             project.setId(id);
+            project.setCode(code);
             project.setUserId(userId);
             project.setUserName(userName);
             project.setName(name);

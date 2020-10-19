@@ -18,30 +18,30 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionVersionMapper">
-    <select id="queryMaxVersionByProcessDefinitionId" resultType="java.lang.Long">
+    <select id="queryMaxVersionByProcessDefinitionCode" resultType="java.lang.Long">
         select max(version)
         from t_ds_process_definition_version
-        where process_definition_id = #{processDefinitionId}
+        where process_definition_code = #{processDefinitionCode}
     </select>
 
     <select id="queryProcessDefinitionVersionsPaging" resultType="org.apache.dolphinscheduler.dao.entity.ProcessDefinitionVersion">
         select *
         from t_ds_process_definition_version
-        where process_definition_id = #{processDefinitionId}
+        where process_definition_code = #{processDefinitionCode}
         order by version desc
     </select>
 
-    <select id="queryByProcessDefinitionIdAndVersion" resultType="org.apache.dolphinscheduler.dao.entity.ProcessDefinitionVersion">
+    <select id="queryByProcessDefinitionCodeAndVersion" resultType="org.apache.dolphinscheduler.dao.entity.ProcessDefinitionVersion">
         select *
         from t_ds_process_definition_version
-        where process_definition_id = #{processDefinitionId}
+        where process_definition_code = #{processDefinitionCode}
           and version = #{version}
     </select>
 
-    <delete id="deleteByProcessDefinitionIdAndVersion">
+    <delete id="deleteByProcessDefinitionCodeAndVersion">
         delete
         from t_ds_process_definition_version
-        where process_definition_id = #{processDefinitionId}
+        where process_definition_code = #{processDefinitionCode}
           and version = #{version}
     </delete>
 </mapper>
