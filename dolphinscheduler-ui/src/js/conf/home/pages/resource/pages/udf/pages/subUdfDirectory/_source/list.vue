@@ -22,7 +22,7 @@
           <th scope="col">
             <span>{{$t('#')}}</span>
           </th>
-          <th scope="col" style="min-width: 30px" >
+          <th scope="col" style="width: 50px" >
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
           </th>
           <th scope="col" style="min-width: 150px">

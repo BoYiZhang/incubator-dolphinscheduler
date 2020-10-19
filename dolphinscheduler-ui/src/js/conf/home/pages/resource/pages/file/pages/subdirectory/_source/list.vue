@@ -22,6 +22,12 @@
           <th scope="col">
             <span>{{$t('#')}}</span>
           </th>
+          <th scope="col" style="width: 50px" >
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          </th>
+          <th scope="col" style="min-width: 150px">
+            <span>{{$t('Code')}}</span>
+          </th>
           <th scope="col">
             <span>{{$t('Name')}}</span>
           </th>
@@ -47,6 +53,13 @@
         <tr v-for="(item, $index) in list" :key="item.id">
           <td>
             <span>{{parseInt(pageNo === 1 ? ($index + 1) : (($index + 1) + (pageSize * (pageNo - 1))))}}</span>
+          </td>
+          <td>
+            <span v-if="item.directory" class="ans-icon-folder-empty"  style="font-size: 24px;"  ></span>
+            <span  v-if="!item.directory"  class="ans-icon-file-download" style="font-size: 24px;"  ></span>
+          </td>
+          <td>
+            <span>{{item.code || $t('Default code')}}</span>
           </td>
           <td>
             <span class="ellipsis" v-tooltip.large.top.start.light="{text: item.alias, maxWidth: '500px'}">
@@ -139,6 +152,7 @@
     name: 'file-manage-list',
     data () {
       return {
+        parentCode:'-1',
         list: []
       }
     },
@@ -157,6 +171,7 @@
         localStore.setItem('file', `${item.alias}|${item.size}`)
         if(item.directory) {
           localStore.setItem('currentDir', `${item.fullName}`)
+          this.parentCode = localStore.setItem('parentCode', item.code)
           this.$router.push({ path: `/resource/file/subdirectory/${item.id}` })
         } else {
           this.$router.push({ path: `/resource/file/list/${item.id}` })
