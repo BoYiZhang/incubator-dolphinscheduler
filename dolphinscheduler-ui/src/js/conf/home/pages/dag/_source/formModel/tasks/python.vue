@@ -336,8 +336,7 @@
                 this.resourceList.push(res.id)
                 this.dataProcess(backResource)
               }).catch(e => {
-                let resCode = res.code + ""
-                this.resourceList.push(resCode)
+                this.resourceList.push(v.res)
                 this.dataProcess(backResource)
               })
             } else {
