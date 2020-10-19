@@ -129,6 +129,7 @@
     },
     mounted () {
       this.$modal.destroy()
+      this.parentCode = localStore.setItem('udfParentCode', "-1")
     },
     beforeDestroy () {
       sessionStorage.setItem('isLeft',1)

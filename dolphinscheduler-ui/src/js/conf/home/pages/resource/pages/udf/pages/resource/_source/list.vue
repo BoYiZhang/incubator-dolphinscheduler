@@ -22,6 +22,12 @@
           <th scope="col">
             <span>{{$t('#')}}</span>
           </th>
+          <th scope="col" style="min-width: 30px" >
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          </th>
+          <th scope="col" style="min-width: 150px">
+            <span>{{$t('Code')}}</span>
+          </th>
           <th scope="col">
             <span>{{$t('UDF Resource Name')}}</span>
           </th>
@@ -50,6 +56,13 @@
         <tr v-for="(item, $index) in list" :key="$index">
           <td>
             <span>{{parseInt(pageNo === 1 ? ($index + 1) : (($index + 1) + (pageSize * (pageNo - 1))))}}</span>
+          </td>
+          <td>
+            <span v-if="item.directory" class="ans-icon-folder-empty"  style="font-size: 24px;"  ></span>
+            <span  v-if="!item.directory"  class="ans-icon-file-download" style="font-size: 24px;"  ></span>
+          </td>
+          <td>
+            <span>{{item.code || $t('Default code')}}</span>
           </td>
           <td>
             <span class="ellipsis" v-tooltip.large.top.start.light="{text: item.alias, maxWidth: '500px'}">
@@ -151,6 +164,7 @@
         localStore.setItem('file', `${item.alias}|${item.size}`)
         if(item.directory) {
           localStore.setItem('currentDir', `${item.fullName}`)
+          this.parentCode = localStore.setItem('udfParentCode', item.code)
           this.$router.push({ path: `/resource/udf/subUdfDirectory/${item.id}` })
         }
       },

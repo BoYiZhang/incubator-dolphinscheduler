@@ -27,6 +27,21 @@
             </x-radio-group>
           </template>
         </m-list-box-f>
+
+        <m-list-box-f>
+          <template slot="name"><strong>*</strong>{{$t('Code')}}</template>
+          <template slot="content">
+            <x-input
+              type="input"
+              v-model="code"
+              maxlength="100"
+              :placeholder="$t('Please enter code')"
+              autocomplete="off"
+              :disabled="!!item"
+            >
+            </x-input>
+          </template>
+        </m-list-box-f>
         <m-list-box-f>
           <template slot="name"><strong>*</strong>{{$t('UDF Function Name')}}</template>
           <template slot="content">
@@ -72,7 +87,7 @@
         <m-list-box-f>
           <template slot="name"><strong>*</strong>{{$t('UDF Resources')}}</template>
           <template slot="content">
-            <treeselect style="width:535px;float:left;" v-model="resourceId" maxHeight="200" :disable-branch-nodes="true" :options="udfResourceList" :disabled="isUpdate" :normalizer="normalizer" :placeholder="$t('Please select UDF resources directory')">
+            <treeselect style="width:535px;float:left;" v-model="resourceCode" maxHeight="200" :disable-branch-nodes="true" :options="udfResourceList" :disabled="isUpdate" :normalizer="normalizer" :placeholder="$t('Please select UDF resources directory')">
               <div slot="value-label" slot-scope="{ node }">{{ node.raw.fullName }}</div>
             </treeselect>
             <x-button type="primary" @click="_toggleUpdate" :disabled="upDisabled">{{$t('Upload Resources')}}</x-button>
@@ -126,19 +141,21 @@
       return {
         store,
         type: 'HIVE',
+        code: '',
         funcName: '',
         className: '',
         argTypes: '',
         database: '',
         description: '',
-        resourceId: null,
+        resourceCode: '',
         pid: null,
         udfResourceList: [],
         isUpdate: false,
         upDisabled: false,
         normalizer(node) {
           return {
-            label: node.name
+            label: node.name,
+            id: node.code
           }
         },
       }
@@ -168,12 +185,13 @@
           // parameter
           let param = {
             type: this.type, // HIVE,SPARK
+            code: this.code,
             funcName: this.funcName,
             className: this.className,
             argTypes: this.argTypes, // Can not pass this parameter
             database: this.database, // Can not pass this parameter
             description: this.description,
-            resourceId: this.resourceId
+            resourceCode: this.resourceCode
           }
 
           let id = this.item && this.item.id || null
@@ -214,7 +232,7 @@
             item = this.filterEmptyDirectory(item)
             let item1 = _.cloneDeep(res.data)
             this.diGuiTree(item)
-            
+
             this.diGuiTree(this.filterJarFile(item1))
             item1 = item1.filter( item => {
               if(item.dirctory) {
@@ -260,20 +278,24 @@
         this.udfResourceList.push(o)
         this.isUpdate = false
         this.$nextTick(() => {
-          this.resourceId = o.id
+          this.resourceCode = o.id
         })
         this.$refs.popup.apDisabled = false
       },
       _toggleUpdate () {
         this.isUpdate = !this.isUpdate
         if (this.isUpdate) {
-          this.resourceId = null
+          this.resourceCode = null
         }
       },
       /**
        * verification
        */
       _validation () {
+        if (!this.code || this.code.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.funcName) {
           this.$message.warning(`${i18n.$t('Please enter a UDF function name')}`)
           return false
@@ -282,7 +304,7 @@
           this.$message.warning(`${i18n.$t('Please enter a Package name')}`)
           return false
         }
-        if (!this.resourceId) {
+        if (!this.resourceCode) {
           this.$message.warning(`${i18n.$t('Select UDF Resources')}`)
           return false
         }
@@ -317,9 +339,9 @@
           this.argTypes = this.item.argTypes || ''
           this.database = this.item.database || ''
           this.description = this.item.description || ''
-          this.resourceId = this.item.resourceId
+          this.resourceCode = this.item.resourceCode
         } else {
-          this.resourceId = null
+          this.resourceCode = null
         }
       })
     },

@@ -19,6 +19,20 @@
     <template slot="content">
       <div class="resource-create-model">
         <m-list-box-f>
+          <template slot="name"><strong>*</strong>{{ $t("Code") }}</template>
+          <template slot="content">
+            <x-input
+              type="input"
+              v-model="code"
+              maxlength="100"
+              style="width: 430px;"
+              :placeholder="$t('Please enter code')"
+              autocomplete="off"
+            >
+            </x-input>
+          </template>
+        </m-list-box-f>
+        <m-list-box-f>
           <template slot="name"><strong>*</strong>{{$t('Folder Name')}}</template>
           <template slot="content">
             <x-input
@@ -70,6 +84,8 @@
     data () {
       return {
         type: '',
+        code: '',
+        parentCode:'',
         name: '',
         description: '',
         spinnerLoading: false
@@ -83,6 +99,8 @@
           this.spinnerLoading = true
           this.createResourceFolder({
             type: 'UDF',
+            code: this.code,
+            parentCode: this.parentCode,
             name: this.name,
             currentDir: localStore.getItem('currentDir'),
             pid: this.$route.params.id,
@@ -100,6 +118,10 @@
         }
       },
       _validation () {
+        if (!this.code || this.code.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.name) {
           this.$message.warning(`${i18n.$t('Please enter resource folder name')}`)
           return false
@@ -113,6 +135,10 @@
     },
     mounted () {
       this.$modal.destroy()
+      const storeParentCode = localStore.getItem('udfParentCode')
+      if(!!storeParentCode){
+        this.parentCode = storeParentCode;
+      }
     },
     destroyed () {
     },

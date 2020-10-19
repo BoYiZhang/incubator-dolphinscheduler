@@ -70,7 +70,8 @@
           pageSize: 10,
           pageNo: 1,
           searchVal: '',
-          type: 'UDF'
+          type: 'UDF',
+          parentCode:'-1',
         },
         isLeft: true,
         breadList: []
@@ -140,6 +141,7 @@
           type: 'UDF',
           fullName: api
         }).then(res => {
+          localStore.setItem('udfParentCode', res.code)
           localStore.setItem('currentDir', `${res.fullName}`)
           this.$router.push({ path: `/resource/udf/subUdfDirectory/${res.id}` })
         }).catch(e => {
@@ -162,6 +164,7 @@
     },
     mounted () {
       let dir = localStore.getItem('currentDir').split('/')
+      this.parentCode = localStore.getItem('udfParentCode')
       dir.shift()
       this.breadList = dir
       this.$modal.destroy()

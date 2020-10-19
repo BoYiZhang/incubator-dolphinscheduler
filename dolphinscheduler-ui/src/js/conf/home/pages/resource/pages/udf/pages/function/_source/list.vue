@@ -23,6 +23,9 @@ v-ps<template>
             <span>{{$t('#')}}</span>
           </th>
           <th scope="col">
+            <span>{{$t('Code')}}</span>
+          </th>
+          <th scope="col">
             <span>{{$t('UDF Function Name')}}</span>
           </th>
           <th scope="col">
@@ -53,6 +56,9 @@ v-ps<template>
         <tr v-for="(item, $index) in list" :key="$index">
           <td>
             <span>{{$index + 1}}</span>
+          </td>
+          <td>
+            <span>{{item.code || $t('Default code')}}</span>
           </td>
           <td>
             <span class="ellipsis" v-tooltip.large.top.start.light="{text: item.funcName, maxWidth: '500px'}">
