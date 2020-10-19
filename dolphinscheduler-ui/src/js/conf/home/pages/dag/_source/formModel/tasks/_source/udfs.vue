@@ -24,7 +24,7 @@
               v-for="city in udfsList"
               :key="city.id"
               :value="city.id"
-              :label="city.code"> 
+              :label="city.code">
       </x-option>
     </x-select>
   </div>
@@ -64,7 +64,7 @@
         this.store.dispatch('dag/getUdfList', { type: this.type }).then(res => {
           this.udfsList = _.map(res.data, v => {
             return {
-              id: v.id,
+              id: v.code,
               code: v.funcName
             }
           })
@@ -73,8 +73,10 @@
             let arr = []
             _.map(udfs, v => {
               _.map(this.udfsList, v1 => {
-                if (parseInt(v) === v1.id) {
-                  arr.push(parseInt(v))
+                let vStr = v+""
+                let v1Str = v1.code+""
+                if (vStr === v1Str) {
+                  arr.push(v)
                 }
               })
             })

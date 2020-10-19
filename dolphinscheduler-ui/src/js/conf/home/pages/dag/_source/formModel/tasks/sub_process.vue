@@ -30,8 +30,8 @@
                   @on-change="_handleWdiChanged">
             <x-option
                     v-for="city in processDefinitionList"
-                    :key="city.code"
-                    :value="city.id"
+                    :key="_toString(city.id)"
+                    :value="_toString(city.id)"
                     :label="city.code">
             </x-option>
           </x-select>
@@ -60,6 +60,10 @@
       backfillItem: Object
     },
     methods: {
+      _toString(key){
+        let  o = key + "";
+        return o
+      },
       /**
        * Node unified authentication parameters
        */
@@ -69,7 +73,7 @@
           return false
         }
         this.$emit('on-params', {
-          processDefinitionId: this.wdiCurr
+          processDefinitionCode: this.wdiCurr
         })
         return true
       },
@@ -89,7 +93,7 @@
     watch: {
       wdiCurr (val) {
         this.$emit('on-cache-params', {
-          processDefinitionId: this.wdiCurr
+          processDefinitionCode: this.wdiCurr
         })
       }
     },
@@ -104,18 +108,19 @@
       this.processDefinitionList = (() => {
         let a = _.map(processListS, v => {
           return {
-            id: v.id,
+            id: v.code,
             code: v.name,
             disabled: false
           }
         })
-        return _.filter(a, v => +v.id !== +id)
+        return _.filter(a, v => v.id !== +id)
       })()
 
       let o = this.backfillItem
       // Non-null objects represent backfill
       if (!_.isEmpty(o)) {
-        this.wdiCurr = o.params.processDefinitionId
+        let pcode = o.params.processDefinitionCode+"" || o.params.processDefinitionId+""
+        this.wdiCurr = o.params.pcode
       } else {
         if (this.processDefinitionList.length) {
           this.wdiCurr = this.processDefinitionList[0]['id']

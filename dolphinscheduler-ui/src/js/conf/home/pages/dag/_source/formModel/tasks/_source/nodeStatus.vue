@@ -78,7 +78,7 @@
       _add () {
         // btn loading
         this.isLoading = true
-            this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams()))
+        this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams()))
 
         // remove tooltip
         this._removeTip()
@@ -99,19 +99,19 @@
         return new Promise((resolve, reject) => {
           this.projectList = _.map(_.cloneDeep(this.store.state.dag.projectListS), v => {
             return {
-              value: v.id,
+              value: v.code,
               label: v.name
             }
           })
           resolve()
         })
       },
-      _getProcessByProjectId (id) {
+      _getProcessByProjectCode (projectCode) {
         return new Promise((resolve, reject) => {
-          this.store.dispatch('dag/getProcessByProjectId', { projectId: id }).then(res => {
+          this.store.dispatch('dag/getProcessByProjectCode', { projectCode: id }).then(res => {
             this.definitionList = _.map(_.cloneDeep(res), v => {
               return {
-                value: v.id,
+                value: v.code,
                 label: v.name
               }
             })
@@ -122,10 +122,10 @@
       /**
        * get dependItemList
        */
-      _getDependItemList (ids, is = true) {
+      _getDependItemList (codes, is = true) {
         return new Promise((resolve, reject) => {
           if (is) {
-            this.store.dispatch('dag/getProcessTasksList', { processDefinitionId: ids }).then(res => {
+            this.store.dispatch('dag/getProcessTasksList', { processDefinitionCode: codes }).then(res => {
               resolve(['ALL'].concat(_.map(res, v => v.name)))
             })
           }
@@ -159,17 +159,17 @@
       this.isInstance = this.router.history.current.name === 'projects-instance-details'
       // get processlist
       this._getProjectList().then(() => {
-        let projectId = this.projectList[0].value
+        let projectCode = this.projectList[0].value
         if (!this.dependItemList.length) {
           this.$emit('dependItemListEvent', _.concat(this.dependItemList, this._rtNewParams()))
         } else {
-          // get definitionId ids
-          let ids = _.map(this.dependItemList, v => v.definitionId).join(',')
+          // get definitionCode ids
+          let ids = _.map(this.dependItemList, v => v.definitionCode).join(',')
           // get item list
           this._getDependItemList(ids, false).then(res => {
             _.map(this.dependItemList, (v, i) => {
-              this._getProcessByProjectId(v.projectId).then(definitionList => {
-                this.$set(this.dependItemList, i, this._rtOldParams(v.definitionId, ['ALL'].concat(_.map(res[v.definitionId] || [], v => v.name)), v))
+              this._getProcessByProjectCode(v.projectCode).then(definitionList => {
+                this.$set(this.dependItemList, i, this._rtOldParams(v.definitionCode, ['ALL'].concat(_.map(res[v.definitionCode] || [], v => v.name)), v))
               })
             })
           })

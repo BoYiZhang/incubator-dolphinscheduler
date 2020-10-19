@@ -34,9 +34,9 @@
                 :disabled="isDetails">
         <x-option
                 v-for="city in datasourceList"
-                :key="city.id"
-                :value="city.id"
-                :label="city.code">
+                :key="city.code"
+                :value="city.code"
+                :label="city.name">
         </x-option>
       </x-select>
     </div>
@@ -88,10 +88,11 @@
         return new Promise((resolve, reject) => {
           this.store.dispatch('dag/getDatasourceList', this.type).then(res => {
             this.datasourceList = _.map(res.data, v => {
+              const chooseCode = v.code || 'default'
               return {
-                id: v.id,
-                code: v.name,
-                disabled: false
+                code: chooseCode,
+                disabled: false,
+                name: v.name
               }
             })
             resolve()
@@ -104,7 +105,7 @@
       _handleTypeChanged ({ value }) {
         this.type = value
         this._getDatasourceData().then(res => {
-          this.datasource = this.datasourceList.length && this.datasourceList[0].id || ''
+          this.datasource = this.datasourceList.length && this.datasourceList[0].code || ''
           this.$emit('on-dsData', {
             type: this.type,
             datasource: this.datasource
@@ -145,11 +146,12 @@
       this._getDatasourceData().then(res => {
         if (_.isEmpty(this.data)) {
           this.$nextTick(() => {
-            this.datasource = this.datasourceList[0].id
+            this.datasource = this.datasourceList[0].code
           })
         } else {
           this.$nextTick(() => {
-            this.datasource = this.data.datasource
+            let datasourceStr = this.data.datasource + ""
+            this.datasource = datasourceStr
           })
         }
         this.$emit('on-dsData', {

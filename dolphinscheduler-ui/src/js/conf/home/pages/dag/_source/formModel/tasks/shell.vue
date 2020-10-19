@@ -94,6 +94,7 @@
         options: [],
         normalizer(node) {
           return {
+            id: node.code,
             label: node.name
           }
         },
@@ -175,7 +176,7 @@
         // Process resourcelist
         let dataProcessing= _.map(this.resourceList, v => {
           return {
-            id: v
+            code: v
           }
         })
         // storage
@@ -222,15 +223,15 @@
         }
         delete item.children
       },
-      searchTree(element, id) {
+      searchTree(element, code) {
         // 根据id查找节点
-        if (element.id == id) {
+        if (element.code == code) {
           return element;
         } else if (element.children != null) {
           var i;
           var result = null;
           for (i = 0; result == null && i < element.children.length; i++) {
-            result = this.searchTree(element.children[i], id);
+            result = this.searchTree(element.children[i], code);
           }
           return result;
         }
@@ -248,7 +249,7 @@
             })
           })
           resourceIdArr = isResourceId.map(item=>{
-            return item.id
+            return item.code
           })
           Array.prototype.diff = function(a) {
             return this.filter(function(i) {return a.indexOf(i) < 0;});
@@ -258,14 +259,14 @@
           if(diffSet.length>0) {
             diffSet.forEach(item=>{
               backResource.forEach(item1=>{
-                if(item==item1.id || item==item1.res) {
+                if(item==item1.code || item==item1.res) {
                   optionsCmp.push(item1)
                 }
               })
             })
           }
           let noResources = [{
-            id: -1,
+            code: -1,
             name: $t('Unauthorized or deleted resources'),
             fullName: '/'+$t('Unauthorized or deleted resources'),
             children: []
@@ -273,7 +274,7 @@
           if(optionsCmp.length>0) {
             this.allNoResources = optionsCmp
             optionsCmp = optionsCmp.map(item=>{
-              return {id: item.id,name: item.name,fullName: item.res}
+              return {code: item.code,name: item.name,fullName: item.res}
             })
             optionsCmp.forEach(item=>{
               item.isNew = true
@@ -303,13 +304,13 @@
             })
           })
           resourceIdArr = isResourceId.map(item=>{
-            return {id: item.id,name: item.name,res: item.fullName}
+            return {code: item.code,name: item.name,res: item.fullName}
           })
         }
         let result = []
         resourceIdArr.forEach(item=>{
           this.allNoResources.forEach(item1=>{
-            if(item.id==item1.id) {
+            if(item.code==item1.code) {
               // resultBool = true
              result.push(item1)
             }
@@ -327,7 +328,7 @@
       this.diGuiTree(item)
       this.options = item
       let o = this.backfillItem
-      
+
       // Non-null objects represent backfill
       if (!_.isEmpty(o)) {
         this.rawScript = o.params.rawScript || ''
@@ -337,25 +338,27 @@
         let resourceList = o.params.resourceList || []
         if (resourceList.length) {
            _.map(resourceList, v => {
-            if(!v.id) {
+            if(!v.code) {
               this.store.dispatch('dag/getResourceId',{
                 type: 'FILE',
                 fullName: '/'+v.res
               }).then(res => {
-                this.resourceList.push(res.id)
+                let resCode = res.code + ""
+                this.resourceList.push(resCode)
                 this.dataProcess(backResource)
               }).catch(e => {
                 this.resourceList.push(v.res)
                 this.dataProcess(backResource)
               })
             } else {
-              this.resourceList.push(v.id)
+              let resCode = res.code + ""
+              this.resourceList.push(resCode)
               this.dataProcess(backResource)
             }
           })
           this.cacheResourceList = resourceList
         }
-        
+
         // backfill localParams
         let localParams = o.params.localParams || []
         if (localParams.length) {
