@@ -199,7 +199,7 @@
         let deployMode = this.deployMode
         let master = this.master
         let masterUrl = this.masterUrl
-        
+
         if(this.deployMode == 'local'){
           master = 'local'
           masterUrl = ''
@@ -384,14 +384,16 @@
                 type: 'FILE',
                 fullName: '/'+v.res
               }).then(res => {
-                this.resourceList.push(res.id)
+                let resCode = res.code + ""
+                this.resourceList.push(resCode)
                 this.dataProcess(backResource)
               }).catch(e => {
                 this.resourceList.push(v.res)
                 this.dataProcess(backResource)
               })
             } else {
-              this.resourceList.push(v.id)
+              let resCode = res.code + ""
+              this.resourceList.push(resCode)
               this.dataProcess(backResource)
             }
           })

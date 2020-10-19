@@ -250,7 +250,8 @@
           type: 'FILE',
           fullName: '/'+name
         }).then(res => {
-          this.mainJar = res.code
+          let resCode = res.code + ""
+          this.mainJar = resCode
         }).catch(e => {
           this.$message.error(e.msg || '')
         })
@@ -511,14 +512,16 @@
                   type: 'FILE',
                   fullName: '/'+v.res
                 }).then(res => {
-                  this.resourceList.push(res.code)
+                  let resCode = res.code + ""
+                  this.resourceList.push(resCode)
                   this.dataProcess(backResource)
                 }).catch(e => {
                   this.resourceList.push(v.res)
                   this.dataProcess(backResource)
                 })
               } else {
-                this.resourceList.push(v.code)
+                let resCode = res.code + ""
+                this.resourceList.push(resCode)
                 this.dataProcess(backResource)
               }
             })
