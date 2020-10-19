@@ -83,7 +83,7 @@ public class ProcessScheduleJob implements Job {
         }
 
 
-        ProcessDefinition processDefinition = getProcessService().findProcessDefineById(schedule.getProcessDefinitionId());
+        ProcessDefinition processDefinition = getProcessService().findProcessDefineByCode(schedule.getProcessDefinitionCode());
         // release state : online/offline
         ReleaseState releaseState = processDefinition.getReleaseState();
         if (processDefinition == null || releaseState == ReleaseState.OFFLINE) {
@@ -95,7 +95,7 @@ public class ProcessScheduleJob implements Job {
         command.setCommandType(CommandType.SCHEDULER);
         command.setExecutorId(schedule.getUserId());
         command.setFailureStrategy(schedule.getFailureStrategy());
-        command.setProcessDefinitionId(schedule.getProcessDefinitionId());
+        command.setProcessDefinitionId(processDefinition.getId());
         command.setScheduleTime(scheduledFireTime);
         command.setStartTime(fireTime);
         command.setWarningGroupId(schedule.getWarningGroupId());

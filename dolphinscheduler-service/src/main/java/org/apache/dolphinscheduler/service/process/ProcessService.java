@@ -22,7 +22,7 @@ import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_COMPLEMENT_D
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_EMPTY_SUB_PROCESS;
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING;
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_SUB_PROCESS;
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_SUB_PROCESS_DEFINE_ID;
+import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_SUB_PROCESS_DEFINE_CODE;
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_SUB_PROCESS_PARENT_INSTANCE_ID;
 import static org.apache.dolphinscheduler.common.Constants.YYYY_MM_DD_HH_MM_SS;
 
@@ -328,6 +328,15 @@ public class ProcessService {
     }
 
     /**
+     * find process define by code.
+     * @param processDefinitionCode processDefinitionCode
+     * @return process definition
+     */
+    public ProcessDefinition findProcessDefineByCode(String processDefinitionCode) {
+        return processDefineMapper.queryByDefineCode(processDefinitionCode);
+    }
+
+    /**
      * delete work process instance by id
      * @param processInstanceId processInstanceId
      * @return delete process instance result
@@ -416,10 +425,11 @@ public class ProcessService {
             for (TaskNode taskNode : taskNodeList) {
                 String parameter = taskNode.getParams();
                 ObjectNode parameterJson = JSONUtils.parseObject(parameter);
-                if (parameterJson.get(CMDPARAM_SUB_PROCESS_DEFINE_ID) != null) {
+                if (parameterJson.get(CMDPARAM_SUB_PROCESS_DEFINE_CODE) != null) {
                     SubProcessParameters subProcessParam = JSONUtils.parseObject(parameter, SubProcessParameters.class);
-                    ids.add(subProcessParam.getProcessDefinitionId());
-                    recurseFindSubProcessId(subProcessParam.getProcessDefinitionId(),ids);
+                    ProcessDefinition subDefinition = processDefineMapper.queryByCode(subProcessParam.getProcessDefinitionCode());
+                    ids.add(subDefinition.getId());
+                    recurseFindSubProcessId(subDefinition.getId(),ids);
                 }
 
             }
@@ -1018,7 +1028,10 @@ public class ProcessService {
         CommandType commandType = getSubCommandType(parentProcessInstance, childInstance);
         TaskNode taskNode = JSONUtils.parseObject(task.getTaskJson(), TaskNode.class);
         Map<String, String> subProcessParam = JSONUtils.toMap(taskNode.getParams());
-        Integer childDefineId = Integer.parseInt(subProcessParam.get(Constants.CMDPARAM_SUB_PROCESS_DEFINE_ID));
+
+        ProcessDefinition subProcessDefinition = findProcessDefineByCode(subProcessParam.get(Constants.CMDPARAM_SUB_PROCESS_DEFINE_CODE));
+        Integer childDefineId = subProcessDefinition.getId();
+
         String processParam = getSubWorkFlowParam(instanceMap, parentProcessInstance);
 
         return new Command(
@@ -1592,25 +1605,12 @@ public class ProcessService {
     }
 
     /**
-     * find data source by id
-     * @param id id
+     * find data source by code
+     * @param code code
      * @return datasource
      */
-    public DataSource findDataSourceById(int id) {
-        return dataSourceMapper.selectById(id);
-    }
-
-    /**
-     * update process instance state by id
-     * @param processInstanceId processInstanceId
-     * @param executionStatus executionStatus
-     * @return update process result
-     */
-    public int updateProcessInstanceState(Integer processInstanceId, ExecutionStatus executionStatus) {
-        ProcessInstance instance = processInstanceMapper.selectById(processInstanceId);
-        instance.setState(executionStatus);
-        return processInstanceMapper.updateById(instance);
-
+    public DataSource findDataSourceByCode(String code){
+        return dataSourceMapper.queryDataSourceByCode(code);
     }
 
     /**
@@ -1618,14 +1618,13 @@ public class ProcessService {
      * @param taskId taskId
      * @return process instance
      */
-    public ProcessInstance findProcessInstanceByTaskId(int taskId) {
+    public ProcessInstance findProcessInstanceByTaskId(int taskId){
         TaskInstance taskInstance = taskInstanceMapper.selectById(taskId);
-        if (taskInstance != null) {
+        if(taskInstance!= null){
             return processInstanceMapper.selectById(taskInstance.getProcessInstanceId());
         }
         return null;
     }
-
     /**
      * find udf function list by id list string
      * @param ids ids
@@ -1643,101 +1642,6 @@ public class ProcessService {
      */
     public String queryTenantCodeByResName(String resName,ResourceType resourceType) {
         return resourceMapper.queryTenantCodeByResourceName(resName, resourceType.ordinal());
-    }
-
-    /**
-     * find schedule list by process define id.
-     * @param ids ids
-     * @return schedule list
-     */
-    public List<Schedule> selectAllByProcessDefineId(int[] ids) {
-        return scheduleMapper.selectAllByProcessDefineArray(
-                ids);
-    }
-
-    /**
-     * get dependency cycle by work process define id and scheduler fire time
-     * @param masterId masterId
-     * @param processDefinitionId processDefinitionId
-     * @param scheduledFireTime the time the task schedule is expected to trigger
-     * @return CycleDependency
-     * @throws Exception if error throws Exception
-     */
-    public CycleDependency getCycleDependency(int masterId, int processDefinitionId, Date scheduledFireTime) throws Exception {
-        List<CycleDependency> list = getCycleDependencies(masterId,new int[]{processDefinitionId},scheduledFireTime);
-        return list.size() > 0 ? list.get(0) : null;
-
-    }
-
-    /**
-     * get dependency cycle list by work process define id list and scheduler fire time
-     * @param masterId masterId
-     * @param ids ids
-     * @param scheduledFireTime the time the task schedule is expected to trigger
-     * @return CycleDependency list
-     * @throws Exception if error throws Exception
-     */
-    public List<CycleDependency> getCycleDependencies(int masterId,int[] ids,Date scheduledFireTime) throws Exception {
-        List<CycleDependency> cycleDependencyList =  new ArrayList<CycleDependency>();
-        if (ids == null || ids.length == 0) {
-            logger.warn("ids[] is empty!is invalid!");
-            return cycleDependencyList;
-        }
-        if (scheduledFireTime == null) {
-            logger.warn("scheduledFireTime is null!is invalid!");
-            return cycleDependencyList;
-        }
-
-        String strCrontab = "";
-        CronExpression depCronExpression;
-        Cron depCron;
-        List<Date> list;
-        List<Schedule> schedules = this.selectAllByProcessDefineId(ids);
-        // for all scheduling information
-        for (Schedule depSchedule:schedules) {
-            strCrontab = depSchedule.getCrontab();
-            depCronExpression = CronUtils.parse2CronExpression(strCrontab);
-            depCron = CronUtils.parse2Cron(strCrontab);
-            CycleEnum cycleEnum = CronUtils.getMiniCycle(depCron);
-            if (cycleEnum == null) {
-                logger.error("{} is not valid",strCrontab);
-                continue;
-            }
-            Calendar calendar = Calendar.getInstance();
-            switch (cycleEnum) {
-                /*case MINUTE:
-                    calendar.add(Calendar.MINUTE,-61);*/
-                case HOUR:
-                    calendar.add(Calendar.HOUR,-25);
-                    break;
-                case DAY:
-                    calendar.add(Calendar.DATE,-32);
-                    break;
-                case WEEK:
-                    calendar.add(Calendar.DATE,-32);
-                    break;
-                case MONTH:
-                    calendar.add(Calendar.MONTH,-13);
-                    break;
-                default:
-                    logger.warn("Dependent process definition's  cycleEnum is {},not support!!", cycleEnum.name());
-                    continue;
-            }
-            Date start = calendar.getTime();
-
-            if (depSchedule.getProcessDefinitionId() == masterId) {
-                list = CronUtils.getSelfFireDateList(start, scheduledFireTime, depCronExpression);
-            } else {
-                list = CronUtils.getFireDateList(start, scheduledFireTime, depCronExpression);
-            }
-            if (list.size() >= 1) {
-                start = list.get(list.size() - 1);
-                CycleDependency dependency = new CycleDependency(depSchedule.getProcessDefinitionId(),start, CronUtils.getExpirationTime(start, cycleEnum), cycleEnum);
-                cycleDependencyList.add(dependency);
-            }
-
-        }
-        return cycleDependencyList;
     }
 
     /**
@@ -1842,6 +1746,20 @@ public class ProcessService {
      * @param userId userId
      * @return project ids
      */
+    public List<String> getProjectCodesListHavePerm(int userId){
+
+        List<String> projectIdList = new ArrayList<>();
+        for(Project project : getProjectListHavePerm(userId)){
+            projectIdList.add(project.getCode());
+        }
+        return projectIdList;
+    }
+
+    /**
+     * get have perm project ids
+     * @param userId userId
+     * @return project ids
+     */
     public List<Integer> getProjectIdListHavePerm(int userId) {
 
         List<Integer> projectIdList = new ArrayList<>();
@@ -1864,6 +1782,10 @@ public class ProcessService {
             Set<T> originResSet = new HashSet<T>(Arrays.asList(needChecks));
 
             switch (authorizationType) {
+                case RESOURCE_FILE_CODE:
+                    Set<String> authorizedResourceCodeFiles = resourceMapper.listAuthorizedResourceByCode(userId, needChecks).stream().map(t -> t.getCode()).collect(toSet());
+                    originResSet.removeAll(authorizedResourceCodeFiles);
+                    break;
                 case RESOURCE_FILE_ID:
                     Set<Integer> authorizedResourceFiles = resourceMapper.listAuthorizedResourceById(userId, needChecks).stream().map(t -> t.getId()).collect(toSet());
                     originResSet.removeAll(authorizedResourceFiles);
@@ -1904,21 +1826,21 @@ public class ProcessService {
     }
 
     /**
-     * get resource by resoruce id
-     * @param resoruceId resource id
+     * get resource by resoruce code
+     * @param resoruceCode resource code
      * @return Resource
      */
-    public Resource getResourceById(int resoruceId) {
-        return resourceMapper.selectById(resoruceId);
+    public Resource getResourceByCode(String resoruceCode){
+        return resourceMapper.selectByCode(resoruceCode);
     }
 
     /**
      * list resources by ids
-     * @param resIds resIds
+     * @param resCodes resIds
      * @return resource list
      */
-    public List<Resource> listResourceByIds(Integer[] resIds) {
-        return resourceMapper.listResourceByIds(resIds);
+    public List<Resource> listResourceByCodes(String[] resCodes){
+        return resourceMapper.listResourceByCodes(resCodes);
     }
 
     /**
