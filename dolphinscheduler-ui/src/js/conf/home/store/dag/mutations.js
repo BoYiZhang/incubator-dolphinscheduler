@@ -46,6 +46,12 @@ export default {
     state.connects = payload
   },
   /**
+   * set dag code
+   */
+  setCode(state, payload) {
+    state.code = payload
+  },
+  /**
    * set dag name
    */
   setName (state, payload) {
@@ -102,6 +108,7 @@ export default {
     $('#canvas').html('')
     state.globalParams = (payload && payload.globalParams) || []
     state.tasks = (payload && payload.tasks) || []
+    state.code = (payload && payload.code) || ''
     state.name = (payload && payload.name) || ''
     state.description = (payload && payload.description) || ''
     state.timeout = (payload && payload.timeout) || 0

@@ -172,7 +172,7 @@
     props: {
     },
     methods: {
-      ...mapActions('dag', ['getScheduleList', 'scheduleOffline', 'scheduleOnline', 'getReceiver','deleteTiming']),
+      ...mapActions('dag', ['getScheduleList', 'scheduleOffline', 'scheduleOnline', 'getReceiverByDCode','deleteTiming']),
       /**
        * delete
        */
@@ -271,9 +271,9 @@
       /**
        * get email
        */
-      _getReceiver (id) {
+      _getReceiver (code) {
         return new Promise((resolve, reject) => {
-          this.getReceiver({ processDefinitionId: id }).then(res => {
+          this.getReceiverByDCode({ processDefinitionCode: code }).then(res => {
             resolve({
               receivers: res.receivers && res.receivers.split(',') || [],
               receiversCc: res.receiversCc && res.receiversCc.split(',') || []
@@ -286,7 +286,7 @@
        */
       _editTiming (item) {
         let self = this
-        this._getReceiver(item.processDefinitionId).then(res => {
+        this._getReceiver(item.processDefinitionCode).then(res => {
           let modal = this.$modal.dialog({
             closable: false,
             showMask: true,

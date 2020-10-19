@@ -21,6 +21,16 @@
         <span>{{$t('Set the DAG diagram name')}}</span>
       </div>
 
+      <div v-if="hasCode" style="margin-bottom: 12px">
+        <x-input
+          type="text"
+          v-model="code"
+          :disabled="codeIsExist"
+          maxlength="100"
+          :placeholder="$t('Please enter code')">
+        </x-input>
+      </div>
+
       <div>
         <x-input
                 type="text"
@@ -100,6 +110,7 @@
     data () {
       return {
         originalName: '',
+        code: '',
         // dag name
         name: '',
         // dag description
@@ -115,7 +126,8 @@
 
         tenantId: -1,
         // checked Timeout alarm
-        checkedTimeout: true
+        checkedTimeout: true,
+        codeIsExist: false
       }
     },
     mixins: [disabledState],
@@ -138,6 +150,7 @@
       },
       _accuStore(){
         this.store.commit('dag/setGlobalParams', _.cloneDeep(this.udpList))
+        this.store.commit('dag/setCode', _.cloneDeep(this.code))
         this.store.commit('dag/setName', _.cloneDeep(this.name))
         this.store.commit('dag/setTimeout', _.cloneDeep(this.timeout))
         this.store.commit('dag/setTenantId', _.cloneDeep(this.tenantId))
@@ -148,6 +161,13 @@
        * submit
        */
       ok () {
+        if(this.hasCode){
+          if (!this.code || this.code.includes(',')) {
+            this.$message.warning(`${i18n.$t('Please enter code')}`)
+            return false
+          }
+        }
+
         if (!this.name) {
           this.$message.warning(`${i18n.$t('DAG graph name cannot be empty')}`)
           return
@@ -200,6 +220,9 @@
       this.udpList = dag.globalParams
       this.udpListCache = dag.globalParams
       this.name = dag.name
+      this.code = dag.code
+      this.codeIsExist = this.code ? true : false;
+      this.hasCode = dag.name ? dag.code ?  true : false : true;
       this.originalName = dag.name
       this.description = dag.description
       this.syncDefine = dag.syncDefine

@@ -21,6 +21,8 @@ import localStore from '@/module/util/localStorage'
 const projectName = localStore.getItem('projectName')
 
 export default {
+  // code
+  code: '',
   // name
   name: '',
   // description

@@ -189,7 +189,7 @@
     },
     methods: {
       ...mapActions('dag', ['saveDAGchart', 'updateInstance', 'updateDefinition', 'getTaskState', 'switchProcessDefinitionVersion', 'getProcessDefinitionVersionsPage', 'deleteProcessDefinitionVersion']),
-      ...mapMutations('dag', ['addTasks', 'cacheTasks', 'resetParams', 'setIsEditDag', 'setName', 'addConnects']),
+      ...mapMutations('dag', ['addTasks', 'cacheTasks', 'resetParams', 'setIsEditDag', 'setName', 'addConnects', 'setCode']),
 
       // DAG automatic layout
       dagAutomaticLayout() {
@@ -395,7 +395,9 @@
                 })
               } else {
                 // New
-                this.saveDAGchart().then(res => {
+                const interrupt = sourceType == 'affirm' ? true : false;
+
+                this.saveDAGchart({interrupt}).then(res => {
                   this.$message.success(res.msg)
                   this.spinnerLoading = false
                   // source @/conf/home/pages/dag/_source/editAffirmModel/index.js
@@ -406,12 +408,16 @@
                   resolve()
                 }).catch(e => {
                   this.$message.error(e.msg || '')
+                  this.setCode('')
                   this.setName('')
                   this.spinnerLoading = false
                   reject(e)
                 })
               }
             }
+          }).catch(e => {
+            this.spinnerLoading = false
+            reject(e)
           })
         })
       },

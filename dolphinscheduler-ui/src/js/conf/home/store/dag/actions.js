@@ -158,6 +158,8 @@ export default {
       io.get(`projects/${state.projectName}/process/select-by-id`, {
         processId: payload
       }, res => {
+        // code
+        state.code = res.data.code
         // name
         state.name = res.data.name
         // description
@@ -281,6 +283,7 @@ export default {
    * Create process definition
    */
   saveDAGchart ({ state }, payload) {
+    const {interrupt} = payload
     return new Promise((resolve, reject) => {
       const data = {
         globalParams: state.globalParams,
@@ -290,7 +293,8 @@ export default {
       }
       io.post(`projects/${state.projectName}/process/save`, {
         processDefinitionJson: JSON.stringify(data),
-        name: _.trim(state.name),
+        code: interrupt ? `code_${new Date().getTime()}`: _.trim(state.code),
+        name: interrupt ? `name_${new Date().getTime()}`: _.trim(state.name),
         description: _.trim(state.description),
         locations: JSON.stringify(state.locations),
         connects: JSON.stringify(state.connects)
@@ -401,9 +405,9 @@ export default {
   /**
    * Get a list of process definitions by project id
    */
-  getProcessByProjectId ({ state }, payload) {
+  getProcessByProjectCode ({ state }, payload) {
     return new Promise((resolve, reject) => {
-      io.get(`projects/${state.projectName}/process/queryProcessDefinitionAllByProjectId`, payload, res => {
+      io.get(`projects/${state.projectName}/process/queryProcessDefinitionAllByProjectCode`, payload, res => {
         resolve(res.data)
       }).catch(res => {
         reject(res)
@@ -818,6 +822,21 @@ export default {
       })
     })
   },
+
+
+  /**
+   * Get the mailbox list interface
+   */
+  getReceiverByDCode ({ state }, payload) {
+    return new Promise((resolve, reject) => {
+      io.get(`projects/${state.projectName}/executors/get-receiver-cc-by-defincode`, payload, res => {
+        resolve(res.data)
+      }).catch(e => {
+        reject(e)
+      })
+    })
+  },
+
   getTaskListDefIdAll ({ state }, payload) {
     return new Promise((resolve, reject) => {
       io.get(`projects/${state.projectName}/process/get-task-list`, payload, res => {

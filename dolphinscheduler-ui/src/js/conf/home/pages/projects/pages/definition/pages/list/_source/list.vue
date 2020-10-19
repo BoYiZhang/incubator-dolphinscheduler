@@ -25,6 +25,9 @@
           <th scope="col" style="min-width: 40px">
             <span>{{$t('#')}}</span>
           </th>
+          <th scope="col" style="min-width: 100px;max-width: 300px;">
+            <span>{{$t('Code')}}</span>
+          </th>
           <th scope="col" style="min-width: 200px;max-width: 300px;">
             <span>{{$t('Process Name')}}</span>
           </th>
@@ -56,6 +59,11 @@
           <td width="50"><x-checkbox v-model="item.isCheck" :disabled="item.releaseState === 'ONLINE'" @on-change="_arrDelChange"></x-checkbox></td>
           <td width="50">
             <span>{{parseInt(pageNo === 1 ? ($index + 1) : (($index + 1) + (pageSize * (pageNo - 1))))}}</span>
+          </td>
+          <td style="padding-right: 10px;">
+            <span>
+              {{item.code || $t('Default code')}}
+            </span>
           </td>
           <td style="min-width: 200px;max-width: 300px;padding-right: 10px;">
             <span class="ellipsis">
