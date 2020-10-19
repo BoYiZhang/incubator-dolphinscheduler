@@ -19,6 +19,20 @@
     <template slot="content">
       <div class="projects-create-model">
         <m-list-box-f>
+          <template slot="name"><strong>*</strong>{{$t('Code')}}</template>
+          <template slot="content">
+            <x-input
+              type="input"
+              v-model="projectCode"
+              maxlength="100"
+              :placeholder="$t('Please enter code')"
+              autocomplete="off"
+              :disabled="!!item"
+            >
+            </x-input>
+          </template>
+        </m-list-box-f>
+        <m-list-box-f>
           <template slot="name"><strong>*</strong>{{$t('Project Name')}}</template>
           <template slot="content">
             <x-input
@@ -58,6 +72,7 @@
       return {
         store,
         description: '',
+        projectCode: '',
         projectName: ''
       }
     },
@@ -71,6 +86,7 @@
         }
 
         let param = {
+          code: _.trim(this.projectCode),
           projectName: _.trim(this.projectName),
           description: _.trim(this.description)
         }
@@ -94,6 +110,10 @@
         })
       },
       _verification () {
+        if (!this.projectCode || this.projectCode.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.projectName) {
           this.$message.warning(`${i18n.$t('Please enter name')}`)
           return false
@@ -104,6 +124,7 @@
     watch: {},
     created () {
       if (this.item) {
+        this.projectCode = this.item.code
         this.projectName = this.item.name
         this.description = this.item.description
       }
