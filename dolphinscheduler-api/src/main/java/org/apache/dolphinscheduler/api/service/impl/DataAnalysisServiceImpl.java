@@ -101,6 +101,7 @@ public class DataAnalysisServiceImpl extends BaseService implements DataAnalysis
      * @param endDate end date
      * @return task state count data
      */
+    @Override
     public Map<String, Object> countTaskStateByProject(User loginUser, int projectId, String startDate, String endDate) {
 
         return countStateByProject(
@@ -120,6 +121,7 @@ public class DataAnalysisServiceImpl extends BaseService implements DataAnalysis
      * @param endDate end date
      * @return process instance state count data
      */
+    @Override
     public Map<String, Object> countProcessInstanceStateByProject(User loginUser, int projectId, String startDate, String endDate) {
         return this.countStateByProject(
                 loginUser,
@@ -167,6 +169,7 @@ public class DataAnalysisServiceImpl extends BaseService implements DataAnalysis
      * @param projectId project id
      * @return definition count data
      */
+    @Override
     public Map<String, Object> countDefinitionByUser(User loginUser, int projectId) {
         Map<String, Object> result = new HashMap<>();
 
@@ -191,6 +194,7 @@ public class DataAnalysisServiceImpl extends BaseService implements DataAnalysis
      * @param endDate end date
      * @return command state count data
      */
+    @Override
     public Map<String, Object> countCommandState(User loginUser, int projectId, String startDate, String endDate) {
 
         Map<String, Object> result = new HashMap<>(5);
@@ -303,6 +307,7 @@ public class DataAnalysisServiceImpl extends BaseService implements DataAnalysis
      * @param projectId project id
      * @return queue state count data
      */
+    @Override
     public Map<String, Object> countQueueState(User loginUser, int projectId) {
         Map<String, Object> result = new HashMap<>(5);
 

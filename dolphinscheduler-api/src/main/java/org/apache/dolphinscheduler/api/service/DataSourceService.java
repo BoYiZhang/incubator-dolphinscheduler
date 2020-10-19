@@ -34,6 +34,7 @@ import org.apache.dolphinscheduler.dao.entity.Resource;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.mapper.DataSourceMapper;
 import org.apache.dolphinscheduler.dao.mapper.DataSourceUserMapper;
+import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ public class DataSourceService extends BaseService {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSourceService.class);
 
+    public static final String CODE = "code";
     public static final String NAME = "name";
     public static final String NOTE = "note";
     public static final String TYPE = "type";
@@ -66,6 +68,7 @@ public class DataSourceService extends BaseService {
     public static final String DATABASE = "database";
     public static final String USER_NAME = "userName";
     public static final String OTHER = "other";
+    public static final String SQL = "SQL";
 
 
     @Autowired
@@ -75,19 +78,34 @@ public class DataSourceService extends BaseService {
     @Autowired
     private DataSourceUserMapper datasourceUserMapper;
 
+    @Autowired
+    private ProcessDefinitionMapper processDefinitionMapper;
+
+
     /**
      * create data source
      *
      * @param loginUser login user
+     * @param code      data source code
      * @param name      data source name
      * @param desc      data source description
      * @param type      data source type
      * @param parameter datasource parameters
      * @return create result code
      */
-    public Map<String, Object> createDataSource(User loginUser, String name, String desc, DbType type, String parameter) {
+    public Map<String, Object> createDataSource(User loginUser,String code, String name, String desc, DbType type, String parameter) {
 
         Map<String, Object> result = new HashMap<>();
+
+        if (StringUtils.isBlank(code) || code.indexOf(Constants.COMMA) != -1) {
+            putMsg(result, Status.CODE_IS_NOT_NULL);
+            return result;
+        }
+        if (checkCode(code)) {
+            putMsg(result, Status.CODE_OCCUPIED);
+            return result;
+        }
+
         // check name can use or not
         if (checkName(name)) {
             putMsg(result, Status.DATASOURCE_EXIST);
@@ -110,6 +128,7 @@ public class DataSourceService extends BaseService {
         DataSource dataSource = new DataSource();
         Date now = new Date();
 
+        dataSource.setCode(code.trim());
         dataSource.setName(name.trim());
         dataSource.setNote(desc);
         dataSource.setUserId(loginUser.getId());
@@ -192,6 +211,10 @@ public class DataSourceService extends BaseService {
         return queryDataSource != null && queryDataSource.size() > 0;
     }
 
+    private boolean checkCode(String code) {
+        DataSource queryDataSource = dataSourceMapper.queryDataSourceByCode(code.trim());
+        return queryDataSource != null ;
+    }
 
     /**
      * updateProcessInstance datasource
@@ -264,6 +287,7 @@ public class DataSourceService extends BaseService {
         }
 
         Map<String, Object> map = new HashMap<>(10);
+        map.put(CODE,dataSource.getCode());
         map.put(NAME, dataSourceName);
         map.put(NOTE, desc);
         map.put(TYPE, dataSourceType);

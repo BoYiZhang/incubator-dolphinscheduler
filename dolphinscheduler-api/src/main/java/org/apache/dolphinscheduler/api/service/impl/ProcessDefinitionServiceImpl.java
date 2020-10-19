@@ -17,8 +17,6 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_SUB_PROCESS_DEFINE_ID;
-
 import org.apache.dolphinscheduler.api.dto.ProcessMeta;
 import org.apache.dolphinscheduler.api.dto.treeview.Instance;
 import org.apache.dolphinscheduler.api.dto.treeview.TreeViewDto;
@@ -108,6 +106,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_SUB_PROCESS_DEFINE_CODE;
+
 /**
  * process definition service impl
  */
@@ -118,6 +118,8 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
     private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionServiceImpl.class);
 
     private static final String PROCESSDEFINITIONID = "processDefinitionId";
+
+    private static final String PROCESSDEFINITION_CODE = "processDefinitionCode";
 
     private static final String RELEASESTATE = "releaseState";
 
@@ -160,8 +162,10 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @return create result code
      * @throws JsonProcessingException JsonProcessingException
      */
+    @Override
     public Map<String, Object> createProcessDefinition(User loginUser,
                                                        String projectName,
+                                                       String code,
                                                        String name,
                                                        String processDefinitionJson,
                                                        String desc,
@@ -177,6 +181,16 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             return checkResult;
         }
 
+        if (StringUtils.isBlank(code) || code.indexOf(Constants.COMMA) != -1) {
+            putMsg(result, Status.CODE_IS_NOT_NULL);
+            return result;
+        }
+
+        if (checkCode(code)) {
+            putMsg(result, Status.CODE_OCCUPIED);
+            return result;
+        }
+
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
@@ -186,9 +200,10 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             return checkProcessJson;
         }
 
+        processDefine.setCode(code);
         processDefine.setName(name);
         processDefine.setReleaseState(ReleaseState.OFFLINE);
-        processDefine.setProjectId(project.getId());
+        processDefine.setProjectCode(project.getCode());
         processDefine.setUserId(loginUser.getId());
         processDefine.setProcessDefinitionJson(processDefinitionJson);
         processDefine.setDescription(desc);
@@ -197,7 +212,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         processDefine.setTimeout(processData.getTimeout());
         processDefine.setTenantId(processData.getTenantId());
         processDefine.setModifyBy(loginUser.getUserName());
-        processDefine.setResourceIds(getResourceIds(processData));
+        processDefine.setResourceCodes(getResourceCodes(processData));
 
         //custom global params
         List<Property> globalParamsList = processData.getGlobalParams();
@@ -224,23 +239,29 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         result.put(Constants.DATA_LIST, processDefineMapper.selectById(processDefine.getId()));
         putMsg(result, Status.SUCCESS);
         result.put(PROCESSDEFINITIONID, processDefine.getId());
+        result.put(PROCESSDEFINITION_CODE, processDefine.getCode());
         return result;
     }
 
+    private boolean checkCode(String code) {
+        ProcessDefinition processDefinition = processDefineMapper.queryByCode(code);
+        return processDefinition == null ? false : true;
+    }
+
     /**
-     * get resource ids
+     * get resource codes
      *
      * @param processData process data
-     * @return resource ids
+     * @return resource codes
      */
-    private String getResourceIds(ProcessData processData) {
+    private String getResourceCodes(ProcessData processData) {
         return Optional.ofNullable(processData.getTasks())
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(taskNode -> TaskParametersUtils.getParameters(taskNode.getType(), taskNode.getParams()))
                 .filter(Objects::nonNull)
                 .flatMap(parameters -> parameters.getResourceFilesList().stream())
-                .map(ResourceInfo::getId)
+                .map(ResourceInfo::getCode)
                 .distinct()
                 .map(Objects::toString)
                 .collect(Collectors.joining(","));
@@ -253,6 +274,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param projectName project name
      * @return definition list
      */
+    @Override
     public Map<String, Object> queryProcessDefinitionList(User loginUser, String projectName) {
 
         HashMap<String, Object> result = new HashMap<>();
@@ -264,7 +286,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             return checkResult;
         }
 
-        List<ProcessDefinition> resourceList = processDefineMapper.queryAllDefinitionList(project.getId());
+        List<ProcessDefinition> resourceList = processDefineMapper.queryAllDefinitionList(project.getCode());
         result.put(Constants.DATA_LIST, resourceList);
         putMsg(result, Status.SUCCESS);
 
@@ -282,6 +304,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param userId user id
      * @return process definition page
      */
+    @Override
     public Map<String, Object> queryProcessDefinitionListPaging(User loginUser, String projectName, String searchVal, Integer pageNo, Integer pageSize, Integer userId) {
 
         Map<String, Object> result = new HashMap<>();
@@ -295,7 +318,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
 
         Page<ProcessDefinition> page = new Page<>(pageNo, pageSize);
         IPage<ProcessDefinition> processDefinitionIPage = processDefineMapper.queryDefineListPaging(
-                page, searchVal, userId, project.getId(), isAdmin(loginUser));
+                page, searchVal, userId, project.getCode(), isAdmin(loginUser));
 
         PageInfo<ProcessDefinition> pageInfo = new PageInfo<>(pageNo, pageSize);
         pageInfo.setTotalCount((int) processDefinitionIPage.getTotal());
@@ -314,6 +337,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param processId process definition id
      * @return process definition detail
      */
+    @Override
     public Map<String, Object> queryProcessDefinitionById(User loginUser, String projectName, Integer processId) {
 
         Map<String, Object> result = new HashMap<>();
@@ -348,6 +372,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param connects connects for nodes
      * @return update result code
      */
+    @Override
     public Map<String, Object> updateProcessDefinition(User loginUser, String projectName, int id, String name,
                                                        String processDefinitionJson, String desc,
                                                        String locations, String connects) {
@@ -383,7 +408,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         processDefine.setId(id);
         processDefine.setName(name);
         processDefine.setReleaseState(ReleaseState.OFFLINE);
-        processDefine.setProjectId(project.getId());
+        processDefine.setProjectCode(project.getCode());
         processDefine.setProcessDefinitionJson(processDefinitionJson);
         processDefine.setDescription(desc);
         processDefine.setLocations(locations);
@@ -391,7 +416,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         processDefine.setTimeout(processData.getTimeout());
         processDefine.setTenantId(processData.getTenantId());
         processDefine.setModifyBy(loginUser.getUserName());
-        processDefine.setResourceIds(getResourceIds(processData));
+        processDefine.setResourceCodes(getResourceCodes(processData));
 
         //custom global params
         List<Property> globalParamsList = new ArrayList<>();
@@ -424,6 +449,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param name name
      * @return true if process definition name not exists, otherwise false
      */
+    @Override
     public Map<String, Object> verifyProcessDefinitionName(User loginUser, String projectName, String name) {
 
         Map<String, Object> result = new HashMap<>();
@@ -451,6 +477,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param processDefinitionId process definition id
      * @return delete result code
      */
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public Map<String, Object> deleteProcessDefinitionById(User loginUser, String projectName, Integer processDefinitionId) {
 
@@ -523,6 +550,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param releaseState release state
      * @return release result code
      */
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public Map<String, Object> releaseProcessDefinition(User loginUser, String projectName, int id, int releaseState) {
         HashMap<String, Object> result = new HashMap<>();
@@ -547,10 +575,10 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         switch (state) {
             case ONLINE:
                 // To check resources whether they are already cancel authorized or deleted
-                String resourceIds = processDefinition.getResourceIds();
-                if (StringUtils.isNotBlank(resourceIds)) {
-                    Integer[] resourceIdArray = Arrays.stream(resourceIds.split(",")).map(Integer::parseInt).toArray(Integer[]::new);
-                    PermissionCheck<Integer> permissionCheck = new PermissionCheck<>(AuthorizationType.RESOURCE_FILE_ID, processService, resourceIdArray, loginUser.getId(), logger);
+                String resourceCodes = processDefinition.getResourceCodes();
+                if (StringUtils.isNotBlank(resourceCodes)) {
+                    String[] resourceCodesArray = Arrays.stream(resourceCodes.split(",")).toArray(String[]::new);
+                    PermissionCheck<Integer> permissionCheck = new PermissionCheck(AuthorizationType.RESOURCE_FILE_CODE, processService, resourceCodesArray, loginUser.getId(), logger);
                     try {
                         permissionCheck.checkPermission();
                     } catch (Exception e) {
@@ -590,6 +618,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
     /**
      * batch export process definition by ids
      */
+    @Override
     public void batchExportProcessDefinitionByIds(User loginUser, String projectName, String processDefinitionIds, HttpServletResponse response) {
 
         if (StringUtils.isEmpty(processDefinitionIds)) {
@@ -681,6 +710,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         //export process metadata
         ProcessMeta exportProcessMeta = new ProcessMeta();
         exportProcessMeta.setProjectName(processDefinition.getProjectName());
+        exportProcessMeta.setCode(processDefinition.getCode());
         exportProcessMeta.setProcessDefinitionName(processDefinition.getName());
         exportProcessMeta.setProcessDefinitionJson(processDefinition.getProcessDefinitionJson());
         exportProcessMeta.setProcessDefinitionDescription(processDefinition.getDescription());
@@ -748,8 +778,9 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param currentProjectName current project name
      * @return import process
      */
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Map<String, Object> importProcessDefinition(User loginUser, MultipartFile file, String currentProjectName) {
+    public Map<String, Object> importProcessDefinition(User loginUser, MultipartFile file,String currentProjectName) {
         Map<String, Object> result = new HashMap<>();
         String processMetaJson = FileUtils.file2String(file);
         List<ProcessMeta> processMetaList = JSONUtils.toList(processMetaJson, ProcessMeta.class);
@@ -812,9 +843,9 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         }
 
         //create process definition
-        Integer processDefinitionId =
-                Objects.isNull(createProcessResult.get(PROCESSDEFINITIONID))
-                        ? null : Integer.parseInt(createProcessResult.get(PROCESSDEFINITIONID).toString());
+        String processDefinitionCode =
+                Objects.isNull(createProcessResult.get(PROCESSDEFINITION_CODE))
+                        ? null : createProcessResult.get(PROCESSDEFINITION_CODE).toString();
 
         //scheduler param
         return getImportProcessScheduleResult(loginUser,
@@ -822,7 +853,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
                 result,
                 processMeta,
                 processDefinitionName,
-                processDefinitionId);
+                processDefinitionCode);
 
     }
 
@@ -839,6 +870,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         try {
             createProcessResult = createProcessDefinition(loginUser
                     , currentProjectName,
+                    processMeta.getCode(),
                     processDefinitionName + "_import_" + DateUtils.getCurrentTimeStamp(),
                     importProcessParam,
                     processMeta.getProcessDefinitionDescription(),
@@ -861,13 +893,13 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
                                                    Map<String, Object> result,
                                                    ProcessMeta processMeta,
                                                    String processDefinitionName,
-                                                   Integer processDefinitionId) {
-        if (null != processMeta.getScheduleCrontab() && null != processDefinitionId) {
+                                                   String processDefinitionCode) {
+        if (null != processMeta.getScheduleCrontab() && null != processDefinitionCode) {
             int scheduleInsert = importProcessSchedule(loginUser,
                     currentProjectName,
                     processMeta,
                     processDefinitionName,
-                    processDefinitionId);
+                    processDefinitionCode);
 
             if (0 == scheduleInsert) {
                 putMsg(result, Status.IMPORT_PROCESS_DEFINE_ERROR);
@@ -881,6 +913,10 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * check importance params
      */
     private boolean checkImportanceParams(ProcessMeta processMeta, Map<String, Object> result) {
+        if (StringUtils.isEmpty(processMeta.getCode())) {
+            putMsg(result, Status.DATA_IS_NULL, "code");
+            return false;
+        }
         if (StringUtils.isEmpty(processMeta.getProjectName())) {
             putMsg(result, Status.DATA_IS_NULL, "projectName");
             return false;
@@ -918,15 +954,15 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             }
         }
 
-        //recursive sub-process parameter correction map key for old process id value for new process id
-        Map<Integer, Integer> subProcessIdMap = new HashMap<>();
+        //recursive sub-process parameter correction map key for old process id value for new process code
+        Map<String, String> subProcessCodeMap = new HashMap<>();
 
         List<Object> subProcessList = StreamUtils.asStream(jsonArray.elements())
                 .filter(elem -> checkTaskHasSubProcess(JSONUtils.parseObject(elem.toString()).path("type").asText()))
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(subProcessList)) {
-            importSubProcess(loginUser, targetProject, jsonArray, subProcessIdMap);
+            importSubProcess(loginUser, targetProject, jsonArray, subProcessCodeMap);
         }
 
         jsonObject.set(TASKS, jsonArray);
@@ -940,15 +976,15 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param currentProjectName current project name
      * @param processMeta process meta data
      * @param processDefinitionName process definition name
-     * @param processDefinitionId process definition id
+     * @param processDefinitionCode process definition code
      * @return insert schedule flag
      */
     public int importProcessSchedule(User loginUser, String currentProjectName, ProcessMeta processMeta,
-                                     String processDefinitionName, Integer processDefinitionId) {
+                                     String processDefinitionName, String processDefinitionCode) {
         Date now = new Date();
         Schedule scheduleObj = new Schedule();
         scheduleObj.setProjectName(currentProjectName);
-        scheduleObj.setProcessDefinitionId(processDefinitionId);
+        scheduleObj.setProcessDefinitionCode(processDefinitionCode);
         scheduleObj.setProcessDefinitionName(processDefinitionName);
         scheduleObj.setCreateTime(now);
         scheduleObj.setUpdateTime(now);
@@ -993,9 +1029,9 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param loginUser login user
      * @param targetProject target project
      * @param jsonArray process task array
-     * @param subProcessIdMap correct sub process id map
+     * @param subProcessCodeMap correct sub process code map
      */
-    private void importSubProcess(User loginUser, Project targetProject, ArrayNode jsonArray, Map<Integer, Integer> subProcessIdMap) {
+    private void importSubProcess(User loginUser, Project targetProject, ArrayNode jsonArray, Map<String, String> subProcessCodeMap) {
         for (int i = 0; i < jsonArray.size(); i++) {
             ObjectNode taskNode = (ObjectNode) jsonArray.path(i);
             String taskType = taskNode.path("type").asText();
@@ -1005,8 +1041,8 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             }
             //get sub process info
             ObjectNode subParams = (ObjectNode) taskNode.path("params");
-            Integer subProcessId = subParams.path(PROCESSDEFINITIONID).asInt();
-            ProcessDefinition subProcess = processDefineMapper.queryByDefineId(subProcessId);
+            String subProcessCode = subParams.get(PROCESSDEFINITION_CODE).asText();
+            ProcessDefinition subProcess = processDefineMapper.queryByDefineCode(subProcessCode);
             //check is sub process exist in db
             if (null == subProcess) {
                 continue;
@@ -1023,17 +1059,17 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
                         .collect(Collectors.toList());
 
                 if (CollectionUtils.isNotEmpty(subProcessList)) {
-                    importSubProcess(loginUser, targetProject, subJsonArray, subProcessIdMap);
+                    importSubProcess(loginUser, targetProject, subJsonArray, subProcessCodeMap);
                     //sub process processId correct
-                    if (!subProcessIdMap.isEmpty()) {
+                    if (!subProcessCodeMap.isEmpty()) {
 
-                        for (Map.Entry<Integer, Integer> entry : subProcessIdMap.entrySet()) {
-                            String oldSubProcessId = "\"processDefinitionId\":" + entry.getKey();
-                            String newSubProcessId = "\"processDefinitionId\":" + entry.getValue();
-                            subProcessJson = subProcessJson.replaceAll(oldSubProcessId, newSubProcessId);
+                        for (Map.Entry<String, String> entry : subProcessCodeMap.entrySet()) {
+                            String oldSubProcessCode = "\"processDefinitionCode\":" + entry.getKey();
+                            String newSubProcessCode = "\"processDefinitionCode\":" + entry.getValue();
+                            subProcessJson = subProcessJson.replaceAll(oldSubProcessCode, newSubProcessCode);
                         }
 
-                        subProcessIdMap.clear();
+                        subProcessCodeMap.clear();
                     }
                 }
 
@@ -1041,10 +1077,11 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
                 Date now = new Date();
                 //create sub process in target project
                 ProcessDefinition processDefine = new ProcessDefinition();
+                processDefine.setCode(subProcess.getCode());
                 processDefine.setName(subProcess.getName());
                 processDefine.setVersion(subProcess.getVersion());
                 processDefine.setReleaseState(subProcess.getReleaseState());
-                processDefine.setProjectId(targetProject.getId());
+                processDefine.setProjectCode(targetProject.getCode());
                 processDefine.setUserId(loginUser.getId());
                 processDefine.setProcessDefinitionJson(subProcessJson);
                 processDefine.setDescription(subProcess.getDescription());
@@ -1063,11 +1100,11 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
                 logger.info("create sub process, project: {}, process name: {}", targetProject.getName(), processDefine.getName());
 
                 //modify task node
-                ProcessDefinition newSubProcessDefine = processDefineMapper.queryByDefineName(processDefine.getProjectId(), processDefine.getName());
+                ProcessDefinition newSubProcessDefine = processDefineMapper.queryByDefineName(targetProject.getId(), processDefine.getName());
 
                 if (null != newSubProcessDefine) {
-                    subProcessIdMap.put(subProcessId, newSubProcessDefine.getId());
-                    subParams.put(PROCESSDEFINITIONID, newSubProcessDefine.getId());
+                    subProcessCodeMap.put(subProcessCode, newSubProcessDefine.getCode());
+                    subParams.put(PROCESSDEFINITION_CODE, newSubProcessDefine.getCode());
                     taskNode.set("params", subParams);
                 }
             }
@@ -1081,6 +1118,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @param processDefinitionJson process definition json
      * @return check result code
      */
+    @Override
     public Map<String, Object> checkProcessNodeList(ProcessData processData, String processDefinitionJson) {
 
         Map<String, Object> result = new HashMap<>();
@@ -1129,16 +1167,17 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
     /**
      * get task node details based on process definition
      *
-     * @param defineId define id
+     * @param processDefinitionCode define code
      * @return task node list
      */
-    public Map<String, Object> getTaskNodeListByDefinitionId(Integer defineId) {
+    @Override
+    public Map<String, Object> getTaskNodeListByDefinitionCode(String processDefinitionCode) {
         Map<String, Object> result = new HashMap<>();
 
-        ProcessDefinition processDefinition = processDefineMapper.selectById(defineId);
+        ProcessDefinition processDefinition = processDefineMapper.queryByCode(processDefinitionCode);
         if (processDefinition == null) {
             logger.info("process define not exists");
-            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, defineId);
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, processDefinitionCode);
             return result;
         }
 
@@ -1165,23 +1204,19 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
     /**
      * get task node details based on process definition
      *
-     * @param defineIdList define id list
+     * @param processDefinitionCodeList define code list
      * @return task node list
      */
-    public Map<String, Object> getTaskNodeListByDefinitionIdList(String defineIdList) {
+    @Override
+    public Map<String, Object> getTaskNodeListByDefinitionCodeList(String processDefinitionCodeList) {
         Map<String, Object> result = new HashMap<>();
 
         Map<Integer, List<TaskNode>> taskNodeMap = new HashMap<>();
-        String[] idList = defineIdList.split(",");
-        List<Integer> idIntList = new ArrayList<>();
-        for (String definitionId : idList) {
-            idIntList.add(Integer.parseInt(definitionId));
-        }
-        Integer[] idArray = idIntList.toArray(new Integer[0]);
-        List<ProcessDefinition> processDefinitionList = processDefineMapper.queryDefinitionListByIdList(idArray);
+        String[] codes = processDefinitionCodeList.split(",");
+        List<ProcessDefinition> processDefinitionList = processDefineMapper.queryDefinitionListByCodeList(codes);
         if (CollectionUtils.isEmpty(processDefinitionList)) {
             logger.info("process definition not exists");
-            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, defineIdList);
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, processDefinitionCodeList);
             return result;
         }
 
@@ -1200,16 +1235,17 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
     }
 
     /**
-     * query process definition all by project id
+     * query process definition all by project code
      *
-     * @param projectId project id
+     * @param projectCode project code
      * @return process definitions in the project
      */
-    public Map<String, Object> queryProcessDefinitionAllByProjectId(Integer projectId) {
+    @Override
+    public Map<String, Object> queryProcessDefinitionAllByProjectCode(String projectCode) {
 
         HashMap<String, Object> result = new HashMap<>();
 
-        List<ProcessDefinition> resourceList = processDefineMapper.queryAllDefinitionList(projectId);
+        List<ProcessDefinition> resourceList = processDefineMapper.queryAllDefinitionList(projectCode);
         result.put(Constants.DATA_LIST, resourceList);
         putMsg(result, Status.SUCCESS);
 
@@ -1224,6 +1260,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
      * @return tree view json data
      * @throws Exception exception
      */
+    @Override
     public Map<String, Object> viewTree(Integer processId, Integer limit) throws Exception {
         Map<String, Object> result = new HashMap<>();
 
@@ -1300,15 +1337,16 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
                         Date startTime = taskInstance.getStartTime() == null ? new Date() : taskInstance.getStartTime();
                         Date endTime = taskInstance.getEndTime() == null ? new Date() : taskInstance.getEndTime();
 
-                        int subProcessId = 0;
+                        int subProcessId = 0  ;
                         /**
                          * if process is sub process, the return sub id, or sub id=0
                          */
                         if (taskInstance.getTaskType().equals(TaskType.SUB_PROCESS.name())) {
                             String taskJson = taskInstance.getTaskJson();
                             taskNode = JSONUtils.parseObject(taskJson, TaskNode.class);
-                            subProcessId = Integer.parseInt(JSONUtils.parseObject(
-                                    taskNode.getParams()).path(CMDPARAM_SUB_PROCESS_DEFINE_ID).asText());
+                            String subProcessCode = JSONUtils.parseObject( taskNode.getParams()).get(CMDPARAM_SUB_PROCESS_DEFINE_CODE).asText();
+                            ProcessDefinition subDefinition = processDefineMapper.queryByCode(subProcessCode);
+                            subProcessId = subDefinition.getId();
                         }
                         treeViewDto.getInstances().add(new Instance(taskInstance.getId(), taskInstance.getName(), taskInstance.getTaskType(), taskInstance.getState().toString()
                                 , taskInstance.getStartTime(), taskInstance.getEndTime(), taskInstance.getHost(), DateUtils.format2Readable(endTime.getTime() - startTime.getTime()), subProcessId));
@@ -1427,6 +1465,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             return createProcessDefinition(
                     loginUser,
                     targetProject.getName(),
+                    processDefinition.getCode()+ "_copy_" + DateUtils.getCurrentTimeStamp(),
                     processDefinition.getName() + "_copy_" + DateUtils.getCurrentTimeStamp(),
                     processDefinition.getProcessDefinitionJson(),
                     processDefinition.getDescription(),
@@ -1563,7 +1602,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         }
 
         ProcessDefinitionVersion processDefinitionVersion = processDefinitionVersionService
-                .queryByProcessDefinitionIdAndVersion(processDefinitionId, version);
+                .queryByProcessDefinitionCodeAndVersion(processDefinition.getCode(), version);
         if (Objects.isNull(processDefinitionVersion)) {
             putMsg(result
                     , Status.SWITCH_PROCESS_DEFINITION_VERSION_NOT_EXIST_PROCESS_DEFINITION_VERSION_ERROR
@@ -1582,7 +1621,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         processDefinition.setUpdateTime(new Date());
         processDefinition.setReceivers(processDefinitionVersion.getReceivers());
         processDefinition.setReceiversCc(processDefinitionVersion.getReceiversCc());
-        processDefinition.setResourceIds(processDefinitionVersion.getResourceIds());
+        processDefinition.setResourceCodes(processDefinitionVersion.getResourceCodes());
 
         if (processDefineMapper.updateById(processDefinition) > 0) {
             putMsg(result, Status.SUCCESS);
@@ -1689,7 +1728,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             return result;
         }
 
-        processDefinition.setProjectId(targetProject.getId());
+        processDefinition.setProjectCode(targetProject.getCode());
         processDefinition.setUpdateTime(new Date());
         if (processDefineMapper.updateById(processDefinition) > 0) {
             putMsg(result, Status.SUCCESS);

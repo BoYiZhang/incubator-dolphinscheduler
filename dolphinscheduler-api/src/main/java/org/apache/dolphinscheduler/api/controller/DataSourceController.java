@@ -58,6 +58,7 @@ public class DataSourceController extends BaseController {
      * create data source
      *
      * @param loginUser login user
+     * @param code      data source code
      * @param name      data source name
      * @param note      data source description
      * @param type      data source type
@@ -72,6 +73,7 @@ public class DataSourceController extends BaseController {
      */
     @ApiOperation(value = "createDataSource", notes = "CREATE_DATA_SOURCE_NOTES")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "code", value = "DATA_SOURCE_CODE", required = true, dataType = "String"),
             @ApiImplicitParam(name = "name", value = "DATA_SOURCE_NAME", required = true, dataType = "String"),
             @ApiImplicitParam(name = "note", value = "DATA_SOURCE_NOTE", dataType = "String"),
             @ApiImplicitParam(name = "type", value = "DB_TYPE", required = true, dataType = "DbType"),
@@ -87,6 +89,7 @@ public class DataSourceController extends BaseController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiException(CREATE_DATASOURCE_ERROR)
     public Result createDataSource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+                                   @RequestParam(value = "code") String code,
                                    @RequestParam("name") String name,
                                    @RequestParam(value = "note", required = false) String note,
                                    @RequestParam(value = "type") DbType type,
@@ -98,10 +101,10 @@ public class DataSourceController extends BaseController {
                                    @RequestParam(value = "password") String password,
                                    @RequestParam(value = "connectType") DbConnectType connectType,
                                    @RequestParam(value = "other") String other) {
-        logger.info("login user {} create datasource name: {}, note: {}, type: {}, host: {}, port: {}, database : {}, principal: {}, userName : {}, connectType: {}, other: {}",
-                loginUser.getUserName(), name, note, type, host, port, database, principal, userName, connectType, other);
+        logger.info("login user {} create datasource code:{},name: {}, note: {}, type: {}, host: {}, port: {}, database : {}, principal: {}, userName : {}, connectType: {}, other: {}",
+                loginUser.getUserName(), code, name, note, type, host, port, database, principal, userName, connectType, other);
         String parameter = dataSourceService.buildParameter(type, host, port, database, principal, userName, password, connectType, other);
-        Map<String, Object> result = dataSourceService.createDataSource(loginUser, name, note, type, parameter);
+        Map<String, Object> result = dataSourceService.createDataSource(loginUser,code, name, note, type, parameter);
         return returnDataList(result);
     }
 

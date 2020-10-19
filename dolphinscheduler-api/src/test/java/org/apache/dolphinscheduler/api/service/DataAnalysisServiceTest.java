@@ -89,6 +89,7 @@ public class DataAnalysisServiceTest {
 
         user = new User();
         Project project = new Project();
+        project.setCode("1");
         project.setId(1);
         resultMap = new HashMap<>();
         Mockito.when(projectMapper.selectById(1)).thenReturn(project);

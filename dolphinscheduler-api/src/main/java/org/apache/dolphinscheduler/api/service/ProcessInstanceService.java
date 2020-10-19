@@ -250,7 +250,7 @@ public class ProcessInstanceService extends BaseService {
 
         IPage<ProcessInstance> processInstanceList =
                 processInstanceMapper.queryProcessInstanceListPaging(page,
-                        project.getId(), processDefineId, searchVal, executorId, statusArray, host, start, end);
+                        project.getCode(), processDefineId, searchVal, executorId, statusArray, host, start, end);
 
         List<ProcessInstance> processInstances = processInstanceList.getRecords();
 

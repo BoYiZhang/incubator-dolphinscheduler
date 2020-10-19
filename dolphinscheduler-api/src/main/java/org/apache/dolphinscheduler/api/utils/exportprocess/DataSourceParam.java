@@ -46,7 +46,7 @@ public class DataSourceParam implements ProcessAddTaskParam, InitializingBean {
     public JsonNode addExportSpecialParam(JsonNode taskNode) {
         // add sqlParameters
         ObjectNode sqlParameters = (ObjectNode) taskNode.path(PARAMS);
-        DataSource dataSource = dataSourceMapper.selectById(sqlParameters.get("datasource").asInt());
+        DataSource dataSource = dataSourceMapper.queryDataSourceByCode(sqlParameters.get("datasource").asText());
         if (null != dataSource) {
             sqlParameters.put("datasourceName", dataSource.getName());
         }
@@ -66,7 +66,7 @@ public class DataSourceParam implements ProcessAddTaskParam, InitializingBean {
         List<DataSource> dataSources = dataSourceMapper.queryDataSourceByName(sqlParameters.path("datasourceName").asText());
         if (!dataSources.isEmpty()) {
             DataSource dataSource = dataSources.get(0);
-            sqlParameters.put("datasource", dataSource.getId());
+            sqlParameters.put("datasource", dataSource.getCode());
         }
         ((ObjectNode)taskNode).set(PARAMS, sqlParameters);
         return taskNode;

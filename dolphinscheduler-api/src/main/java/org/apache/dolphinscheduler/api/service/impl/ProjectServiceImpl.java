@@ -24,6 +24,7 @@ import org.apache.dolphinscheduler.api.service.ProjectService;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.UserType;
+import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Project;
 import org.apache.dolphinscheduler.dao.entity.ProjectUser;
@@ -65,11 +66,13 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * create project
      *
      * @param loginUser login user
+     * @param code project code
      * @param name project name
      * @param desc description
      * @return returns an error if it exists
      */
-    public Map<String, Object> createProject(User loginUser, String name, String desc) {
+    @Override
+    public Map<String, Object> createProject(User loginUser,String code,  String name, String desc) {
 
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> descCheck = checkDesc(desc);
@@ -83,10 +86,20 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
             return result;
         }
 
+        if (StringUtils.isBlank(code)) {
+            putMsg(result, Status.CODE_IS_NOT_NULL);
+            return result;
+        }
+        if (checkCode(code)) {
+            putMsg(result, Status.CODE_OCCUPIED);
+            return result;
+        }
+
         Date now = new Date();
 
         project = Project
                 .newBuilder()
+                .code(code)
                 .name(name)
                 .description(desc)
                 .userId(loginUser.getId())
@@ -105,12 +118,22 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
         return result;
     }
 
+    private boolean checkCode(String code) {
+        Project project = projectMapper.queryByCode(code);
+        if (null == project) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * query project details by id
      *
      * @param projectId project id
      * @return project detail information
      */
+    @Override
     public Map<String, Object> queryById(Integer projectId) {
 
         Map<String, Object> result = new HashMap<>();
@@ -133,6 +156,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * @param projectName project name
      * @return true if the login user have permission to see the project
      */
+    @Override
     public Map<String, Object> checkProjectAndAuth(User loginUser, Project project, String projectName) {
         Map<String, Object> result = new HashMap<>();
         if (project == null) {
@@ -146,6 +170,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
         return result;
     }
 
+    @Override
     public boolean hasProjectAndPerm(User loginUser, Project project, Map<String, Object> result) {
         boolean checkResult = false;
         if (project == null) {
@@ -167,6 +192,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * @param pageNo page number
      * @return project list which the login user have permission to see
      */
+    @Override
     public Map<String, Object> queryProjectListPaging(User loginUser, Integer pageSize, Integer pageNo, String searchVal) {
         Map<String, Object> result = new HashMap<>();
         PageInfo<Project> pageInfo = new PageInfo<>(pageNo, pageSize);
@@ -198,6 +224,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * @param projectId project id
      * @return delete result code
      */
+    @Override
     public Map<String, Object> deleteProject(User loginUser, Integer projectId) {
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.selectById(projectId);
@@ -211,7 +238,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
             return result;
         }
 
-        List<ProcessDefinition> processDefinitionList = processDefinitionMapper.queryAllDefinitionList(projectId);
+        List<ProcessDefinition> processDefinitionList = processDefinitionMapper.queryAllDefinitionList(project.getCode());
 
         if (!processDefinitionList.isEmpty()) {
             putMsg(result, Status.DELETE_PROJECT_ERROR_DEFINES_NOT_NULL);
@@ -252,6 +279,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * @param desc description
      * @return update result code
      */
+    @Override
     public Map<String, Object> update(User loginUser, Integer projectId, String projectName, String desc) {
         Map<String, Object> result = new HashMap<>();
 
@@ -291,6 +319,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * @param userId user id
      * @return the projects which user have not permission to see
      */
+    @Override
     public Map<String, Object> queryUnauthorizedProject(User loginUser, Integer userId) {
         Map<String, Object> result = new HashMap<>();
         if (checkAdmin(loginUser, result)) {
@@ -341,6 +370,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * @param userId user id
      * @return projects which the user have permission to see, Except for items created by this user
      */
+    @Override
     public Map<String, Object> queryAuthorizedProject(User loginUser, Integer userId) {
         Map<String, Object> result = new HashMap<>();
 
@@ -361,6 +391,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      * @param loginUser login user
      * @return projects which the user have permission to see, Except for items created by this user
      */
+    @Override
     public Map<String, Object> queryProjectCreatedByUser(User loginUser) {
         Map<String, Object> result = new HashMap<>();
 
@@ -418,18 +449,19 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
      *
      * @return project list
      */
+    @Override
     public Map<String, Object> queryAllProjectList() {
         Map<String, Object> result = new HashMap<>();
         List<Project> projects = projectMapper.selectList(null);
         List<ProcessDefinition> processDefinitions = processDefinitionMapper.selectList(null);
         if (projects != null) {
-            Set<Integer> set = new HashSet<>();
+            Set<String> set = new HashSet<>();
             for (ProcessDefinition processDefinition : processDefinitions) {
-                set.add(processDefinition.getProjectId());
+                set.add(processDefinition.getProjectCode());
             }
             List<Project> tempDeletelist = new ArrayList<>();
             for (Project project : projects) {
-                if (!set.contains(project.getId())) {
+                if (!set.contains(project.getCode())) {
                     tempDeletelist.add(project);
                 }
             }

@@ -25,20 +25,21 @@ import java.util.List;
 /**
  * resource component
  */
-@JsonPropertyOrder({"id","pid","name","fullName","description","isDirctory","children","type"})
+@JsonPropertyOrder({"id","code","parentCode","name","fullName","description","isDirctory","children","type"})
 public abstract class ResourceComponent {
     public ResourceComponent() {
     }
 
-    public ResourceComponent(int id, int pid, String name, String fullName, String description, boolean isDirctory) {
+    public ResourceComponent(int id, String code,String name, String fullName, String description, boolean isDirctory,String parentCode) {
         this.id = id;
-        this.pid = pid;
+        this.code = code;
         this.name = name;
         this.fullName = fullName;
         this.description = description;
         this.isDirctory = isDirctory;
         int directoryFlag = isDirctory ? 1:0;
         this.idValue = String.format("%s_%s",id,directoryFlag);
+        this.parentCode = parentCode;
     }
 
 
@@ -46,10 +47,16 @@ public abstract class ResourceComponent {
      * id
      */
     protected int id;
+
     /**
-     * parent id
+     * code
      */
-    protected int pid;
+    private String code;
+
+    /**
+     * parent code
+     */
+    protected String parentCode;
     /**
      * name
      */
@@ -107,12 +114,20 @@ public abstract class ResourceComponent {
         this.id = id;
     }
 
-    public int getPid() {
-        return pid;
+    public String getCode() {
+        return code;
     }
 
-    public void setPid(int pid) {
-        this.pid = pid;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getParentCode() {
+        return parentCode;
+    }
+
+    public void setParentCode(String parentCode) {
+        this.parentCode = parentCode;
     }
 
     public void setName(String name) {
@@ -168,7 +183,8 @@ public abstract class ResourceComponent {
     public String toString() {
         return "ResourceComponent{" +
                 "id=" + id +
-                ", pid=" + pid +
+                ", code='" + code + '\'' +
+                ", parentCode='" + parentCode + '\'' +
                 ", name='" + name + '\'' +
                 ", currentDir='" + currentDir + '\'' +
                 ", fullName='" + fullName + '\'' +

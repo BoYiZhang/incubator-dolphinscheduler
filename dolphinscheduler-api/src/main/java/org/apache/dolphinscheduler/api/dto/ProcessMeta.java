@@ -20,12 +20,20 @@ package org.apache.dolphinscheduler.api.dto;
  * ProcessMeta
  */
 public class ProcessMeta {
+    /**
+     * project code
+     */
+    private String projectCode;
 
     /**
      * project name
      */
     private String projectName;
 
+    /**
+     * unique code
+     * */
+    private String code;
     /**
      * process definition name
      */
@@ -35,6 +43,11 @@ public class ProcessMeta {
      * processs definition json
      */
     private String processDefinitionJson;
+
+    /**
+     * resource codes
+     */
+    private String resourceCodes;
 
     /**
      * process definition desc
@@ -101,12 +114,28 @@ public class ProcessMeta {
      */
     private String scheduleWorkerGroupName;
 
+    public String getProjectCode() {
+        return projectCode;
+    }
+
+    public void setProjectCode(String projectCode) {
+        this.projectCode = projectCode;
+    }
+
     public String getProjectName() {
         return projectName;
     }
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getProcessDefinitionName() {
@@ -227,5 +256,17 @@ public class ProcessMeta {
 
     public void setScheduleWorkerGroupName(String scheduleWorkerGroupName) {
         this.scheduleWorkerGroupName = scheduleWorkerGroupName;
+    }
+
+    public String getResourceCodes() {
+        return resourceCodes;
+    }
+
+    public void setResourceCodes(String resourceCodes) {
+        this.resourceCodes = resourceCodes;
+    }
+
+    public void setScheduleWarningGroupId(Integer scheduleWarningGroupId) {
+        this.scheduleWarningGroupId = scheduleWarningGroupId;
     }
 }

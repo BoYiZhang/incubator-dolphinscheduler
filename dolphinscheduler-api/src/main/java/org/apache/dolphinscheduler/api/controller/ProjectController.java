@@ -61,12 +61,14 @@ public class ProjectController extends BaseController {
      * create project
      *
      * @param loginUser   login user
+     * @param code        project code
      * @param projectName project name
      * @param description description
      * @return returns an error if it exists
      */
     @ApiOperation(value = "createProject", notes = "CREATE_PROJECT_NOTES")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "code", value = "PROJECT_CODE", dataType = "String"),
             @ApiImplicitParam(name = "projectName", value = "PROJECT_NAME", dataType = "String"),
             @ApiImplicitParam(name = "description", value = "PROJECT_DESC", dataType = "String")
     })
@@ -74,11 +76,12 @@ public class ProjectController extends BaseController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiException(CREATE_PROJECT_ERROR)
     public Result createProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+                                @RequestParam("code") String code,
                                 @RequestParam("projectName") String projectName,
                                 @RequestParam(value = "description", required = false) String description) {
 
         logger.info("login user {}, create project name: {}, desc: {}", loginUser.getUserName(), projectName, description);
-        Map<String, Object> result = projectService.createProject(loginUser, projectName, description);
+        Map<String, Object> result = projectService.createProject(loginUser,code, projectName, description);
         return returnDataList(result);
     }
 
@@ -143,8 +146,8 @@ public class ProjectController extends BaseController {
     @ApiOperation(value = "queryProjectListPaging", notes = "QUERY_PROJECT_LIST_PAGING_NOTES")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "searchVal", value = "SEARCH_VAL", dataType = "String"),
-            @ApiImplicitParam(name = "projectId", value = "PAGE_SIZE", dataType = "Int", example = "20"),
-            @ApiImplicitParam(name = "projectId", value = "PAGE_NO", dataType = "Int", example = "1")
+            @ApiImplicitParam(name = "pageSize", value = "PAGE_SIZE", dataType = "Int", example = "20"),
+            @ApiImplicitParam(name = "pageNo", value = "PAGE_NO", dataType = "Int", example = "1")
     })
     @GetMapping(value = "/list-paging")
     @ResponseStatus(HttpStatus.OK)

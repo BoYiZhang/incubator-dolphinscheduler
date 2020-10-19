@@ -96,10 +96,10 @@ public class ProcessDefinitionControllerTest {
         putMsg(result, Status.SUCCESS);
         result.put("processDefinitionId", 1);
 
-        Mockito.when(processDefinitionService.createProcessDefinition(user, projectName, name, json,
+        Mockito.when(processDefinitionService.createProcessDefinition(user, projectName, "1",name, json,
                 description, locations, connects)).thenReturn(result);
 
-        Result response = processDefinitionController.createProcessDefinition(user, projectName, name, json,
+        Result response = processDefinitionController.createProcessDefinition(user, projectName,"1", name, json,
                 locations, connects, description);
         Assert.assertEquals(Status.SUCCESS.getCode(), response.getCode().intValue());
     }
@@ -308,13 +308,13 @@ public class ProcessDefinitionControllerTest {
     @Test
     public void testGetNodeListByDefinitionId() throws Exception {
         String projectName = "test";
-        int id = 1;
+        String code = "1";
 
         Map<String, Object> result = new HashMap<>();
         putMsg(result, Status.SUCCESS);
 
-        Mockito.when(processDefinitionService.getTaskNodeListByDefinitionId(id)).thenReturn(result);
-        Result response = processDefinitionController.getNodeListByDefinitionId(user, projectName, id);
+        Mockito.when(processDefinitionService.getTaskNodeListByDefinitionCode(code)).thenReturn(result);
+        Result response = processDefinitionController.getNodeListByDefinitionCode(user, projectName, code);
 
         Assert.assertEquals(Status.SUCCESS.getCode(), response.getCode().intValue());
     }
@@ -322,25 +322,25 @@ public class ProcessDefinitionControllerTest {
     @Test
     public void testGetNodeListByDefinitionIdList() throws Exception {
         String projectName = "test";
-        String idList = "1,2,3";
+        String codeList = "1,2,3";
 
         Map<String, Object> result = new HashMap<>();
         putMsg(result, Status.SUCCESS);
 
-        Mockito.when(processDefinitionService.getTaskNodeListByDefinitionIdList(idList)).thenReturn(result);
-        Result response = processDefinitionController.getNodeListByDefinitionIdList(user, projectName, idList);
+        Mockito.when(processDefinitionService.getTaskNodeListByDefinitionCodeList(codeList)).thenReturn(result);
+        Result response = processDefinitionController.getNodeListByDefinitionCodeList(user, projectName, codeList);
 
         Assert.assertEquals(Status.SUCCESS.getCode(), response.getCode().intValue());
     }
 
     @Test
     public void testQueryProcessDefinitionAllByProjectId() throws Exception {
-        int projectId = 1;
+        String projectCode = "1";
         Map<String, Object> result = new HashMap<>();
         putMsg(result, Status.SUCCESS);
 
-        Mockito.when(processDefinitionService.queryProcessDefinitionAllByProjectId(projectId)).thenReturn(result);
-        Result response = processDefinitionController.queryProcessDefinitionAllByProjectId(user, projectId);
+        Mockito.when(processDefinitionService.queryProcessDefinitionAllByProjectCode(projectCode)).thenReturn(result);
+        Result response = processDefinitionController.queryProcessDefinitionAllByProjectCode(user, projectCode);
 
         Assert.assertEquals(Status.SUCCESS.getCode(), response.getCode().intValue());
     }

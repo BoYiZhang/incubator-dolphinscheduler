@@ -461,6 +461,37 @@ public class ExecutorService extends BaseService{
     }
 
 
+
+    /**
+     * query recipients and copyers by process definition code
+     *
+     * @param processDefineCode process definition code
+     * @return receivers cc list
+     */
+    public Map<String, Object> getReceiverCcByDefineCode(String processDefineCode) {
+        Map<String, Object> result = new HashMap<>();
+        logger.info("processDefineCode {}",processDefineCode);
+        if(StringUtils.isEmpty(processDefineCode)){
+            throw new RuntimeException("You must set values for parameters processDefineId or processInstanceId");
+        }
+
+        ProcessDefinition processDefinition = processDefinitionMapper.queryByDefineCode(processDefineCode);
+        if (processDefinition == null){
+            throw new RuntimeException(String.format("processDefineCode %s is not exists",processDefineCode));
+        }
+
+        String receivers = processDefinition.getReceivers();
+        String receiversCc = processDefinition.getReceiversCc();
+        Map<String,String> dataMap = new HashMap<>();
+        dataMap.put(Constants.RECEIVERS,receivers);
+        dataMap.put(Constants.RECEIVERS_CC,receiversCc);
+
+        result.put(Constants.DATA_LIST, dataMap);
+        putMsg(result, Status.SUCCESS);
+        return result;
+    }
+
+
     /**
      * create command
      * @param commandType commandType

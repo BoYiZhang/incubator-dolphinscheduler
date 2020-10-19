@@ -85,7 +85,7 @@ public class ResourceFilter implements IFilter {
      */
     private void setAllParent(Resource resource,Set<Resource> parentList){
         for (Resource resourceTemp : resourceList) {
-            if (resourceTemp.getId() == resource.getPid()) {
+            if (resourceTemp.getCode().equals(resource.getParentCode())) {
                 parentList.add(resourceTemp);
                 setAllParent(resourceTemp,parentList);
             }

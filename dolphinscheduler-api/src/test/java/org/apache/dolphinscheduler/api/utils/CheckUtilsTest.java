@@ -144,7 +144,7 @@ public class CheckUtilsTest {
         // sub SubProcessParameters
         SubProcessParameters subProcessParameters = new SubProcessParameters();
         assertFalse(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(subProcessParameters), TaskType.SUB_PROCESS.toString()));
-        subProcessParameters.setProcessDefinitionId(1234);
+        subProcessParameters.setProcessDefinitionCode("1234");
         assertTrue(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(subProcessParameters), TaskType.SUB_PROCESS.toString()));
 
         // ShellParameters
@@ -158,7 +158,7 @@ public class CheckUtilsTest {
         // ProcedureParameters
         ProcedureParameters procedureParameters = new ProcedureParameters();
         assertFalse(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(procedureParameters), TaskType.PROCEDURE.toString()));
-        procedureParameters.setDatasource(1);
+        procedureParameters.setDatasource("1");
         procedureParameters.setType("xx");
         procedureParameters.setMethod("yy");
         assertTrue(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(procedureParameters), TaskType.PROCEDURE.toString()));
@@ -166,7 +166,7 @@ public class CheckUtilsTest {
         // SqlParameters
         SqlParameters sqlParameters = new SqlParameters();
         assertFalse(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(sqlParameters), TaskType.SQL.toString()));
-        sqlParameters.setDatasource(1);
+        sqlParameters.setDatasource("1");
         sqlParameters.setType("xx");
         sqlParameters.setSql("yy");
         assertTrue(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(sqlParameters), TaskType.SQL.toString()));
@@ -176,7 +176,7 @@ public class CheckUtilsTest {
         assertFalse(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(mapreduceParameters), TaskType.MR.toString()));
 
         ResourceInfo resourceInfoMapreduce = new ResourceInfo();
-        resourceInfoMapreduce.setId(1);
+        resourceInfoMapreduce.setCode("1");
         resourceInfoMapreduce.setRes("");
         mapreduceParameters.setMainJar(resourceInfoMapreduce);
         mapreduceParameters.setProgramType(ProgramType.JAVA);
@@ -217,8 +217,8 @@ public class CheckUtilsTest {
         DataxParameters dataxParameters = new DataxParameters();
         assertFalse(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(dataxParameters), TaskType.DATAX.toString()));
         dataxParameters.setCustomConfig(0);
-        dataxParameters.setDataSource(111);
-        dataxParameters.setDataTarget(333);
+        dataxParameters.setDataSource("111");
+        dataxParameters.setDataTarget("333");
         dataxParameters.setSql("sql");
         dataxParameters.setTargetTable("tar");
         assertTrue(CheckUtils.checkTaskNodeParameters(JSONUtils.toJsonString(dataxParameters), TaskType.DATAX.toString()));

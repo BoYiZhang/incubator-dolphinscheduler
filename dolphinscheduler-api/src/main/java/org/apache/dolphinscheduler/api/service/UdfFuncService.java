@@ -64,29 +64,40 @@ public class UdfFuncService extends BaseService{
      * create udf function
      *
      * @param loginUser login user
+     * @param code union code
      * @param type udf type
      * @param funcName function name
      * @param argTypes argument types
      * @param database database
      * @param desc description
-     * @param resourceId resource id
+     * @param resourceCode resource code
      * @param className class name
      * @return create result code
      */
     public Result createUdfFunction(User loginUser,
+                                    String code,
                                     String funcName,
                                     String className,
                                     String argTypes,
                                     String database,
                                     String desc,
                                     UdfType type,
-                                    int resourceId) {
+                                    String resourceCode) {
         Result result = new Result();
 
         // if resource upload startup
         if (!PropertyUtils.getResUploadStartupState()){
             logger.error("resource upload startup state: {}", PropertyUtils.getResUploadStartupState());
             putMsg(result, Status.HDFS_NOT_STARTUP);
+            return result;
+        }
+
+        if (StringUtils.isBlank(code) || code.indexOf(Constants.COMMA) != -1) {
+            putMsg(result, Status.CODE_IS_NOT_NULL);
+            return result;
+        }
+        if (checkCode(code)) {
+            putMsg(result, Status.CODE_OCCUPIED);
             return result;
         }
 
@@ -97,9 +108,9 @@ public class UdfFuncService extends BaseService{
             return result;
         }
 
-        Resource resource = resourceMapper.selectById(resourceId);
+        Resource resource = resourceMapper.selectByCode(resourceCode);
         if (resource == null) {
-            logger.error("resourceId {} is not exist", resourceId);
+            logger.error("resourceCode {} is not exist", resourceCode);
             putMsg(result, Status.RESOURCE_NOT_EXIST);
             return result;
         }
@@ -107,6 +118,7 @@ public class UdfFuncService extends BaseService{
         //save data
         UdfFunc udf = new UdfFunc();
         Date now = new Date();
+        udf.setCode(code);
         udf.setUserId(loginUser.getId());
         udf.setFuncName(funcName);
         udf.setClassName(className);
@@ -117,7 +129,7 @@ public class UdfFuncService extends BaseService{
             udf.setDatabase(database);
         }
         udf.setDescription(desc);
-        udf.setResourceId(resourceId);
+        udf.setResourceCode(resourceCode);
         udf.setResourceName(resource.getFullName());
         udf.setType(type);
 
@@ -127,6 +139,14 @@ public class UdfFuncService extends BaseService{
         udfFuncMapper.insert(udf);
         putMsg(result, Status.SUCCESS);
         return result;
+    }
+
+    private boolean checkCode(String code) {
+       Resource resource =  resourceMapper.selectByCode(code);
+       if (null == resource) {
+           return  true;
+       }
+       return  false;
     }
 
     /**
@@ -168,7 +188,7 @@ public class UdfFuncService extends BaseService{
      * @param argTypes argument types
      * @param database data base
      * @param desc description
-     * @param resourceId resource id
+     * @param resourceCode resource code
      * @param className class name
      * @return update result code
      */
@@ -179,7 +199,7 @@ public class UdfFuncService extends BaseService{
                                              String database,
                                              String desc,
                                              UdfType type,
-                                             int resourceId) {
+                                             String resourceCode) {
         Map<String, Object> result = new HashMap<>();
         // verify udfFunc is exist
         UdfFunc udf = udfFuncMapper.selectUdfById(udfFuncId);
@@ -207,9 +227,9 @@ public class UdfFuncService extends BaseService{
             }
         }
 
-        Resource resource = resourceMapper.selectById(resourceId);
+        Resource resource = resourceMapper.selectByCode(resourceCode);
         if (resource == null) {
-            logger.error("resourceId {} is not exist", resourceId);
+            logger.error("resourceCode {} is not exist", resourceCode);
             result.put(Constants.STATUS, Status.RESOURCE_NOT_EXIST);
             result.put(Constants.MSG, Status.RESOURCE_NOT_EXIST.getMsg());
             return result;
@@ -222,7 +242,7 @@ public class UdfFuncService extends BaseService{
             udf.setDatabase(database);
         }
         udf.setDescription(desc);
-        udf.setResourceId(resourceId);
+        udf.setResourceCode(resourceCode);
         udf.setResourceName(resource.getFullName());
         udf.setType(type);
 

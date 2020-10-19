@@ -80,32 +80,33 @@ public class ResourcesService extends BaseService {
      * create directory
      *
      * @param loginUser login user
+     * @param code resource code
      * @param name alias
      * @param description description
      * @param type type
-     * @param pid parent id
+     * @param parentCode parent code
      * @param currentDir current directory
      * @return create directory result
      */
     @Transactional(rollbackFor = RuntimeException.class)
     public Result createDirectory(User loginUser,
+                                 String code,
                                  String name,
                                  String description,
                                  ResourceType type,
-                                 int pid,
+                                 String parentCode,
                                  String currentDir) {
         Result result = new Result();
         // if hdfs not startup
-        if (!PropertyUtils.getResUploadStartupState()){
+        if (!PropertyUtils.getResUploadStartupState()) {
             logger.error("resource upload startup state: {}", PropertyUtils.getResUploadStartupState());
             putMsg(result, Status.HDFS_NOT_STARTUP);
             return result;
         }
-        String fullName = "/".equals(currentDir) ? String.format("%s%s",currentDir,name):String.format("%s/%s",currentDir,name);
+        String fullName = "/".equals(currentDir) ? String.format("%s%s",currentDir,name) : String.format("%s/%s",currentDir,name);
 
-        if (pid != -1) {
-            Resource parentResource = resourcesMapper.selectById(pid);
-
+        if (!"-1".equals(parentCode)) {
+            Resource parentResource = resourcesMapper.selectByCode(parentCode);
             if (parentResource == null) {
                 putMsg(result, Status.PARENT_RESOURCE_NOT_EXIST);
                 return result;
@@ -117,6 +118,14 @@ public class ResourcesService extends BaseService {
             }
         }
 
+        if (StringUtils.isBlank(code) || code.indexOf(Constants.COMMA) != -1) {
+            putMsg(result, Status.CODE_IS_NOT_NULL);
+            return result;
+        }
+        if (checkCode(code)) {
+            putMsg(result, Status.CODE_OCCUPIED);
+            return result;
+        }
 
         if (checkResourceExists(fullName, 0, type.ordinal())) {
             logger.error("resource directory {} has exist, can't recreate", fullName);
@@ -126,7 +135,7 @@ public class ResourcesService extends BaseService {
 
         Date now = new Date();
 
-        Resource resource = new Resource(pid,name,fullName,true,description,name,loginUser.getId(),type,0,now,now);
+        Resource resource = new Resource(code,name,fullName,true,description,name,parentCode,loginUser.getId(),type,0,now,now);
 
         try {
             resourcesMapper.insert(resource);
@@ -153,25 +162,35 @@ public class ResourcesService extends BaseService {
         return result;
     }
 
+    private boolean checkCode(String code) {
+        Resource resource = resourcesMapper.selectByCode(code);
+        if (null == resource) {
+            return  false;
+        }
+        return true;
+    }
+
     /**
      * create resource
      *
      * @param loginUser login user
+     * @param code union code
      * @param name alias
      * @param desc description
      * @param file file
      * @param type type
-     * @param pid parent id
+     * @param parentCode parent code
      * @param currentDir current directory
      * @return create result code
      */
     @Transactional(rollbackFor = RuntimeException.class)
     public Result createResource(User loginUser,
+                                 String code,
                                  String name,
                                  String desc,
                                  ResourceType type,
                                  MultipartFile file,
-                                 int pid,
+                                 String parentCode,
                                  String currentDir) {
         Result result = new Result();
 
@@ -182,8 +201,17 @@ public class ResourcesService extends BaseService {
             return result;
         }
 
-        if (pid != -1) {
-            Resource parentResource = resourcesMapper.selectById(pid);
+        if (StringUtils.isBlank(code) || code.indexOf(Constants.COMMA) != -1) {
+            putMsg(result, Status.CODE_IS_NOT_NULL);
+            return result;
+        }
+        if (checkCode(code)) {
+            putMsg(result, Status.CODE_OCCUPIED);
+            return result;
+        }
+
+        if (!"-1".equals(parentCode)) {
+            Resource parentResource = resourcesMapper.selectByCode(parentCode);
 
             if (parentResource == null) {
                 putMsg(result, Status.PARENT_RESOURCE_NOT_EXIST);
@@ -238,8 +266,7 @@ public class ResourcesService extends BaseService {
         }
 
         Date now = new Date();
-        Resource resource = new Resource(pid,name,fullName,false,desc,file.getOriginalFilename(),loginUser.getId(),type,file.getSize(),now,now);
-
+        Resource resource = new Resource(code,name,fullName,false,desc,file.getOriginalFilename(),parentCode,loginUser.getId(),type,file.getSize(),now,now);
         try {
             resourcesMapper.insert(resource);
 
@@ -380,7 +407,7 @@ public class ResourcesService extends BaseService {
         }
 
         // updateResource data
-        List<Integer> childrenResource = listAllChildren(resource,false);
+        List<String> childrenResource = listAllChildren(resource,false);
         Date now = new Date();
 
         resource.setAlias(name);
@@ -393,7 +420,7 @@ public class ResourcesService extends BaseService {
             if (resource.isDirectory() && CollectionUtils.isNotEmpty(childrenResource)) {
                 String matcherFullName = Matcher.quoteReplacement(fullName);
                 List<Resource> childResourceList = new ArrayList<>();
-                List<Resource> resourceList = resourcesMapper.listResourceByIds(childrenResource.toArray(new Integer[childrenResource.size()]));
+                List<Resource> resourceList = resourcesMapper.listResourceByCodes(childrenResource.toArray(new String[childrenResource.size()]));
                 childResourceList = resourceList.stream().map(t -> {
                     t.setFullName(t.getFullName().replaceFirst(originFullName, matcherFullName));
                     t.setUpdateTime(now);
@@ -455,8 +482,9 @@ public class ResourcesService extends BaseService {
         if (isAdmin(loginUser)) {
             userId= 0;
         }
+        Resource directory = null;
         if (direcotryId != -1) {
-            Resource directory = resourcesMapper.selectById(direcotryId);
+            directory = resourcesMapper.selectById(direcotryId);
             if (directory == null) {
                 putMsg(result, Status.RESOURCE_NOT_EXIST);
                 return result;
@@ -464,7 +492,7 @@ public class ResourcesService extends BaseService {
         }
 
         IPage<Resource> resourceIPage = resourcesMapper.queryResourcePaging(page,
-                userId,direcotryId, type.ordinal(), searchVal);
+                userId,directory==null ? "-1" : directory.getCode(), type.ordinal(), searchVal);
         PageInfo pageInfo = new PageInfo<Resource>(pageNo, pageSize);
         pageInfo.setTotalCount((int)resourceIPage.getTotal());
         pageInfo.setLists(resourceIPage.getRecords());
@@ -625,15 +653,16 @@ public class ResourcesService extends BaseService {
 
         // get all resource id of process definitions those is released
         List<Map<String, Object>> list = processDefinitionMapper.listResources();
-        Map<Integer, Set<Integer>> resourceProcessMap = ResourceProcessDefinitionUtils.getResourceProcessDefinitionMap(list);
-        Set<Integer> resourceIdSet = resourceProcessMap.keySet();
+        // resourceProcessMap :  resource code -> processDefinition code
+        Map<String, Set<Integer>> resourceProcessMap = ResourceProcessDefinitionUtils.getResourceProcessDefinitionMap(list);
+        Set<String> resourceCodeSet = resourceProcessMap.keySet();
         // get all children of the resource
-        List<Integer> allChildren = listAllChildren(resource,true);
-        Integer[] needDeleteResourceIdArray = allChildren.toArray(new Integer[allChildren.size()]);
+        List<String> allChildrenCode = listAllChildren(resource,true);
+        String[] needDeleteResourceCodeArray = allChildrenCode.toArray(new String[allChildrenCode.size()]);
 
         //if resource type is UDF,need check whether it is bound by UDF functon
         if (resource.getType() == (ResourceType.UDF)) {
-            List<UdfFunc> udfFuncs = udfFunctionMapper.listUdfByResourceId(needDeleteResourceIdArray);
+            List<UdfFunc> udfFuncs = udfFunctionMapper.listUdfByResourceCode(needDeleteResourceCodeArray);
             if (CollectionUtils.isNotEmpty(udfFuncs)) {
                 logger.error("can't be deleted,because it is bound by UDF functions:{}",udfFuncs.toString());
                 putMsg(result,Status.UDF_RESOURCE_IS_BOUND,udfFuncs.get(0).getFuncName());
@@ -641,16 +670,16 @@ public class ResourcesService extends BaseService {
             }
         }
 
-        if (resourceIdSet.contains(resource.getPid())) {
+        if (resourceCodeSet.contains(resource.getParentCode())) {
             logger.error("can't be deleted,because it is used of process definition");
             putMsg(result, Status.RESOURCE_IS_USED);
             return result;
         }
-        resourceIdSet.retainAll(allChildren);
-        if (CollectionUtils.isNotEmpty(resourceIdSet)) {
+        resourceCodeSet.retainAll(allChildrenCode);
+        if (CollectionUtils.isNotEmpty(resourceCodeSet)) {
             logger.error("can't be deleted,because it is used of process definition");
-            for (Integer resId : resourceIdSet) {
-                logger.error("resource id:{} is used of process definition {}",resId,resourceProcessMap.get(resId));
+            for (String resCode : resourceCodeSet) {
+                logger.error("resource id:{} is used of process definition {}",resCode,resourceProcessMap.get(resCode));
             }
             putMsg(result, Status.RESOURCE_IS_USED);
             return result;
@@ -660,8 +689,17 @@ public class ResourcesService extends BaseService {
         String hdfsFilename = HadoopUtils.getHdfsFileName(resource.getType(), tenantCode, resource.getFullName());
 
         //delete data in database
-        resourcesMapper.deleteIds(needDeleteResourceIdArray);
-        resourceUserMapper.deleteResourceUserArray(0, needDeleteResourceIdArray);
+        resourcesMapper.deleteByCodes(needDeleteResourceCodeArray);
+
+        // todo
+        // If you want to change, it will change the authority,
+        // the impact is relatively large Do compatibility processing for the time being
+        List<Resource> needDeleteResourceList = resourcesMapper.listResourceByCodes(needDeleteResourceCodeArray);
+        if (null != needDeleteResourceList && needDeleteResourceList.size() > 0) {
+            Integer[] needDeleteResourceIdArray = needDeleteResourceList.stream().map(Resource::getId).toArray(Integer[]::new);
+            logger.info("delete resource user relationship : {}" ,needDeleteResourceIdArray);
+            resourceUserMapper.deleteResourceUserArray(0,needDeleteResourceIdArray);
+        }
 
         //delete file on hdfs
         HadoopUtils.getInstance().delete(hdfsFilename, true);
@@ -739,7 +777,8 @@ public class ResourcesService extends BaseService {
                 putMsg(result, Status.RESOURCE_NOT_EXIST);
                 return result;
             }
-            Resource parentResource = resourcesMapper.selectById(resource.getPid());
+
+            Resource parentResource = resourcesMapper.selectByCode(resource.getParentCode());
             if (parentResource == null) {
                 logger.error("parent resource file not exist,  resource id {}", id);
                 putMsg(result, Status.RESOURCE_NOT_EXIST);
@@ -830,12 +869,21 @@ public class ResourcesService extends BaseService {
      * @return create result code
      */
     @Transactional(rollbackFor = RuntimeException.class)
-    public Result onlineCreateResource(User loginUser, ResourceType type, String fileName, String fileSuffix, String desc, String content,int pid,String currentDirectory) {
+    public Result onlineCreateResource(User loginUser,String code, ResourceType type, String fileName, String fileSuffix, String desc, String content,String parentCode,String currentDirectory) {
         Result result = new Result();
         // if resource upload startup
         if (!PropertyUtils.getResUploadStartupState()){
             logger.error("resource upload startup state: {}", PropertyUtils.getResUploadStartupState());
             putMsg(result, Status.HDFS_NOT_STARTUP);
+            return result;
+        }
+
+        if (StringUtils.isBlank(code) || code.indexOf(Constants.COMMA) != -1) {
+            putMsg(result, Status.CODE_IS_NOT_NULL);
+            return result;
+        }
+        if (checkCode(code)) {
+            putMsg(result, Status.CODE_OCCUPIED);
             return result;
         }
 
@@ -861,7 +909,7 @@ public class ResourcesService extends BaseService {
 
         // save data
         Date now = new Date();
-        Resource resource = new Resource(pid,name,fullName,false,desc,name,loginUser.getId(),type,content.getBytes().length,now,now);
+        Resource resource = new Resource(code,name,fullName,false,desc,name,parentCode,loginUser.getId(),type,content.getBytes().length,now,now);
 
         resourcesMapper.insert(resource);
 
@@ -1203,34 +1251,34 @@ public class ResourcesService extends BaseService {
     }
 
     /**
-     * list all children id
+     * list all children code
      * @param resource    resource
      * @param containSelf whether add self to children list
      * @return all children id
      */
-    List<Integer> listAllChildren(Resource resource,boolean containSelf){
-        List<Integer> childList = new ArrayList<>();
-        if (resource.getId() != -1 && containSelf) {
-            childList.add(resource.getId());
+    List<String> listAllChildren(Resource resource,boolean containSelf){
+        List<String> childList = new ArrayList<>();
+        if (!"-1".equals(resource.getCode()) && containSelf) {
+            childList.add(resource.getCode());
         }
 
-        if(resource.isDirectory()){
-            listAllChildren(resource.getId(),childList);
+        if(resource.isDirectory()) {
+            listAllChildren(resource.getCode(),childList);
         }
         return childList;
     }
-
     /**
-     * list all children id
-     * @param resourceId    resource id
+     * list all children code
+     * @param code    resource code
      * @param childList     child list
      */
-    void listAllChildren(int resourceId,List<Integer> childList){
-
-        List<Integer> children = resourcesMapper.listChildren(resourceId);
-        for(int chlidId:children){
-            childList.add(chlidId);
-            listAllChildren(chlidId,childList);
+    void listAllChildren(String code,List<String> childList) {
+        List<Resource> children = resourcesMapper.listChildrenByCode(code);
+        for(Resource res : children){
+            childList.add(res.getCode());
+            if(res.isDirectory()){
+                listAllChildren(res.getCode(),childList);
+            }
         }
     }
 

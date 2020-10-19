@@ -47,13 +47,13 @@ public interface ProcessDefinitionVersionService {
                                                        int pageNo, int pageSize, int processDefinitionId);
 
     /**
-     * query one certain process definition version by version number and process definition id
+     * query one certain process definition version by version number and process definition code
      *
-     * @param processDefinitionId process definition id
+     * @param processDefinitionCode process definition code
      * @param version version number
      * @return the process definition version info
      */
-    ProcessDefinitionVersion queryByProcessDefinitionIdAndVersion(int processDefinitionId,
+    ProcessDefinitionVersion queryByProcessDefinitionCodeAndVersion(String processDefinitionCode,
                                                                   long version);
 
     /**

@@ -48,6 +48,7 @@ public interface ProcessDefinitionService {
      */
     Map<String, Object> createProcessDefinition(User loginUser,
                                                 String projectName,
+                                                String code,
                                                 String name,
                                                 String processDefinitionJson,
                                                 String desc,
@@ -217,26 +218,26 @@ public interface ProcessDefinitionService {
     /**
      * get task node details based on process definition
      *
-     * @param defineId define id
+     * @param processDefinitionCode define code
      * @return task node list
      */
-    Map<String, Object> getTaskNodeListByDefinitionId(Integer defineId);
+    Map<String, Object> getTaskNodeListByDefinitionCode(String processDefinitionCode);
 
     /**
      * get task node details based on process definition
      *
-     * @param defineIdList define id list
+     * @param processDefinitionCodeList define code list
      * @return task node list
      */
-    Map<String, Object> getTaskNodeListByDefinitionIdList(String defineIdList);
+    Map<String, Object> getTaskNodeListByDefinitionCodeList(String processDefinitionCodeList);
 
     /**
      * query process definition all by project id
      *
-     * @param projectId project id
+     * @param projectCode project code
      * @return process definitions in the project
      */
-    Map<String, Object> queryProcessDefinitionAllByProjectId(Integer projectId);
+    Map<String, Object> queryProcessDefinitionAllByProjectCode(String projectCode) ;
 
     /**
      * Encapsulates the TreeView structure

@@ -128,7 +128,7 @@ public class SchedulerService extends BaseService {
         Date now = new Date();
 
         scheduleObj.setProjectName(projectName);
-        scheduleObj.setProcessDefinitionId(processDefinition.getId());
+        scheduleObj.setProcessDefinitionCode(processDefinition.getCode());
         scheduleObj.setProcessDefinitionName(processDefinition.getName());
 
         ScheduleParam scheduleParam = JSONUtils.parseObject(schedule, ScheduleParam.class);
@@ -222,9 +222,9 @@ public class SchedulerService extends BaseService {
             return result;
         }
 
-        ProcessDefinition processDefinition = processService.findProcessDefineById(schedule.getProcessDefinitionId());
+        ProcessDefinition processDefinition = processDefinitionMapper.queryByDefineCode(schedule.getProcessDefinitionCode());
         if (processDefinition == null) {
-            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, schedule.getProcessDefinitionId());
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, schedule.getProcessDefinitionCode());
             return result;
         }
 
@@ -322,9 +322,9 @@ public class SchedulerService extends BaseService {
             putMsg(result, Status.SCHEDULE_CRON_REALEASE_NEED_NOT_CHANGE, scheduleStatus);
             return result;
         }
-        ProcessDefinition processDefinition = processService.findProcessDefineById(scheduleObj.getProcessDefinitionId());
+        ProcessDefinition processDefinition = processDefinitionMapper.queryByDefineCode(scheduleObj.getProcessDefinitionCode());
         if (processDefinition == null) {
-            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, scheduleObj.getProcessDefinitionId());
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, scheduleObj.getProcessDefinitionCode());
             return result;
         }
 
@@ -338,7 +338,7 @@ public class SchedulerService extends BaseService {
             }
             // check sub process definition release state
             List<Integer> subProcessDefineIds = new ArrayList<>();
-            processService.recurseFindSubProcessId(scheduleObj.getProcessDefinitionId(), subProcessDefineIds);
+            processService.recurseFindSubProcessId(processDefinition.getId(), subProcessDefineIds);
             Integer[] idArray = subProcessDefineIds.toArray(new Integer[subProcessDefineIds.size()]);
             if (subProcessDefineIds.size() > 0){
                 List<ProcessDefinition> subProcessDefinitionList =

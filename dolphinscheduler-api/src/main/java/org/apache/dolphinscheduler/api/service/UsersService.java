@@ -521,17 +521,24 @@ public class UsersService extends BaseService {
 
             // get all resource id of process definitions those is released
             List<Map<String, Object>> list = processDefinitionMapper.listResourcesByUser(userId);
-            Map<Integer, Set<Integer>> resourceProcessMap = ResourceProcessDefinitionUtils.getResourceProcessDefinitionMap(list);
-            Set<Integer> resourceIdSet = resourceProcessMap.keySet();
+            Map<String, Set<Integer>> resourceProcessMap = ResourceProcessDefinitionUtils.getResourceProcessDefinitionMap(list);
+            Set<String> resourceCodesSet = resourceProcessMap.keySet();
 
-            resourceIdSet.retainAll(oldAuthorizedResIds);
-            if (CollectionUtils.isNotEmpty(resourceIdSet)) {
-                logger.error("can't be deleted,because it is used of process definition");
-                for (Integer resId : resourceIdSet) {
-                    logger.error("resource id:{} is used of process definition {}",resId,resourceProcessMap.get(resId));
+            String[] resCodes = new String[resourceCodesSet.size()];
+            resourceCodesSet.toArray(resCodes);
+            List<Resource> resouceData  = resourceMapper.listResourceByCodes(resCodes);
+            if (null != resouceData && resouceData.size() > 0) {
+                Set<Integer> resourceIdSet = resouceData.stream().map(Resource::getId).collect(Collectors.toSet());
+                resourceIdSet.retainAll(oldAuthorizedResIds);
+                if (CollectionUtils.isNotEmpty(resourceIdSet)) {
+                    logger.error("can't be deleted,because it is used of process definition");
+                    for (Integer resId : resourceIdSet) {
+                        logger.error("resource id:{} is used of process definition {}",resId,resourceProcessMap.get(resId));
+                    }
+                    putMsg(result, Status.RESOURCE_IS_USED);
+                    return result;
                 }
-                putMsg(result, Status.RESOURCE_IS_USED);
-                return result;
+
             }
 
         }

@@ -628,7 +628,7 @@ public class UsersServiceTest {
     private Resource getResource(){
 
         Resource resource = new Resource();
-        resource.setPid(-1);
+        resource.setParentCode("-1");
         resource.setUserId(1);
         resource.setDescription("ResourcesServiceTest.jar");
         resource.setAlias("ResourcesServiceTest.jar");

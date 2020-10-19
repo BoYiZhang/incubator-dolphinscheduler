@@ -57,7 +57,7 @@ public class DataSourceServiceTest {
 
     public void createDataSourceTest() {
         User loginUser = getAdminUser();
-
+        String dataSourceCode = "1";
         String dataSourceName = "dataSource01";
         String dataSourceDesc = "test dataSource";
         DbType dataSourceType = DbType.POSTGRESQL;
@@ -69,27 +69,27 @@ public class DataSourceServiceTest {
         dataSource.setName(dataSourceName);
         dataSourceList.add(dataSource);
         PowerMockito.when(dataSourceMapper.queryDataSourceByName(dataSourceName.trim())).thenReturn(dataSourceList);
-        Map<String, Object> dataSourceExitsResult = dataSourceService.createDataSource(loginUser, dataSourceName, dataSourceDesc, dataSourceType, parameter);
+        Map<String, Object> dataSourceExitsResult = dataSourceService.createDataSource(loginUser,dataSourceCode, dataSourceName, dataSourceDesc, dataSourceType, parameter);
         Assert.assertEquals(Status.DATASOURCE_EXIST, dataSourceExitsResult.get(Constants.STATUS));
 
         // data source exits
         PowerMockito.when(dataSourceMapper.queryDataSourceByName(dataSourceName.trim())).thenReturn(null);
         PowerMockito.when(dataSourceService.checkConnection(dataSourceType, parameter)).thenReturn(false);
-        Map<String, Object> connectFailedResult = dataSourceService.createDataSource(loginUser, dataSourceName, dataSourceDesc, dataSourceType, parameter);
+        Map<String, Object> connectFailedResult = dataSourceService.createDataSource(loginUser,dataSourceCode, dataSourceName, dataSourceDesc, dataSourceType, parameter);
         Assert.assertEquals(Status.DATASOURCE_CONNECT_FAILED, connectFailedResult.get(Constants.STATUS));
 
         // data source exits
         PowerMockito.when(dataSourceMapper.queryDataSourceByName(dataSourceName.trim())).thenReturn(null);
         PowerMockito.when(dataSourceService.checkConnection(dataSourceType, parameter)).thenReturn(true);
         PowerMockito.when(DataSourceFactory.getDatasource(dataSourceType, parameter)).thenReturn(null);
-        Map<String, Object> notValidError = dataSourceService.createDataSource(loginUser, dataSourceName, dataSourceDesc, dataSourceType, parameter);
+        Map<String, Object> notValidError = dataSourceService.createDataSource(loginUser,dataSourceCode, dataSourceName, dataSourceDesc, dataSourceType, parameter);
         Assert.assertEquals(Status.REQUEST_PARAMS_NOT_VALID_ERROR, notValidError.get(Constants.STATUS));
 
         // success
         PowerMockito.when(dataSourceMapper.queryDataSourceByName(dataSourceName.trim())).thenReturn(null);
         PowerMockito.when(dataSourceService.checkConnection(dataSourceType, parameter)).thenReturn(true);
         PowerMockito.when(DataSourceFactory.getDatasource(dataSourceType, parameter)).thenReturn(JSONUtils.parseObject(parameter, MySQLDataSource.class));
-        Map<String, Object> success = dataSourceService.createDataSource(loginUser, dataSourceName, dataSourceDesc, dataSourceType, parameter);
+        Map<String, Object> success = dataSourceService.createDataSource(loginUser,dataSourceCode, dataSourceName, dataSourceDesc, dataSourceType, parameter);
         Assert.assertEquals(Status.SUCCESS, success.get(Constants.STATUS));
     }
 

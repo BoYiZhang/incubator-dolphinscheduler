@@ -65,7 +65,7 @@ public class ProcessDefinitionVersionServiceTest {
         long expectedVersion = 5L;
         ProcessDefinition processDefinition = getProcessDefinition();
         Mockito.when(processDefinitionVersionMapper
-                .queryMaxVersionByProcessDefinitionId(processDefinition.getId()))
+                .queryMaxVersionByProcessDefinitionCode(processDefinition.getCode()))
                 .thenReturn(expectedVersion);
 
         long version = processDefinitionVersionService.addProcessDefinitionVersion(processDefinition);
@@ -80,6 +80,7 @@ public class ProcessDefinitionVersionServiceTest {
         int pageNo = -1;
         int pageSize = 10;
         int processDefinitionId = 66;
+        String processDefinitionCode = "66";
 
         String projectName = "project_test1";
         User loginUser = new User();
@@ -133,7 +134,7 @@ public class ProcessDefinitionVersionServiceTest {
         ProcessDefinitionVersion processDefinitionVersion = getProcessDefinitionVersion(getProcessDefinition());
 
         Mockito.when(processDefinitionVersionMapper
-                .queryProcessDefinitionVersionsPaging(Mockito.any(Page.class), Mockito.eq(processDefinitionId)))
+                .queryProcessDefinitionVersionsPaging(Mockito.any(Page.class), Mockito.eq(processDefinitionCode)))
                 .thenReturn(new Page<ProcessDefinitionVersion>()
                         .setRecords(Lists.newArrayList(processDefinitionVersion)));
 
@@ -155,13 +156,13 @@ public class ProcessDefinitionVersionServiceTest {
         ProcessDefinitionVersion expectedProcessDefinitionVersion =
                 getProcessDefinitionVersion(getProcessDefinition());
 
-        int processDefinitionId = 66;
+        String processDefinitionCode = "66";
         long version = 10;
-        Mockito.when(processDefinitionVersionMapper.queryByProcessDefinitionIdAndVersion(processDefinitionId, version))
+        Mockito.when(processDefinitionVersionMapper.queryByProcessDefinitionCodeAndVersion(processDefinitionCode, version))
                 .thenReturn(expectedProcessDefinitionVersion);
 
         ProcessDefinitionVersion processDefinitionVersion = processDefinitionVersionService
-                .queryByProcessDefinitionIdAndVersion(processDefinitionId, version);
+                .queryByProcessDefinitionCodeAndVersion(processDefinitionCode, version);
 
         Assert.assertEquals(expectedProcessDefinitionVersion, processDefinitionVersion);
     }
@@ -170,6 +171,7 @@ public class ProcessDefinitionVersionServiceTest {
     public void testDeleteByProcessDefinitionIdAndVersion() {
         String projectName = "project_test1";
         int processDefinitionId = 66;
+        String processDefinitionCode = "66";
         long version = 10;
         Project project = getProject(projectName);
         Mockito.when(projectMapper.queryByName(projectName))
@@ -194,7 +196,7 @@ public class ProcessDefinitionVersionServiceTest {
         Map<String, Object> res = new HashMap<>();
         putMsg(res, Status.SUCCESS);
 
-        Mockito.when(processDefinitionVersionMapper.deleteByProcessDefinitionIdAndVersion(processDefinitionId, version))
+        Mockito.when(processDefinitionVersionMapper.deleteByProcessDefinitionCodeAndVersion(processDefinitionCode, version))
                 .thenReturn(1);
         Mockito.when(projectService.checkProjectAndAuth(loginUser, project, projectName))
                 .thenReturn(res);
@@ -217,7 +219,7 @@ public class ProcessDefinitionVersionServiceTest {
     private ProcessDefinitionVersion getProcessDefinitionVersion(ProcessDefinition processDefinition) {
         return ProcessDefinitionVersion
                 .newBuilder()
-                .processDefinitionId(processDefinition.getId())
+                .processDefinitionCode(processDefinition.getCode())
                 .version(1)
                 .processDefinitionJson(processDefinition.getProcessDefinitionJson())
                 .description(processDefinition.getDescription())
@@ -228,7 +230,7 @@ public class ProcessDefinitionVersionServiceTest {
                 .createTime(processDefinition.getUpdateTime())
                 .receivers(processDefinition.getReceivers())
                 .receiversCc(processDefinition.getReceiversCc())
-                .resourceIds(processDefinition.getResourceIds())
+                .resourceCodes(processDefinition.getResourceCodes())
                 .build();
     }
 
@@ -242,7 +244,7 @@ public class ProcessDefinitionVersionServiceTest {
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setId(66);
         processDefinition.setName("test_pdf");
-        processDefinition.setProjectId(2);
+        processDefinition.setProjectCode("2");
         processDefinition.setTenantId(1);
         processDefinition.setDescription("");
 
@@ -258,6 +260,7 @@ public class ProcessDefinitionVersionServiceTest {
     private Project getProject(String projectName) {
         Project project = new Project();
         project.setId(1);
+        project.setCode("1");
         project.setName(projectName);
         project.setUserId(1);
         return project;

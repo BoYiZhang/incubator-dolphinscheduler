@@ -66,7 +66,7 @@ public class ProjectServiceTest {
     @Mock
     private ProcessDefinitionMapper processDefinitionMapper;
 
-
+    private String projectCode = "1";
     private String projectName = "ProjectServiceTest";
 
     private String userName = "ProjectServiceTest";
@@ -76,19 +76,19 @@ public class ProjectServiceTest {
 
         User loginUser = getLoginUser();
         loginUser.setId(1);
-        Map<String, Object> result = projectService.createProject(loginUser, projectName, getDesc());
+        Map<String, Object> result = projectService.createProject(loginUser,projectCode, projectName, getDesc());
         logger.info(result.toString());
         Assert.assertEquals(Status.REQUEST_PARAMS_NOT_VALID_ERROR, result.get(Constants.STATUS));
 
         //project name exist
         Mockito.when(projectMapper.queryByName(projectName)).thenReturn(getProject());
-        result = projectService.createProject(loginUser, projectName, projectName);
+        result = projectService.createProject(loginUser,projectCode, projectName, projectName);
         logger.info(result.toString());
         Assert.assertEquals(Status.PROJECT_ALREADY_EXISTS, result.get(Constants.STATUS));
 
         //success
         Mockito.when(projectMapper.insert(Mockito.any(Project.class))).thenReturn(1);
-        result = projectService.createProject(loginUser, "test", "test");
+        result = projectService.createProject(loginUser, "test","test", "test");
         logger.info(result.toString());
         Assert.assertEquals(Status.SUCCESS, result.get(Constants.STATUS));
 
@@ -213,7 +213,7 @@ public class ProjectServiceTest {
         Assert.assertEquals(Status.USER_NO_OPERATION_PROJECT_PERM, result.get(Constants.STATUS));
 
         //DELETE_PROJECT_ERROR_DEFINES_NOT_NULL
-        Mockito.when(processDefinitionMapper.queryAllDefinitionList(1)).thenReturn(getProcessDefinitions());
+        Mockito.when(processDefinitionMapper.queryAllDefinitionList("1")).thenReturn(getProcessDefinitions());
         loginUser.setUserType(UserType.ADMIN_USER);
         result = projectService.deleteProject(loginUser, 1);
         logger.info(result.toString());
@@ -221,7 +221,7 @@ public class ProjectServiceTest {
 
         //success
         Mockito.when(projectMapper.deleteById(1)).thenReturn(1);
-        Mockito.when(processDefinitionMapper.queryAllDefinitionList(1)).thenReturn(new ArrayList<>());
+        Mockito.when(processDefinitionMapper.queryAllDefinitionList("1")).thenReturn(new ArrayList<>());
         result = projectService.deleteProject(loginUser, 1);
         logger.info(result.toString());
         Assert.assertEquals(Status.SUCCESS, result.get(Constants.STATUS));
@@ -325,6 +325,7 @@ public class ProjectServiceTest {
     private Project getProject() {
         Project project = new Project();
         project.setId(1);
+        project.setCode("1");
         project.setName(projectName);
         project.setUserId(1);
         return project;
@@ -362,7 +363,7 @@ public class ProjectServiceTest {
     private List<ProcessDefinition> getProcessDefinitions() {
         List<ProcessDefinition> list = new ArrayList<>();
         ProcessDefinition processDefinition = new ProcessDefinition();
-        processDefinition.setProjectId(1);
+        processDefinition.setProjectCode("1");
         list.add(processDefinition);
         return list;
     }

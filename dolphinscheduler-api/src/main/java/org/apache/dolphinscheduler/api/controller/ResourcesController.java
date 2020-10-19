@@ -74,31 +74,35 @@ public class ResourcesController extends BaseController {
 
     /**
      * @param loginUser   login user
+     * @param code        resource code
      * @param type        type
      * @param alias       alias
      * @param description description
-     * @param pid         parent id
+     * @param parentCode  parent code
      * @param currentDir  current directory
      * @return
      */
     @ApiOperation(value = "createDirctory", notes = "CREATE_RESOURCE_NOTES")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type", value = "RESOURCE_TYPE", required = true, dataType = "ResourceType"),
+            @ApiImplicitParam(name = "code", value = "RESOURCE_CODE", required = true, dataType = "String"),
             @ApiImplicitParam(name = "name", value = "RESOURCE_NAME", required = true, dataType = "String"),
             @ApiImplicitParam(name = "description", value = "RESOURCE_DESC", dataType = "String"),
-            @ApiImplicitParam(name = "file", value = "RESOURCE_FILE", required = true, dataType = "MultipartFile")
+            @ApiImplicitParam(name = "parentCode", value = "RESOURCE_PARENT_CODE",  dataType = "String",example = "-1"),
+            @ApiImplicitParam(name = "currentDir", value = "RESOURCE_CURRENT_DIR", required = true, dataType = "String",example = "/")
     })
     @PostMapping(value = "/directory/create")
     @ApiException(CREATE_RESOURCE_ERROR)
     public Result createDirectory(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                   @RequestParam(value = "type") ResourceType type,
+                                  @RequestParam(value = "code") String code,
                                   @RequestParam(value = "name") String alias,
                                   @RequestParam(value = "description", required = false) String description,
-                                  @RequestParam(value = "pid") int pid,
+                                  @RequestParam(value = "parentCode") String parentCode,
                                   @RequestParam(value = "currentDir") String currentDir) {
-        logger.info("login user {}, create resource, type: {}, resource alias: {}, desc: {}, file: {},{}",
-                loginUser.getUserName(), type, alias, description, pid, currentDir);
-        return resourceService.createDirectory(loginUser, alias, description, type, pid, currentDir);
+        logger.info("login user {}, create resource, type: {}, code: {}, resource alias: {}, desc: {}, parentCode: {}, currentDir : {}",
+                loginUser.getUserName(), type, code, alias, description, parentCode, currentDir);
+        return resourceService.createDirectory(loginUser, code, alias, description, type, parentCode, currentDir);
     }
 
     /**
@@ -114,22 +118,26 @@ public class ResourcesController extends BaseController {
     @ApiOperation(value = "createResource", notes = "CREATE_RESOURCE_NOTES")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type", value = "RESOURCE_TYPE", required = true, dataType = "ResourceType"),
+            @ApiImplicitParam(name = "code", value = "RESOURCE_CODE", required = true, dataType = "String"),
             @ApiImplicitParam(name = "name", value = "RESOURCE_NAME", required = true, dataType = "String"),
             @ApiImplicitParam(name = "description", value = "RESOURCE_DESC", dataType = "String"),
-            @ApiImplicitParam(name = "file", value = "RESOURCE_FILE", required = true, dataType = "MultipartFile")
+            @ApiImplicitParam(name = "file", value = "RESOURCE_FILE", required = true, dataType = "MultipartFile"),
+            @ApiImplicitParam(name = "parentCode", value = "PARENT_CODE", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "currentDir", value = "CURRENT_DIR", required = true, dataType = "String")
     })
     @PostMapping(value = "/create")
     @ApiException(CREATE_RESOURCE_ERROR)
     public Result createResource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                  @RequestParam(value = "type") ResourceType type,
+                                 @RequestParam(value = "code") String code,
                                  @RequestParam(value = "name") String alias,
                                  @RequestParam(value = "description", required = false) String description,
                                  @RequestParam("file") MultipartFile file,
-                                 @RequestParam(value = "pid") int pid,
+                                 @RequestParam(value = "parentCode") String parentCode,
                                  @RequestParam(value = "currentDir") String currentDir) {
         logger.info("login user {}, create resource, type: {}, resource alias: {}, desc: {}, file: {},{}",
                 loginUser.getUserName(), type, alias, description, file.getName(), file.getOriginalFilename());
-        return resourceService.createResource(loginUser, alias, description, type, file, pid, currentDir);
+        return resourceService.createResource(loginUser,code, alias, description, type, file, parentCode, currentDir);
     }
 
     /**
@@ -363,30 +371,34 @@ public class ResourcesController extends BaseController {
      */
     @ApiOperation(value = "onlineCreateResource", notes = "ONLINE_CREATE_RESOURCE_NOTES")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "code", value = "RESOURCE_CODE", required = true, dataType = "String"),
             @ApiImplicitParam(name = "type", value = "RESOURCE_TYPE", required = true, dataType = "ResourceType"),
             @ApiImplicitParam(name = "fileName", value = "RESOURCE_NAME", required = true, dataType = "String"),
             @ApiImplicitParam(name = "suffix", value = "SUFFIX", required = true, dataType = "String"),
             @ApiImplicitParam(name = "description", value = "RESOURCE_DESC", dataType = "String"),
-            @ApiImplicitParam(name = "content", value = "CONTENT", required = true, dataType = "String")
+            @ApiImplicitParam(name = "content", value = "CONTENT", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "parentCode", value = "RESOURCE_PARENT_CODE",  dataType = "String",example = "-1"),
+            @ApiImplicitParam(name = "currentDir", value = "RESOURCE_CURRENT_DIR", required = true, dataType = "String",example = "/")
     })
     @PostMapping(value = "/online-create")
     @ApiException(CREATE_RESOURCE_FILE_ON_LINE_ERROR)
     public Result onlineCreateResource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+                                       @RequestParam(value = "code") String code,
                                        @RequestParam(value = "type") ResourceType type,
                                        @RequestParam(value = "fileName") String fileName,
                                        @RequestParam(value = "suffix") String fileSuffix,
                                        @RequestParam(value = "description", required = false) String description,
                                        @RequestParam(value = "content") String content,
-                                       @RequestParam(value = "pid") int pid,
+                                       @RequestParam(value = "parentCode") String parentCode,
                                        @RequestParam(value = "currentDir") String currentDir
     ) {
-        logger.info("login user {}, online create resource! fileName : {}, type : {}, suffix : {},desc : {},content : {}",
-                loginUser.getUserName(), fileName, type, fileSuffix, description, content, pid, currentDir);
+        logger.info("login user {}, online create resource! fileName : {}, type : {}, suffix : {},desc : {},content : {} , parentCode :{}, currentDir : {}",
+                loginUser.getUserName(), fileName, type, fileSuffix, description, content, parentCode, currentDir);
         if (StringUtils.isEmpty(content)) {
             logger.error("resource file contents are not allowed to be empty");
             return error(Status.RESOURCE_FILE_IS_EMPTY.getCode(), RESOURCE_FILE_IS_EMPTY.getMsg());
         }
-        return resourceService.onlineCreateResource(loginUser, type, fileName, fileSuffix, description, content, pid, currentDir);
+        return resourceService.onlineCreateResource(loginUser, code, type, fileName, fileSuffix, description, content, parentCode, currentDir);
     }
 
     /**
@@ -452,22 +464,24 @@ public class ResourcesController extends BaseController {
      * @param loginUser   login user
      * @param type        udf type
      * @param funcName    function name
+     * @param funcName    function name
      * @param argTypes    argument types
      * @param database    database
      * @param description description
      * @param className   class name
-     * @param resourceId  resource id
+     * @param resourceCode  resource code
      * @return create result code
      */
     @ApiOperation(value = "createUdfFunc", notes = "CREATE_UDF_FUNCTION_NOTES")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type", value = "UDF_TYPE", required = true, dataType = "UdfType"),
+            @ApiImplicitParam(name = "code", value = "CODE", required = true, dataType = "String"),
             @ApiImplicitParam(name = "funcName", value = "FUNC_NAME", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "suffix", value = "CLASS_NAME", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "className", value = "CLASS_NAME", required = true, dataType = "String"),
             @ApiImplicitParam(name = "argTypes", value = "ARG_TYPES", dataType = "String"),
             @ApiImplicitParam(name = "database", value = "DATABASE_NAME", dataType = "String"),
             @ApiImplicitParam(name = "description", value = "UDF_DESC", dataType = "String"),
-            @ApiImplicitParam(name = "resourceId", value = "RESOURCE_ID", required = true, dataType = "Int", example = "100")
+            @ApiImplicitParam(name = "resourceCode", value = "RESOURCE_CODE", required = true, dataType = "String")
 
     })
     @PostMapping(value = "/udf-func/create")
@@ -475,15 +489,16 @@ public class ResourcesController extends BaseController {
     @ApiException(CREATE_UDF_FUNCTION_ERROR)
     public Result createUdfFunc(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                 @RequestParam(value = "type") UdfType type,
+                                @RequestParam(value = "code") String code,
                                 @RequestParam(value = "funcName") String funcName,
                                 @RequestParam(value = "className") String className,
                                 @RequestParam(value = "argTypes", required = false) String argTypes,
                                 @RequestParam(value = "database", required = false) String database,
                                 @RequestParam(value = "description", required = false) String description,
-                                @RequestParam(value = "resourceId") int resourceId) {
-        logger.info("login user {}, create udf function, type: {},  funcName: {},argTypes: {} ,database: {},desc: {},resourceId: {}",
-                loginUser.getUserName(), type, funcName, argTypes, database, description, resourceId);
-        return udfFuncService.createUdfFunction(loginUser, funcName, className, argTypes, database, description, type, resourceId);
+                                @RequestParam(value = "resourceCode") String resourceCode) {
+        logger.info("login user {}, create udf function, type: {},  funcName: {},argTypes: {} ,database: {},desc: {},resourceCode: {}",
+                loginUser.getUserName(), type, funcName, argTypes, database, description, resourceCode);
+        return udfFuncService.createUdfFunction(loginUser, code, funcName, className, argTypes, database, description, type, resourceCode);
     }
 
     /**
@@ -518,20 +533,20 @@ public class ResourcesController extends BaseController {
      * @param argTypes    argument types
      * @param database    data base
      * @param description description
-     * @param resourceId  resource id
      * @param className   class name
-     * @param udfFuncId   udf function id
+     * @param resourceCode resource code
      * @return update result code
      */
     @ApiOperation(value = "updateUdfFunc", notes = "UPDATE_UDF_FUNCTION_NOTES")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type", value = "UDF_TYPE", required = true, dataType = "UdfType"),
             @ApiImplicitParam(name = "funcName", value = "FUNC_NAME", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "suffix", value = "CLASS_NAME", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "className", value = "CLASS_NAME", required = true, dataType = "String"),
             @ApiImplicitParam(name = "argTypes", value = "ARG_TYPES", dataType = "String"),
             @ApiImplicitParam(name = "database", value = "DATABASE_NAME", dataType = "String"),
             @ApiImplicitParam(name = "description", value = "UDF_DESC", dataType = "String"),
-            @ApiImplicitParam(name = "id", value = "RESOURCE_ID", required = true, dataType = "Int", example = "100")
+            @ApiImplicitParam(name = "id", value = "RESOURCE_ID", required = true, dataType = "Int", example = "100"),
+            @ApiImplicitParam(name = "resourceCode", value = "RESOURCE_CODE", required = true, dataType = "String", example = "10")
 
     })
     @PostMapping(value = "/udf-func/update")
@@ -544,10 +559,10 @@ public class ResourcesController extends BaseController {
                                 @RequestParam(value = "argTypes", required = false) String argTypes,
                                 @RequestParam(value = "database", required = false) String database,
                                 @RequestParam(value = "description", required = false) String description,
-                                @RequestParam(value = "resourceId") int resourceId) {
-        logger.info("login user {}, updateProcessInstance udf function id: {},type: {},  funcName: {},argTypes: {} ,database: {},desc: {},resourceId: {}",
-                loginUser.getUserName(), udfFuncId, type, funcName, argTypes, database, description, resourceId);
-        Map<String, Object> result = udfFuncService.updateUdfFunc(udfFuncId, funcName, className, argTypes, database, description, type, resourceId);
+                                @RequestParam(value = "resourceCode") String resourceCode) {
+        logger.info("login user {}, updateProcessInstance udf function id: {},type: {},  funcName: {},argTypes: {} ,database: {},desc: {},resourceCode: {}",
+                loginUser.getUserName(), udfFuncId, type, funcName, argTypes, database, description, resourceCode);
+        Map<String, Object> result = udfFuncService.updateUdfFunc(udfFuncId, funcName, className, argTypes, database, description, type, resourceCode);
         return returnDataList(result);
     }
 

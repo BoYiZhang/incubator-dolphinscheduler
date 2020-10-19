@@ -34,7 +34,7 @@ public interface ProjectService {
      * @param desc description
      * @return returns an error if it exists
      */
-    Map<String, Object> createProject(User loginUser, String name, String desc);
+    Map<String, Object> createProject(User loginUser, String code , String name, String desc);
 
     /**
      * query project details by id

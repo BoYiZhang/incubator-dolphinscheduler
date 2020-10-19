@@ -201,5 +201,26 @@ public class ExecutorController extends BaseController {
         return returnDataList(result);
     }
 
+    /**
+     * query recipients and copyers by process definition code
+     *
+     * @param loginUser           login user
+     * @param processDefinitionCode process definition code
+     * @return receivers cc list
+     */
+    @ApiIgnore
+    @ApiOperation(value = "getReceiverCcByDefinitionCode", notes = "GET_RECEIVER_CC_NOTES")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "processDefinitionCode", value = "PROCESS_DEFINITION_CODE", required = true, dataType = "String", example = "100")
+    })
+    @GetMapping(value = "/get-receiver-cc-by-defincode")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiException(QUERY_RECIPIENTS_AND_COPYERS_BY_PROCESS_DEFINITION_ERROR)
+    public Result getReceiverCcByDefinitionCode(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+                                                @RequestParam(value = "processDefinitionCode", required = true) String processDefinitionCode) {
+        logger.info("login user {}, get process definition receiver and cc", loginUser.getUserName());
+        Map<String, Object> result = execService.getReceiverCcByDefineCode(processDefinitionCode);
+        return returnDataList(result);
+    }
 
 }

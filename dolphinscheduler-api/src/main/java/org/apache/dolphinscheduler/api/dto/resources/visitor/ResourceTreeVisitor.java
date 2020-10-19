@@ -58,7 +58,7 @@ public class ResourceTreeVisitor implements Visitor{
             if (rootNode(resource)){
                 ResourceComponent tempResourceComponent = getResourceComponent(resource);
                 rootDirectory.add(tempResourceComponent);
-                tempResourceComponent.setChildren(setChildren(tempResourceComponent.getId(),resourceList));
+                tempResourceComponent.setChildren(setChildren(tempResourceComponent.getCode(),resourceList));
             }
         }
         return rootDirectory;
@@ -66,20 +66,20 @@ public class ResourceTreeVisitor implements Visitor{
 
     /**
      * set children
-     * @param id    id
+     * @param code    code
      * @param list  resource list
      * @return resource component list
      */
-    public static List<ResourceComponent> setChildren(int id, List<Resource> list ){
+    public static List<ResourceComponent> setChildren(String code, List<Resource> list ){
         List<ResourceComponent> childList = new ArrayList<>();
         for (Resource resource : list) {
-            if (id == resource.getPid()){
+            if (code.equals(resource.getParentCode())){
                 ResourceComponent tempResourceComponent = getResourceComponent(resource);
                 childList.add(tempResourceComponent);
             }
         }
         for (ResourceComponent resourceComponent : childList) {
-            resourceComponent.setChildren(setChildren(resourceComponent.getId(),list));
+            resourceComponent.setChildren(setChildren(resourceComponent.getCode(),list));
         }
         if (childList.size()==0){
             return new ArrayList<>();
@@ -95,9 +95,9 @@ public class ResourceTreeVisitor implements Visitor{
     public boolean rootNode(Resource resource) {
 
         boolean isRootNode = true;
-        if(resource.getPid() != -1 ){
+        if(!"-1".equals(resource.getParentCode()) ){
             for (Resource parent : resourceList) {
-                if (resource.getPid() == parent.getId()) {
+                if (resource.getParentCode().equals(parent.getCode())) {
                     isRootNode = false;
                     break;
                 }
@@ -118,11 +118,11 @@ public class ResourceTreeVisitor implements Visitor{
         }else{
             tempResourceComponent = new FileLeaf();
         }
-        
+        tempResourceComponent.setCode(resource.getCode());
+        tempResourceComponent.setParentCode(resource.getParentCode());
         tempResourceComponent.setName(resource.getAlias());
         tempResourceComponent.setFullName(resource.getFullName().replaceFirst("/",""));
         tempResourceComponent.setId(resource.getId());
-        tempResourceComponent.setPid(resource.getPid());
         tempResourceComponent.setIdValue(resource.getId(),resource.isDirectory());
         tempResourceComponent.setDescription(resource.getDescription());
         tempResourceComponent.setType(resource.getType());

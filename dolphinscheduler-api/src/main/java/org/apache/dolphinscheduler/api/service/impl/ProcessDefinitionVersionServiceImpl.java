@@ -27,6 +27,7 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinitionVersion;
 import org.apache.dolphinscheduler.dao.entity.Project;
 import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionVersionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
 
@@ -50,6 +51,9 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
     private ProcessDefinitionVersionMapper processDefinitionVersionMapper;
 
     @Autowired
+    private ProcessDefinitionMapper processDefinitionMapper;
+
+    @Autowired
     private ProjectService projectService;
 
     @Autowired
@@ -61,13 +65,14 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
      * @param processDefinition the process definition that need to record version
      * @return the newest version number of this process definition
      */
+    @Override
     public long addProcessDefinitionVersion(ProcessDefinition processDefinition) {
 
-        long version = this.queryMaxVersionByProcessDefinitionId(processDefinition.getId()) + 1;
+        long version = this.queryMaxVersionByProcessDefinitionCode(processDefinition.getCode()) + 1;
 
         ProcessDefinitionVersion processDefinitionVersion = ProcessDefinitionVersion
                 .newBuilder()
-                .processDefinitionId(processDefinition.getId())
+                .processDefinitionCode(processDefinition.getCode())
                 .version(version)
                 .processDefinitionJson(processDefinition.getProcessDefinitionJson())
                 .description(processDefinition.getDescription())
@@ -78,7 +83,7 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
                 .createTime(processDefinition.getUpdateTime())
                 .receivers(processDefinition.getReceivers())
                 .receiversCc(processDefinition.getReceiversCc())
-                .resourceIds(processDefinition.getResourceIds())
+                .resourceCodes(processDefinition.getResourceCodes())
                 .build();
 
         processDefinitionVersionMapper.insert(processDefinitionVersion);
@@ -87,13 +92,13 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
     }
 
     /**
-     * query the max version number by the process definition id
+     * query the max version number by the process definition code
      *
-     * @param processDefinitionId process definition id
-     * @return the max version number of this id
+     * @param processDefinitionCode process definition code
+     * @return the max version number of this code
      */
-    private long queryMaxVersionByProcessDefinitionId(int processDefinitionId) {
-        Long maxVersion = processDefinitionVersionMapper.queryMaxVersionByProcessDefinitionId(processDefinitionId);
+    private long queryMaxVersionByProcessDefinitionCode(String processDefinitionCode) {
+        Long maxVersion = processDefinitionVersionMapper.queryMaxVersionByProcessDefinitionCode(processDefinitionCode);
         if (Objects.isNull(maxVersion)) {
             return 0L;
         } else {
@@ -111,6 +116,7 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
      * @param processDefinitionId process definition id
      * @return the pagination process definition versions info of the certain process definition
      */
+    @Override
     public Map<String, Object> queryProcessDefinitionVersions(User loginUser, String projectName, int pageNo, int pageSize, int processDefinitionId) {
 
         Map<String, Object> result = new HashMap<>();
@@ -133,9 +139,14 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
             return checkResult;
         }
 
+        ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
+        if (null == processDefinition) {
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, processDefinitionId);
+        }
+
         PageInfo<ProcessDefinitionVersion> pageInfo = new PageInfo<>(pageNo, pageSize);
         Page<ProcessDefinitionVersion> page = new Page<>(pageNo, pageSize);
-        IPage<ProcessDefinitionVersion> processDefinitionVersionsPaging = processDefinitionVersionMapper.queryProcessDefinitionVersionsPaging(page, processDefinitionId);
+        IPage<ProcessDefinitionVersion> processDefinitionVersionsPaging = processDefinitionVersionMapper.queryProcessDefinitionVersionsPaging(page, processDefinition.getCode());
         List<ProcessDefinitionVersion> processDefinitionVersions = processDefinitionVersionsPaging.getRecords();
         pageInfo.setLists(processDefinitionVersions);
         pageInfo.setTotalCount((int) processDefinitionVersionsPaging.getTotal());
@@ -146,14 +157,15 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
     }
 
     /**
-     * query one certain process definition version by version number and process definition id
+     * query one certain process definition version by version number and process definition code
      *
-     * @param processDefinitionId process definition id
+     * @param processDefinitionCode process definition code
      * @param version version number
      * @return the process definition version info
      */
-    public ProcessDefinitionVersion queryByProcessDefinitionIdAndVersion(int processDefinitionId, long version) {
-        return processDefinitionVersionMapper.queryByProcessDefinitionIdAndVersion(processDefinitionId, version);
+    @Override
+    public ProcessDefinitionVersion queryByProcessDefinitionCodeAndVersion(String processDefinitionCode, long version) {
+        return processDefinitionVersionMapper.queryByProcessDefinitionCodeAndVersion(processDefinitionCode, version);
     }
 
     /**
@@ -165,6 +177,7 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
      * @param version version number
      * @return delele result code
      */
+    @Override
     public Map<String, Object> deleteByProcessDefinitionIdAndVersion(User loginUser, String projectName, int processDefinitionId, long version) {
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
@@ -174,7 +187,11 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
         if (resultStatus != Status.SUCCESS) {
             return checkResult;
         }
-        processDefinitionVersionMapper.deleteByProcessDefinitionIdAndVersion(processDefinitionId, version);
+        ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
+        if (null == processDefinition) {
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, processDefinitionId);
+        }
+        processDefinitionVersionMapper.deleteByProcessDefinitionCodeAndVersion(processDefinition.getCode(), version);
         putMsg(result, Status.SUCCESS);
         return result;
     }

@@ -101,7 +101,7 @@ public class SchedulerServiceTest {
 
         Schedule schedule = new Schedule();
         schedule.setId(1);
-        schedule.setProcessDefinitionId(1);
+        schedule.setProcessDefinitionCode("1");
         schedule.setReleaseState(ReleaseState.OFFLINE);
 
         List<Server> masterServers = new ArrayList<>();
@@ -126,10 +126,10 @@ public class SchedulerServiceTest {
         Assert.assertEquals(Status.SCHEDULE_CRON_REALEASE_NEED_NOT_CHANGE, result.get(Constants.STATUS));
 
         //PROCESS_DEFINE_NOT_EXIST
-        schedule.setProcessDefinitionId(2);
+        schedule.setProcessDefinitionCode("2");
         result = schedulerService.setScheduleState(loginUser, projectName, 1, ReleaseState.ONLINE);
         Assert.assertEquals(Status.PROCESS_DEFINE_NOT_EXIST, result.get(Constants.STATUS));
-        schedule.setProcessDefinitionId(1);
+        schedule.setProcessDefinitionCode("1");
 
         // PROCESS_DEFINE_NOT_RELEASE
         result = schedulerService.setScheduleState(loginUser, projectName, 1, ReleaseState.ONLINE);
@@ -175,6 +175,7 @@ public class SchedulerServiceTest {
     private Project getProject(String name) {
 
         Project project = new Project();
+        project.setCode("1");
         project.setName(name);
         project.setUserId(1);
 
