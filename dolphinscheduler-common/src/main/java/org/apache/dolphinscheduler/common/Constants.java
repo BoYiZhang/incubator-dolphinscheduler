@@ -440,7 +440,7 @@ public final class Constants {
 
     public static final String CMDPARAM_SUB_PROCESS_PARENT_INSTANCE_ID = "parentProcessInstanceId";
 
-    public static final String CMDPARAM_SUB_PROCESS_DEFINE_ID = "processDefinitionId";
+    public static final String CMDPARAM_SUB_PROCESS_DEFINE_CODE = "processDefinitionCode";
 
     public static final String CMDPARAM_START_NODE_NAMES = "StartNodeNameList";
 

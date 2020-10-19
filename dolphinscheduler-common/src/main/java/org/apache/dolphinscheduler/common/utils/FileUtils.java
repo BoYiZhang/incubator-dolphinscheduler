@@ -113,15 +113,15 @@ public class FileUtils {
     /**
      * directory of process execution
      *
-     * @param projectId project id
+     * @param projectCode project code
      * @param processDefineId process definition id
      * @param processInstanceId process instance id
      * @param taskInstanceId task instance id
      * @return directory of process execution
      */
-    public static String getProcessExecDir(int projectId, int processDefineId, int processInstanceId, int taskInstanceId) {
-        String fileName = String.format("%s/exec/process/%s/%s/%s/%s", DATA_BASEDIR, Integer.toString(projectId),
-                Integer.toString(processDefineId), Integer.toString(processInstanceId), Integer.toString(taskInstanceId));
+    public static String getProcessExecDir(String projectCode, int processDefineId, int processInstanceId, int taskInstanceId) {
+        String fileName = String.format("%s/exec/process/%s/%s/%s/%s", DATA_BASEDIR, projectCode,
+                processDefineId, processInstanceId, taskInstanceId);
         File file = new File(fileName);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
@@ -133,14 +133,14 @@ public class FileUtils {
     /**
      * directory of process instances
      *
-     * @param projectId project id
+     * @param projectCode project code
      * @param processDefineId process definition id
      * @param processInstanceId process instance id
      * @return directory of process instances
      */
-    public static String getProcessExecDir(int projectId, int processDefineId, int processInstanceId) {
-        String fileName = String.format("%s/exec/process/%s/%s/%s", DATA_BASEDIR, Integer.toString(projectId),
-                Integer.toString(processDefineId), Integer.toString(processInstanceId));
+    public static String getProcessExecDir(String projectCode, int processDefineId, int processInstanceId) {
+        String fileName = String.format("%s/exec/process/%s/%s/%s", DATA_BASEDIR, projectCode,
+                processDefineId, processInstanceId);
         File file = new File(fileName);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();

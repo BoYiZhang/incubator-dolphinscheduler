@@ -24,7 +24,7 @@ import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
  */
 public class DependentItem {
 
-    private int definitionId;
+    private String definitionCode;
     private String depTasks;
     private String cycle;
     private String dateValue;
@@ -33,19 +33,19 @@ public class DependentItem {
 
 
     public String getKey(){
-        return String.format("%d-%s-%s-%s",
-                getDefinitionId(),
+        return String.format("%s-%s-%s-%s",
+                getDefinitionCode(),
                 getDepTasks(),
                 getCycle(),
                 getDateValue());
     }
 
-    public int getDefinitionId() {
-        return definitionId;
+    public String getDefinitionCode() {
+        return definitionCode;
     }
 
-    public void setDefinitionId(int definitionId) {
-        this.definitionId = definitionId;
+    public void setDefinitionCode(String definitionCode) {
+        this.definitionCode = definitionCode;
     }
 
     public String getDepTasks() {

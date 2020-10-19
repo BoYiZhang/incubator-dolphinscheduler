@@ -33,7 +33,8 @@ public enum AuthorizationType {
     RESOURCE_FILE_NAME(1, "resource file name"),
     UDF_FILE(2, "udf file"),
     DATASOURCE(3, "data source"),
-    UDF(4, "udf function");
+    UDF(4, "udf function"),
+    RESOURCE_FILE_CODE(5, "resource file code");;
 
     AuthorizationType(int code, String descp){
         this.code = code;

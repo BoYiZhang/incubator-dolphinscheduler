@@ -33,9 +33,9 @@ public class SqlParameters extends AbstractParameters {
     private String type;
 
     /**
-     * datasource id
+     * datasource code
      */
-    private int datasource;
+    private String datasource;
 
     /**
      * sql
@@ -97,11 +97,11 @@ public class SqlParameters extends AbstractParameters {
         this.type = type;
     }
 
-    public int getDatasource() {
+    public String getDatasource() {
         return datasource;
     }
 
-    public void setDatasource(int datasource) {
+    public void setDatasource(String datasource) {
         this.datasource = datasource;
     }
 
@@ -186,7 +186,7 @@ public class SqlParameters extends AbstractParameters {
 
     @Override
     public boolean checkParameters() {
-        return datasource != 0 && StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(sql);
+        return StringUtils.isNotEmpty(datasource) && StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(sql);
     }
 
     @Override

@@ -35,9 +35,9 @@ public class ProcedureParameters extends AbstractParameters {
   private String type;
 
   /**
-   * data source id
+   * data source code
    */
-  private int datasource;
+  private String datasource;
 
   /**
    * procedure name
@@ -53,11 +53,11 @@ public class ProcedureParameters extends AbstractParameters {
     this.type = type;
   }
 
-  public int getDatasource() {
+  public String getDatasource() {
     return datasource;
   }
 
-  public void setDatasource(int datasource) {
+  public void setDatasource(String datasource) {
     this.datasource = datasource;
   }
 
@@ -71,7 +71,7 @@ public class ProcedureParameters extends AbstractParameters {
 
   @Override
   public boolean checkParameters() {
-    return datasource != 0 && StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(method);
+    return StringUtils.isNotEmpty(datasource) && StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(method);
   }
 
   @Override

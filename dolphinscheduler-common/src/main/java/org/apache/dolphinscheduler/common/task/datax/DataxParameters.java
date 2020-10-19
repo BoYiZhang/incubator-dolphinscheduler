@@ -45,9 +45,9 @@ public class DataxParameters extends AbstractParameters {
     private String dsType;
 
     /**
-     * datasource id
+     * datasource code
      */
-    private int dataSource;
+    private String dataSource;
 
     /**
      * data target type，eg  MYSQL, POSTGRES ...
@@ -55,9 +55,9 @@ public class DataxParameters extends AbstractParameters {
     private String dtType;
 
     /**
-     * datatarget id
+     * datatarget code
      */
-    private int dataTarget;
+    private String dataTarget;
 
     /**
      * sql
@@ -113,11 +113,11 @@ public class DataxParameters extends AbstractParameters {
         this.dsType = dsType;
     }
 
-    public int getDataSource() {
+    public String getDataSource() {
         return dataSource;
     }
 
-    public void setDataSource(int dataSource) {
+    public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -129,11 +129,11 @@ public class DataxParameters extends AbstractParameters {
         this.dtType = dtType;
     }
 
-    public int getDataTarget() {
+    public String getDataTarget() {
         return dataTarget;
     }
 
-    public void setDataTarget(int dataTarget) {
+    public void setDataTarget(String dataTarget) {
         this.dataTarget = dataTarget;
     }
 
@@ -188,8 +188,8 @@ public class DataxParameters extends AbstractParameters {
     @Override
     public boolean checkParameters() {
         if (customConfig == Flag.NO.ordinal()) {
-            return dataSource != 0
-                    && dataTarget != 0
+            return StringUtils.isNotEmpty(dataSource)
+                    && StringUtils.isNotEmpty(dataTarget)
                     && StringUtils.isNotEmpty(sql)
                     && StringUtils.isNotEmpty(targetTable);
         } else {

@@ -28,7 +28,7 @@ public class SourceMysqlParameter {
     /**
      * src datasource
      */
-    private int srcDatasource;
+    private String srcDatasource;
     /**
      * src table
      */
@@ -62,11 +62,11 @@ public class SourceMysqlParameter {
      */
     private List<Property> mapColumnJava;
 
-    public int getSrcDatasource() {
+    public String getSrcDatasource() {
         return srcDatasource;
     }
 
-    public void setSrcDatasource(int srcDatasource) {
+    public void setSrcDatasource(String srcDatasource) {
         this.srcDatasource = srcDatasource;
     }
 
