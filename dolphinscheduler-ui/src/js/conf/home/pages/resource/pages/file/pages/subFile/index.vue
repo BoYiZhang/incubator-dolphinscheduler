@@ -19,6 +19,19 @@
     <template slot="content">
       <div class="resource-create-model">
         <m-list-box-f>
+          <template slot="name"><strong>*</strong>{{$t('Code')}}</template>
+          <template slot="content">
+            <x-input
+              type="input"
+              v-model="code"
+              maxlength="100"
+              style="width: 300px;"
+              :placeholder="$t('Please enter code')"
+              autocomplete="off">
+            </x-input>
+          </template>
+        </m-list-box-f>
+        <m-list-box-f>
           <template slot="name"><strong>*</strong>{{$t('File Name')}}</template>
           <template slot="content">
             <x-input
@@ -67,7 +80,7 @@
           <template slot="content">
             <div class="submit">
               <x-button type="primary" shape="circle" :loading="spinnerLoading" @click="ok()">{{spinnerLoading ? 'Loading...' : $t('Create')}} </x-button>
-              <x-button type="text" @click="() => $router.push({name: 'file'})"> {{$t('Cancel')}} </x-button>
+              <x-button type="text" @click="_cancelCreate"> {{$t('Cancel')}} </x-button>
             </div>
           </template>
         </m-list-box-f>
@@ -93,6 +106,7 @@
     data () {
       return {
         suffix: 'sh',
+        code: '',
         fileName: '',
         description: '',
         fileTypeList: filtTypeArr,
@@ -110,12 +124,14 @@
           this.spinnerLoading = true
           this.createResourceFile({
             type: 'FILE',
+            code: this.code,
             pid: this.$route.params.id,
             currentDir: localStore.getItem('currentDir'),
             fileName: this.fileName,
             suffix: this.suffix,
             description: this.description,
-            content: editor.getValue()
+            content: editor.getValue(),
+            parentCode: localStore.getItem('parentCode') || "-1"
           }).then(res => {
             this.$message.success(res.msg)
             setTimeout(() => {
@@ -128,7 +144,14 @@
           })
         }
       },
+      _cancelCreate(){
+        this.$router.push({ path: `/resource/file/subdirectory/${this.$route.params.id}`})
+      },
       _validation () {
+        if (!this.code || this.code.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.fileName) {
           this.$message.warning(`${i18n.$t('Please enter resource name')}`)
           return false

@@ -141,6 +141,7 @@
           fullName: api
         }).then(res => {
           localStore.setItem('currentDir', `${res.fullName}`)
+          localStore.setItem('parentCode', res.code)
           this.$router.push({ path: `/resource/file/subdirectory/${res.id}` })
         }).catch(e => {
           this.$message.error(e.msg || '')

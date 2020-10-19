@@ -19,6 +19,19 @@
     <template slot="content">
       <div class="resource-create-model">
         <m-list-box-f>
+          <template slot="name"><strong>*</strong>{{$t('Code')}}</template>
+          <template slot="content">
+            <x-input
+              type="input"
+              v-model="code"
+              maxlength="100"
+              style="width: 300px;"
+              :placeholder="$t('Please enter code')"
+              autocomplete="off">
+            </x-input>
+          </template>
+        </m-list-box-f>
+        <m-list-box-f>
           <template slot="name"><strong>*</strong>{{$t('Folder Name')}}</template>
           <template slot="content">
             <x-input
@@ -88,7 +101,8 @@
         name: '',
         description: '',
         folderList: folderList,
-        spinnerLoading: false
+        spinnerLoading: false,
+        code:''
       }
     },
     props: {},
@@ -99,9 +113,10 @@
           this.spinnerLoading = true
           this.createResourceFolder({
             type: 'FILE',
+            code: this.code,
             name: this.name,
             currentDir: '/',
-            pid: -1,
+            parentCode: "-1",
             description: this.description
           }).then(res => {
             this.$message.success(res.msg)
@@ -116,6 +131,10 @@
         }
       },
       _validation () {
+        if (!this.code || this.code.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.name) {
           this.$message.warning(`${i18n.$t('Please enter resource folder name')}`)
           return false

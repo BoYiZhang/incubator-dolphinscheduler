@@ -19,8 +19,31 @@
     <div slot="content" style="margin: 20px">
       <div class="file-edit-content">
         <h2>
-          <span>{{name}}</span>
+          <x-input
+            type="input"
+            v-model="name"
+            maxlength="60"
+            no-border
+            clearable
+            size="large"
+            style="width: 300px;font-size: 16px;text-align: center"
+            :placeholder="$t('Please enter name')"
+            autocomplete="off">
+          </x-input>
         </h2>
+        <h3>
+          <x-input
+            type="input"
+            v-model="description"
+            maxlength="100"
+            no-border
+            clearable
+            size="large"
+            style="width: 300px;font-size: 12px;text-align: center"
+            :placeholder="$t('Please enter description')"
+            autocomplete="off">
+          </x-input>
+        </h3>
         <template v-show="isNoType">
           <template v-if="!msg">
             <div class="code-mirror-model">
@@ -64,6 +87,8 @@
     data () {
       return {
         name: '',
+        defaultName:'',
+        description:' ',
         isNoType: true,
         isLoading: false,
         filtTypeArr: filtTypeArr,
@@ -80,10 +105,12 @@
       ...mapActions('resource', ['getViewResources', 'updateContent']),
       ok () {
         if (this._validation()) {
-            this.spinnerLoading = true
-            this.updateContent({
+          this.spinnerLoading = true
+          this.updateContent({
             id: this.$route.params.id,
-            content: editor.getValue()
+            content: editor.getValue(),
+            name  :this.name,
+            description:this.description
           }).then(res => {
             this.$message.success(res.msg)
             setTimeout(() => {
@@ -113,7 +140,9 @@
           skipLineNum: 0,
           limit: 3000
         }).then(res => {
-          this.name = res.data.alias.split('.')[0]
+          this.name = res.data.alias
+          this.defaultName = this.name;
+          this.description = res.data.description||' ';
           if (!res.data) {
             this.isData = false
           } else {
@@ -195,6 +224,7 @@
       text-align: center;
       padding-bottom: 6px;
       position: relative;
+      input { text-align:center; font-size: 20px };
       .down {
         position: absolute;
         right: 0;
@@ -213,6 +243,10 @@
           margin-left: -2px;
         }
       }
+    }
+    >h3 {
+      text-align: right;
+      input { text-align:center; font-size: 12px };
     }
     .code-mirror-model {
       height: calc(100vh - 300px);
