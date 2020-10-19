@@ -31,6 +31,20 @@
           </template>
         </m-list-box-f>
         <m-list-box-f>
+          <template slot="name"><strong>*</strong>{{$t('Code')}}</template>
+          <template slot="content">
+            <x-input
+              type="input"
+              v-model="dataCode"
+              maxlength="100"
+              :placeholder="$t('Please enter code')"
+              autocomplete="off"
+              :disabled="!!item"
+            >
+            </x-input>
+          </template>
+        </m-list-box-f>
+        <m-list-box-f>
           <template slot="name"><strong>*</strong>{{$t('Datasource Name')}}</template>
           <template slot="content">
             <x-input
@@ -195,6 +209,7 @@
         showConnectType: false,
         isShowPrincipal:true,
         prePortMapper:{},
+        dataCode: '',
         datasourceTypeList: [
           {
             value: 'MYSQL',
@@ -265,6 +280,7 @@
       _rtParam () {
         return {
           type: this.type,
+          code: this.dataCode,
           name: this.name,
           note: this.note,
           host: this.host,
@@ -315,6 +331,10 @@
        * verification
        */
       _verification () {
+        if (!this.dataCode || this.dataCode.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.name) {
           this.$message.warning(`${i18n.$t('Please enter resource name')}`)
           return false
@@ -454,6 +474,7 @@
       }
 
       this._setDefaultValues()
+      this.dataCode = this.item.code
 
     },
     watch: {

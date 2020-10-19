@@ -22,6 +22,9 @@
           <th scope="col">
             <span>{{$t('#')}}</span>
           </th>
+          <th scope="col" >
+            <span>{{$t('Code')}}</span>
+          </th>
           <th scope="col">
             <span>{{$t('Datasource Name')}}</span>
           </th>
@@ -47,6 +50,11 @@
         <tr v-for="(item, $index) in list" :key="$index">
           <td>
             <span>{{parseInt(pageNo === 1 ? ($index + 1) : (($index + 1) + (pageSize * (pageNo - 1))))}}</span>
+          </td>
+          <td>
+            <span>
+              {{item.code || $t('Default code')}}
+            </span>
           </td>
           <td>
             <span class="ellipsis">
