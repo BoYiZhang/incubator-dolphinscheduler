@@ -158,7 +158,7 @@ export default {
   'Please enter a non-query SQL statement': '请输入非查询sql语句',
   'Please enter IP/hostname': '请输入IP/主机名',
   'jdbc connection parameters is not a correct JSON format': 'jdbc连接参数不是一个正确的JSON格式',
-  '#': '编号',
+  '#': '序号',
   'Datasource Type': '数据源类型',
   'Datasource Parameter': '数据源参数',
   'Create Time': '创建时间',
@@ -650,4 +650,8 @@ export default {
   'Batch move': '批量移动',
   Version: '版本',
   'Pre tasks': '前置任务',
+  Code: '编码',
+  'Default code': '-',
+  'Please enter code': '请输入编码(必填,创建之后不可修改, 且不含",")',
+  'Parent Code': '父节点编码',
 }

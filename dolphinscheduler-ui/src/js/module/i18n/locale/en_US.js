@@ -650,4 +650,8 @@ export default {
   'Batch move': 'Batch move',
   Version: 'Version',
   'Pre tasks': 'Pre tasks',
+  Code: 'Code',
+  'Default code': '-',
+  'Please enter code': 'Please enter code',
+  'Parent Code': 'Parent Code',
 }
