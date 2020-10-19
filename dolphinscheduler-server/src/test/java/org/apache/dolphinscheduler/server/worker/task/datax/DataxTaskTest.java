@@ -127,8 +127,8 @@ public class DataxTaskTest {
         props.setCmdTypeIfComplement(START_PROCESS);
 
 
-        Mockito.when(processService.findDataSourceById(1)).thenReturn(getDataSource());
-        Mockito.when(processService.findDataSourceById(2)).thenReturn(getDataSource());
+        Mockito.when(processService.findDataSourceByCode("1")).thenReturn(getDataSource());
+        Mockito.when(processService.findDataSourceByCode("2")).thenReturn(getDataSource());
         Mockito.when(processService.findProcessInstanceByTaskId(1)).thenReturn(getProcessInstance());
 
         String fileName = String.format("%s/%s_node.sh", props.getExecutePath(), props.getTaskAppId());

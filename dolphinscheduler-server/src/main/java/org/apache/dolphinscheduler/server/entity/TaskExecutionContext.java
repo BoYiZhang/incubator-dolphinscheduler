@@ -138,9 +138,9 @@ public class TaskExecutionContext implements Serializable {
     private int processDefineId;
 
     /**
-     * project id
+     * project code
      */
-    private int projectId;
+    private String projectCode;
 
     /**
      * taskParams
@@ -369,14 +369,13 @@ public class TaskExecutionContext implements Serializable {
         this.processDefineId = processDefineId;
     }
 
-    public int getProjectId() {
-        return projectId;
+    public String getProjectCode() {
+        return projectCode;
     }
 
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
+    public void setProjectCode(String projectCode) {
+        this.projectCode = projectCode;
     }
-
     public String getTaskParams() {
         return taskParams;
     }
@@ -526,7 +525,7 @@ public class TaskExecutionContext implements Serializable {
                 + ", tenantCode='" + tenantCode + '\''
                 + ", queue='" + queue + '\''
                 + ", processDefineId=" + processDefineId
-                + ", projectId=" + projectId
+                + ", projectCode='" + projectCode + '\''
                 + ", taskParams='" + taskParams + '\''
                 + ", envFile='" + envFile + '\''
                 + ", definedParams=" + definedParams

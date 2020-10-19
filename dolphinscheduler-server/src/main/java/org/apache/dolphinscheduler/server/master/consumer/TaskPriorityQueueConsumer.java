@@ -243,8 +243,8 @@ public class TaskPriorityQueueConsumer extends Thread{
      */
     private void setProcedureTaskRelation(ProcedureTaskExecutionContext procedureTaskExecutionContext, TaskNode taskNode) {
         ProcedureParameters procedureParameters = JSONUtils.parseObject(taskNode.getParams(), ProcedureParameters.class);
-        int datasourceId = procedureParameters.getDatasource();
-        DataSource datasource = processService.findDataSourceById(datasourceId);
+        String datasourceCode = procedureParameters.getDatasource();
+        DataSource datasource = processService.findDataSourceByCode(datasourceCode);
         procedureTaskExecutionContext.setConnectionParams(datasource.getConnectionParams());
     }
 
@@ -256,18 +256,18 @@ public class TaskPriorityQueueConsumer extends Thread{
     private void setDataxTaskRelation(DataxTaskExecutionContext dataxTaskExecutionContext, TaskNode taskNode) {
         DataxParameters dataxParameters = JSONUtils.parseObject(taskNode.getParams(), DataxParameters.class);
 
-        DataSource dataSource = processService.findDataSourceById(dataxParameters.getDataSource());
-        DataSource dataTarget = processService.findDataSourceById(dataxParameters.getDataTarget());
+        DataSource dataSource = processService.findDataSourceByCode(dataxParameters.getDataSource());
+        DataSource dataTarget = processService.findDataSourceByCode(dataxParameters.getDataTarget());
 
 
         if (dataSource != null){
-            dataxTaskExecutionContext.setDataSourceId(dataxParameters.getDataSource());
+            dataxTaskExecutionContext.setDataSourceCode(dataxParameters.getDataSource());
             dataxTaskExecutionContext.setSourcetype(dataSource.getType().getCode());
             dataxTaskExecutionContext.setSourceConnectionParams(dataSource.getConnectionParams());
         }
 
         if (dataTarget != null){
-            dataxTaskExecutionContext.setDataTargetId(dataxParameters.getDataTarget());
+            dataxTaskExecutionContext.setDataTargetCode(dataxParameters.getDataTarget());
             dataxTaskExecutionContext.setTargetType(dataTarget.getType().getCode());
             dataxTaskExecutionContext.setTargetConnectionParams(dataTarget.getConnectionParams());
         }
@@ -287,8 +287,8 @@ public class TaskPriorityQueueConsumer extends Thread{
             SourceMysqlParameter sourceMysqlParameter = JSONUtils.parseObject(sqoopParameters.getSourceParams(), SourceMysqlParameter.class);
             TargetMysqlParameter targetMysqlParameter = JSONUtils.parseObject(sqoopParameters.getTargetParams(), TargetMysqlParameter.class);
 
-            DataSource dataSource = processService.findDataSourceById(sourceMysqlParameter.getSrcDatasource());
-            DataSource dataTarget = processService.findDataSourceById(targetMysqlParameter.getTargetDatasource());
+            DataSource dataSource = processService.findDataSourceByCode(sourceMysqlParameter.getSrcDatasource());
+            DataSource dataTarget = processService.findDataSourceByCode(targetMysqlParameter.getTargetDatasource());
 
             if (dataSource != null){
                 sqoopTaskExecutionContext.setDataSourceId(dataSource.getId());
@@ -311,8 +311,8 @@ public class TaskPriorityQueueConsumer extends Thread{
      */
     private void setSQLTaskRelation(SQLTaskExecutionContext sqlTaskExecutionContext, TaskNode taskNode) {
         SqlParameters sqlParameters = JSONUtils.parseObject(taskNode.getParams(), SqlParameters.class);
-        int datasourceId = sqlParameters.getDatasource();
-        DataSource datasource = processService.findDataSourceById(datasourceId);
+        String datasourceCode = sqlParameters.getDatasource();
+        DataSource datasource = processService.findDataSourceByCode(datasourceCode);
         sqlTaskExecutionContext.setConnectionParams(datasource.getConnectionParams());
 
         // whether udf type
@@ -343,7 +343,7 @@ public class TaskPriorityQueueConsumer extends Thread{
      * @return execute local path
      */
     private String getExecLocalPath(TaskInstance taskInstance){
-        return FileUtils.getProcessExecDir(taskInstance.getProcessDefine().getProjectId(),
+        return FileUtils.getProcessExecDir(taskInstance.getProcessDefine().getProjectCode(),
                 taskInstance.getProcessDefine().getId(),
                 taskInstance.getProcessInstance().getId(),
                 taskInstance.getId());
@@ -378,7 +378,7 @@ public class TaskPriorityQueueConsumer extends Thread{
             if (CollectionUtils.isNotEmpty(projectResourceFiles)) {
 
                 // filter the resources that the resource id equals 0
-                Set<ResourceInfo> oldVersionResources = projectResourceFiles.stream().filter(t -> t.getId() == 0).collect(Collectors.toSet());
+                Set<ResourceInfo> oldVersionResources = projectResourceFiles.stream().filter(t -> StringUtils.isEmpty(t.getCode())).collect(Collectors.toSet());
                 if (CollectionUtils.isNotEmpty(oldVersionResources)) {
 
                     oldVersionResources.forEach(
@@ -386,14 +386,14 @@ public class TaskPriorityQueueConsumer extends Thread{
                     );
                 }
 
-                // get the resource id in order to get the resource names in batch
-                Stream<Integer> resourceIdStream = projectResourceFiles.stream().map(resourceInfo -> resourceInfo.getId());
-                Set<Integer> resourceIdsSet = resourceIdStream.collect(Collectors.toSet());
+                // get the resource code in order to get the resource names in batch
+                Stream<String> resourceCodeStream = projectResourceFiles.stream().map(resourceInfo -> resourceInfo.getCode());
+                Set<String> resourceCodeSet = resourceCodeStream.collect(Collectors.toSet());
 
-                if (CollectionUtils.isNotEmpty(resourceIdsSet)) {
-                    Integer[] resourceIds = resourceIdsSet.toArray(new Integer[resourceIdsSet.size()]);
+                if (CollectionUtils.isNotEmpty(resourceCodeSet)) {
+                    String[] resourceCodes = resourceCodeSet.toArray(new String[resourceCodeSet.size()]);
 
-                    List<Resource> resources = processService.listResourceByIds(resourceIds);
+                    List<Resource> resources = processService.listResourceByCodes(resourceCodes);
                     resources.forEach(
                             (t)->resourceMap.put(t.getFullName(),processService.queryTenantCodeByResName(t.getFullName(), ResourceType.FILE))
                     );

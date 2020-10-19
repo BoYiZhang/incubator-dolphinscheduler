@@ -110,7 +110,7 @@ public class TaskPriorityQueueConsumerTest {
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setUserId(2);
-        processDefinition.setProjectId(1);
+        processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
 
         Mockito.doReturn(taskInstance).when(processService).getTaskInstanceDetailByTaskId(1);
@@ -140,7 +140,7 @@ public class TaskPriorityQueueConsumerTest {
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setUserId(2);
-        processDefinition.setProjectId(1);
+        processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
         Mockito.doReturn(taskInstance).when(processService).getTaskInstanceDetailByTaskId(1);
         taskPriorityQueue.put("2_1_2_1_default");
@@ -154,7 +154,7 @@ public class TaskPriorityQueueConsumerTest {
         dataSource.setCreateTime(new Date());
         dataSource.setUpdateTime(new Date());
 
-        Mockito.doReturn(dataSource).when(processService).findDataSourceById(1);
+        Mockito.doReturn(dataSource).when(processService).findDataSourceByCode("1");
 
         Thread.sleep(10000);
     }
@@ -180,7 +180,7 @@ public class TaskPriorityQueueConsumerTest {
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setUserId(2);
-        processDefinition.setProjectId(1);
+        processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
         Mockito.doReturn(taskInstance).when(processService).getTaskInstanceDetailByTaskId(1);
         taskPriorityQueue.put("2_1_2_1_default");
@@ -195,7 +195,7 @@ public class TaskPriorityQueueConsumerTest {
         dataSource.setConnectionParams("{\"address\":\"jdbc:mysql://192.168.221.185:3306\",\"database\":\"dolphinscheduler_qiaozhanwei\",\"jdbcUrl\":\"jdbc:mysql://192.168.221.185:3306/dolphinscheduler_qiaozhanwei\",\"user\":\"root\",\"password\":\"root@123\"}");
         dataSource.setCreateTime(new Date());
         dataSource.setUpdateTime(new Date());
-        Mockito.doReturn(dataSource).when(processService).findDataSourceById(80);
+        Mockito.doReturn(dataSource).when(processService).findDataSourceByCode("80");
         Thread.sleep(10000);
     }
 
@@ -220,7 +220,7 @@ public class TaskPriorityQueueConsumerTest {
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setUserId(2);
-        processDefinition.setProjectId(1);
+        processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
         Mockito.doReturn(taskInstance).when(processService).getTaskInstanceDetailByTaskId(1);
         taskPriorityQueue.put("2_1_2_1_default");
@@ -234,7 +234,7 @@ public class TaskPriorityQueueConsumerTest {
         dataSource.setConnectionParams("{\"address\":\"jdbc:mysql://192.168.221.185:3306\",\"database\":\"dolphinscheduler_qiaozhanwei\",\"jdbcUrl\":\"jdbc:mysql://192.168.221.185:3306/dolphinscheduler_qiaozhanwei\",\"user\":\"root\",\"password\":\"root@123\"}");
         dataSource.setCreateTime(new Date());
         dataSource.setUpdateTime(new Date());
-        Mockito.doReturn(dataSource).when(processService).findDataSourceById(1);
+        Mockito.doReturn(dataSource).when(processService).findDataSourceByCode("1");
         Thread.sleep(10000);
     }
 

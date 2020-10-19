@@ -79,7 +79,7 @@ public class TaskExecutionContextBuilder {
      */
     public TaskExecutionContextBuilder buildProcessDefinitionRelatedInfo(ProcessDefinition processDefinition){
         taskExecutionContext.setProcessDefineId(processDefinition.getId());
-        taskExecutionContext.setProjectId(processDefinition.getProjectId());
+        taskExecutionContext.setProjectCode(processDefinition.getProjectCode());
         return this;
     }
 

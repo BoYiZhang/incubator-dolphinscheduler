@@ -80,8 +80,8 @@ public class ShellTaskTest {
         shellTask = new ShellTask(taskExecutionContext, logger);
         shellTask.init();
 
-        PowerMockito.when(processService.findDataSourceById(1)).thenReturn(getDataSource());
-        PowerMockito.when(processService.findDataSourceById(2)).thenReturn(getDataSource());
+        PowerMockito.when(processService.findDataSourceByCode("1")).thenReturn(getDataSource());
+        PowerMockito.when(processService.findDataSourceByCode("2")).thenReturn(getDataSource());
         PowerMockito.when(processService.findProcessInstanceByTaskId(1)).thenReturn(getProcessInstance());
 
         String fileName = String.format("%s/%s_node.%s", taskExecutionContext.getExecutePath(),

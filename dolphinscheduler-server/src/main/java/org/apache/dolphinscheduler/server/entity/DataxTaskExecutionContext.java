@@ -25,9 +25,9 @@ import java.io.Serializable;
 public class DataxTaskExecutionContext implements Serializable{
 
     /**
-     * dataSourceId
+     * dataSourceCode
      */
-    private int dataSourceId;
+    private String dataSourceCode;
 
     /**
      * sourcetype
@@ -42,7 +42,7 @@ public class DataxTaskExecutionContext implements Serializable{
     /**
      * dataTargetId
      */
-    private int dataTargetId;
+    private String dataTargetCode;
 
     /**
      * targetType
@@ -54,14 +54,13 @@ public class DataxTaskExecutionContext implements Serializable{
      */
     private String targetConnectionParams;
 
-    public int getDataSourceId() {
-        return dataSourceId;
+    public String getDataSourceCode() {
+        return dataSourceCode;
     }
 
-    public void setDataSourceId(int dataSourceId) {
-        this.dataSourceId = dataSourceId;
+    public void setDataSourceCode(String dataSourceCode) {
+        this.dataSourceCode = dataSourceCode;
     }
-
     public int getSourcetype() {
         return sourcetype;
     }
@@ -78,14 +77,13 @@ public class DataxTaskExecutionContext implements Serializable{
         this.sourceConnectionParams = sourceConnectionParams;
     }
 
-    public int getDataTargetId() {
-        return dataTargetId;
+    public String getDataTargetCode() {
+        return dataTargetCode;
     }
 
-    public void setDataTargetId(int dataTargetId) {
-        this.dataTargetId = dataTargetId;
+    public void setDataTargetCode(String dataTargetCode) {
+        this.dataTargetCode = dataTargetCode;
     }
-
     public int getTargetType() {
         return targetType;
     }
@@ -105,10 +103,10 @@ public class DataxTaskExecutionContext implements Serializable{
     @Override
     public String toString() {
         return "DataxTaskExecutionContext{" +
-                "dataSourceId=" + dataSourceId +
+                "dataSourceCode='" + dataSourceCode + '\'' +
                 ", sourcetype=" + sourcetype +
                 ", sourceConnectionParams='" + sourceConnectionParams + '\'' +
-                ", dataTargetId=" + dataTargetId +
+                ", dataTargetCode='" + dataTargetCode + '\'' +
                 ", targetType=" + targetType +
                 ", targetConnectionParams='" + targetConnectionParams + '\'' +
                 '}';

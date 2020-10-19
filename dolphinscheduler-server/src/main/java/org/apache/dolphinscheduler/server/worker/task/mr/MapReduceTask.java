@@ -116,15 +116,15 @@ public class MapReduceTask extends AbstractYarnTask {
         // main jar
         ResourceInfo mainJar = mapreduceParameters.getMainJar();
         if (mainJar != null) {
-            int resourceId = mainJar.getId();
+            String resourceCode = mainJar.getCode();
             String resourceName;
-            if (resourceId == 0) {
+            if ( "0".equals(resourceCode) || StringUtils.isEmpty(resourceCode)) {
                 resourceName = mainJar.getRes();
             } else {
-                Resource resource = processService.getResourceById(mapreduceParameters.getMainJar().getId());
+                Resource resource = processService.getResourceByCode(resourceCode);
                 if (resource == null) {
-                    logger.error("resource id: {} not exist", resourceId);
-                    throw new RuntimeException(String.format("resource id: %d not exist", resourceId));
+                    logger.error("resource code: {} not exist", resourceCode);
+                    throw new RuntimeException(String.format("resource code: %s not exist", resourceCode));
                 }
                 resourceName = resource.getFullName().replaceFirst("/", "");
             }

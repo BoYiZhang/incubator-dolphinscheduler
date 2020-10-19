@@ -177,7 +177,7 @@ public class TaskExecuteProcessor implements NettyRequestProcessor {
      * @return execute local path
      */
     private String getExecLocalPath(TaskExecutionContext taskExecutionContext){
-        return FileUtils.getProcessExecDir(taskExecutionContext.getProjectId(),
+        return FileUtils.getProcessExecDir(taskExecutionContext.getProjectCode(),
                 taskExecutionContext.getProcessDefineId(),
                 taskExecutionContext.getProcessInstanceId(),
                 taskExecutionContext.getTaskInstanceId());

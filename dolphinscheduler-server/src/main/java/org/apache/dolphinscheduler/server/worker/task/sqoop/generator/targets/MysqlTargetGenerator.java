@@ -50,7 +50,7 @@ public class MysqlTargetGenerator implements ITargetGenerator {
 
             SqoopTaskExecutionContext sqoopTaskExecutionContext = taskExecutionContext.getSqoopTaskExecutionContext();
 
-            if(targetMysqlParameter != null && targetMysqlParameter.getTargetDatasource() != 0){
+            if(targetMysqlParameter != null && StringUtils.isNotEmpty(targetMysqlParameter.getTargetDatasource())){
 
                 // get datasource
                 BaseDataSource baseDataSource = DataSourceFactory.getDatasource(DbType.of(sqoopTaskExecutionContext.getTargetType()),

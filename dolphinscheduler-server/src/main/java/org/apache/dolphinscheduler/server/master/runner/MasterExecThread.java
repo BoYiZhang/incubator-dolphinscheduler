@@ -422,7 +422,7 @@ public class MasterExecThread implements Runnable {
         if (!CommonUtils.isDevelopMode()) {
             // get exec dir
             String execLocalPath = org.apache.dolphinscheduler.common.utils.FileUtils
-                    .getProcessExecDir(processInstance.getProcessDefinition().getProjectId(),
+                    .getProcessExecDir(processInstance.getProcessDefinition().getProjectCode(),
                             processInstance.getProcessDefinitionId(),
                             processInstance.getId());
 

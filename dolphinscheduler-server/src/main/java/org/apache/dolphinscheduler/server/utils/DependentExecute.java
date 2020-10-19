@@ -25,6 +25,7 @@ import org.apache.dolphinscheduler.common.model.DependentItem;
 import org.apache.dolphinscheduler.common.model.TaskNode;
 import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 import org.apache.dolphinscheduler.common.utils.DependentUtils;
+import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.dao.utils.DagHelper;
@@ -101,11 +102,11 @@ public class DependentExecute {
 
         DependResult result = DependResult.FAILED;
         for(DateInterval dateInterval : dateIntervals){
-            ProcessInstance processInstance = findLastProcessInterval(dependentItem.getDefinitionId(),
-                                                    dateInterval);
+            ProcessDefinition processDefinition = processService.findProcessDefineByCode(dependentItem.getDefinitionCode());
+            ProcessInstance processInstance = findLastProcessInterval(processDefinition.getId(),dateInterval);
             if(processInstance == null){
                 logger.error("cannot find the right process instance: definition id:{}, start:{}, end:{}",
-                       dependentItem.getDefinitionId(), dateInterval.getStartTime(), dateInterval.getEndTime() );
+                        processDefinition.getId(), dateInterval.getStartTime(), dateInterval.getEndTime() );
                 return DependResult.FAILED;
             }
             // need to check workflow for updates, so get all task and check the task state
