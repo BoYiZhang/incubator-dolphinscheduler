@@ -21,8 +21,9 @@
     <select id="queryByName" resultType="org.apache.dolphinscheduler.dao.entity.WorkFlowLineage">
         select tepd.id as work_flow_id,tepd.name as work_flow_name
         from t_ds_process_definition tepd
-        left join t_ds_schedules tes on tepd.id = tes.process_definition_id
-        where tepd.project_id = #{projectId}
+        left join t_ds_schedules tes on tepd.code = tes.process_definition_code
+        left join t_ds_project pjt on tepd.project_code = pjt.code
+        where pjt.id = #{projectId}
         <if test="searchVal != null and searchVal != ''">
             and  tepd.name like concat('%', #{searchVal}, '%')
         </if>
@@ -37,8 +38,9 @@
                           tes.crontab as crontab,
                           tes.release_state as schedule_publish_status
         from t_ds_process_definition tepd
-        left join t_ds_schedules tes on tepd.id = tes.process_definition_id
-        where tepd.project_id = #{projectId}
+        left join t_ds_schedules tes on tepd.code = tes.process_definition_code
+        left join t_ds_project pjt on tepd.project_code = pjt.code
+        where pjt.id = #{projectId}
         <if test="ids != null and ids.size()>0">
             and  tepd.id in
             <foreach collection="ids" index="index" item="i" open="(" separator="," close=")">
@@ -67,7 +69,7 @@
                       tes.crontab as crontab,
                       tes.release_state as schedule_publish_status
                  from t_ds_process_definition tepd
-                 left join t_ds_schedules tes on tepd.id = tes.process_definition_id
+                 left join t_ds_schedules tes on tepd.code = tes.process_definition_code
                  where tepd.project_id = #{projectId}
                  <if test="ids != null and ids.size()>0">
                      and  tepd.id in
@@ -95,7 +97,7 @@
                select tepd.id as work_flow_id,
                       (json_array_elements(tepd.process_definition_json::json#>'{tasks}')#>>'{dependence,dependTaskList,0,dependItemList,0,definitionId}') as source_id
                  from t_ds_process_definition tepd
-                 left join t_ds_schedules tes on tepd.id = tes.process_definition_id
+                 left join t_ds_schedules tes on tepd.code = tes.process_definition_code
                 where tepd.project_id = 1) a
         where source_id = #{id}::text;
     </select>
