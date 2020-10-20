@@ -334,6 +334,7 @@
         // edit
         if (this.item) {
           this.type = this.item.type
+          this.code = this.item.code
           this.funcName = this.item.funcName || ''
           this.className = this.item.className || ''
           this.argTypes = this.item.argTypes || ''
