@@ -107,20 +107,21 @@
       }
       this.processDefinitionList = (() => {
         let a = _.map(processListS, v => {
+          debugger
           return {
             id: v.code,
             code: v.name,
             disabled: false
           }
         })
-        return _.filter(a, v => v.id !== +id)
+        return _.filter(a, v => v.id !== id)
       })()
 
       let o = this.backfillItem
       // Non-null objects represent backfill
       if (!_.isEmpty(o)) {
         let pcode = o.params.processDefinitionCode+"" || o.params.processDefinitionId+""
-        this.wdiCurr = o.params.pcode
+        this.wdiCurr = pcode
       } else {
         if (this.processDefinitionList.length) {
           this.wdiCurr = this.processDefinitionList[0]['id']
