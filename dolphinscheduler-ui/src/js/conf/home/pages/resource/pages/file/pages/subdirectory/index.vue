@@ -85,7 +85,8 @@
        * File Upload
        */
       _uploading () {
-        findComponentDownward(this.$root, 'roof-nav')._fileChildUpdate('FILE',this.searchParams.id)
+        const localParentCode = localStore.getItem('parentCode')
+        findComponentDownward(this.$root, 'roof-nav')._fileChildUpdate('FILE',this.searchParams.id,localParentCode)
       },
       _onConditions (o) {
         this.searchParams = _.assign(this.searchParams, o)

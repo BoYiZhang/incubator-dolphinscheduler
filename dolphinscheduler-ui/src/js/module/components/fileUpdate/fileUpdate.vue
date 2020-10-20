@@ -43,6 +43,18 @@
               <span>{{$t('Drag area upload')}}</span>
             </p>
           </div>
+          <m-list-box-f >
+            <template slot="name"><strong>*</strong>{{$t('Code')}}</template>
+            <template slot="content">
+              <x-input
+                type="input"
+                v-model="fileCode"
+                maxlength="100"
+                :placeholder="$t('Please enter code')"
+                autocomplete="off">
+              </x-input>
+            </template>
+          </m-list-box-f>
           <m-list-box-f>
             <template slot="name"><strong>*</strong>{{$t('File Name')}}</template>
             <template slot="content">
@@ -99,6 +111,7 @@
     data () {
       return {
         store,
+        fileCode: '',
         // name
         name: '',
         // description
@@ -108,7 +121,7 @@
         // file
         file: '',
         currentDir: '/',
-        pid: -1,
+        parentCode: '-1',
         // Whether to drag upload
         dragOver: false
       }
@@ -154,6 +167,10 @@
        * validation
        */
       _validation () {
+        if (!this.fileCode || this.fileCode.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.name) {
           this.$message.warning(`${i18n.$t('Please enter file name')}`)
           return false
@@ -173,8 +190,9 @@
           let formData = new FormData()
           formData.append('file', this.file)
           formData.append('type', this.type)
+          formData.append("code",this.fileCode),
           formData.append('name', this.name)
-          formData.append('pid', this.pid)
+          formData.append('parentCode', this.parentCode)
           formData.append('currentDir', this.currentDir)
           formData.append('description', this.description)
           io.post(`resources/create`, res => {

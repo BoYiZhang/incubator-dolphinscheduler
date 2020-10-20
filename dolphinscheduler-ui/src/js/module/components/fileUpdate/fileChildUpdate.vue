@@ -44,6 +44,18 @@
             </p>
           </div>
           <m-list-box-f>
+            <template slot="name"><strong>*</strong>{{$t('Code')}}</template>
+            <template slot="content">
+              <x-input
+                type="input"
+                v-model="code"
+                maxlength="100"
+                :placeholder="$t('Please enter code')"
+                autocomplete="off">
+              </x-input>
+            </template>
+          </m-list-box-f>
+          <m-list-box-f>
             <template slot="name"><strong>*</strong>{{$t('File Name')}}</template>
             <template slot="content">
               <x-input
@@ -100,6 +112,7 @@
     data () {
       return {
         store,
+        code: '',
         // name
         name: '',
         // description
@@ -118,7 +131,7 @@
     },
     props: {
       type: String,
-      id: Number
+      parentCode: Number | String
     },
     methods: {
       /**
@@ -129,7 +142,9 @@
         if (this._validation()) {
           this.store.dispatch('resource/resourceVerifyName', {
             fullName: this.currentDir+'/'+this.name,
-            type: this.type
+            type: this.type,
+            code: this.code,
+            parentCode: this.parentCode,
           }).then(res => {
             const isLt1024M = this.file.size / 1024 / 1024 < 1024
             if(isLt1024M) {
@@ -156,6 +171,10 @@
        * validation
        */
       _validation () {
+        if (!this.code || this.code.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.name) {
           this.$message.warning(`${i18n.$t('Please enter file name')}`)
           return false
@@ -176,13 +195,15 @@
           formData.append('file', this.file)
           formData.append('type', this.type)
           formData.append('name', this.name)
-          formData.append('pid', this.pid)
+          formData.append('code', this.code)
+          formData.append('parentCode', this.parentCode)
           formData.append('currentDir', this.currentDir)
           formData.append('description', this.description)
           io.post(`resources/create`, res => {
             this.$message.success(res.msg)
             resolve()
             self.$emit('onUpdate')
+            self.$emit('close')
           }, e => {
             reject(e)
             self.$emit('close')

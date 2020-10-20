@@ -13,11 +13,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ 
+ */
 <template>
   <div class="update-udf-model">
     <div class="update-udf-box">
       <ul>
+        <li>
+          <div class="update-pbx">
+            <x-input
+              type="input"
+              size="small"
+              v-model="code"
+              :disabled="progress !== 0"
+              style="width: 535px"
+              :placeholder="$t('Please enter code')"
+              autocomplete="off">
+            </x-input>
+          </div>
+        </li>
         <li>
           <div class="update-pbx">
             <x-input
@@ -62,12 +75,13 @@
     data () {
       return {
         store,
+        code:'',
         udfName: '',
         udfDesc: '',
         file: '',
         progress: 0,
         spinnerLoading: false,
-        pid: null,
+        parentCode: '-1',
         currentDir: ''
       }
     },
@@ -79,6 +93,10 @@
        * validation
        */
       _validation () {
+        if (!this.code || this.code.includes(',')) {
+          this.$message.warning(`${i18n.$t('Please enter code')}`)
+          return false
+        }
         if (!this.currentDir) {
           this.$message.warning(`${i18n.$t('Please select UDF resources directory')}`)
           return false
@@ -97,7 +115,9 @@
         return new Promise((resolve, reject) => {
           this.store.dispatch('resource/resourceVerifyName', {
             fullName: '/'+this.currentDir+'/'+this.udfName,
-            type: 'UDF'
+            type: 'UDF',
+            code: this.code,
+            parentCode: this.parentCode,
           }).then(res => {
             resolve()
           }).catch(e => {
@@ -106,8 +126,8 @@
           })
         })
       },
-      receivedValue(pid,name) {
-        this.pid = pid
+      receivedValue(parentCode,name) {
+        this.parentCode = parentCode
         this.currentDir = name
       },
       _formDataUpdate () {
@@ -115,7 +135,8 @@
         let formData = new FormData()
         formData.append('file', this.file)
         formData.append('type', 'UDF')
-        formData.append('pid', this.pid)
+        formData.append('code', this.code)
+        formData.append('parentCode', this.parentCode)
         formData.append('currentDir', this.currentDir)
         formData.append('name', this.udfName)
         formData.append('description', this.udfDesc)

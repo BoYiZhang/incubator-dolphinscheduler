@@ -85,7 +85,8 @@
        * File Upload
        */
       _uploading () {
-        findComponentDownward(this.$root, 'roof-nav')._resourceChildUpdate('UDF',this.searchParams.id)
+        const localParentCode = localStore.getItem('udfParentCode')
+        findComponentDownward(this.$root, 'roof-nav')._resourceChildUpdate('UDF',this.searchParams.id,localParentCode)
       },
       _onConditions (o) {
         this.searchParams = _.assign(this.searchParams, o)

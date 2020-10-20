@@ -262,7 +262,7 @@
           }
         })
       },
-      _fileChildUpdate (type,data) {
+      _fileChildUpdate (type,data,parentCode) {
         if (this.progress) {
           this._toggleArchive()
           return
@@ -296,13 +296,13 @@
               },
               props: {
                 type: type,
-                id: data
+                parentCode: parentCode
               }
             })
           }
         })
       },
-      _resourceChildUpdate (type,data) {
+      _resourceChildUpdate (type,data,parentCode) {
         if (this.progress) {
           this._toggleArchive()
           return
@@ -336,7 +336,7 @@
               },
               props: {
                 type: type,
-                id: data
+                parentCode: parentCode
               }
             })
           }
