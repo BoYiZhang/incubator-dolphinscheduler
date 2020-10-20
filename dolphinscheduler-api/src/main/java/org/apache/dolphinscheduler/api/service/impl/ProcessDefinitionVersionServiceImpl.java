@@ -190,6 +190,7 @@ public class ProcessDefinitionVersionServiceImpl extends BaseService implements
         ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
         if (null == processDefinition) {
             putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, processDefinitionId);
+            return result;
         }
         processDefinitionVersionMapper.deleteByProcessDefinitionCodeAndVersion(processDefinition.getCode(), version);
         putMsg(result, Status.SUCCESS);
