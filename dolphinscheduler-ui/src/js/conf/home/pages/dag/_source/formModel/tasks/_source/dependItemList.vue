@@ -23,10 +23,6 @@
       </x-select>
       <x-select filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" v-model="el.definitionCode" @on-change="_onChangeDefinitionCode">
         <x-option v-for="item in el.definitionList" :key="_toString(item.value)" :value="_toString(item.value)" :label="item.label">
-          <div class="custom">
-            <div class="left" :title="item.label" >{{ item.label }}</div>
-            <div class="right" :title="item.description" >{{ item.description }}</div>
-          </div>
         </x-option>
       </x-select>
       <x-select filterable :style="{width:isInstance ? '450px' : '450px'}" :disabled="isDetails" v-model="el.depTasks">
@@ -157,7 +153,6 @@
               return {
                 value: v.code,
                 label: v.name,
-                description:v.description,
               }
             })
             resolve(definitionList)
