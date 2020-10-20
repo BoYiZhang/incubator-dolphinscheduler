@@ -182,6 +182,7 @@ public class ProcessDefinitionControllerTest {
         int id = 1;
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setProjectName(projectName);
         processDefinition.setConnects(connects);
         processDefinition.setDescription(description);
@@ -265,6 +266,7 @@ public class ProcessDefinitionControllerTest {
         int id = 1;
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setProjectName(projectName);
         processDefinition.setConnects(connects);
         processDefinition.setDescription(description);

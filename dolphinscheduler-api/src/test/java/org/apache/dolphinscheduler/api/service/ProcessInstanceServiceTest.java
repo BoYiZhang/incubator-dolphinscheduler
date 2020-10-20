@@ -520,6 +520,7 @@ public class ProcessInstanceServiceTest {
     private ProcessDefinition getProcessDefinition() {
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setId(46);
+        processDefinition.setCode("1");
         processDefinition.setName("test_pdf");
         processDefinition.setProjectCode("2");
         processDefinition.setTenantId(1);

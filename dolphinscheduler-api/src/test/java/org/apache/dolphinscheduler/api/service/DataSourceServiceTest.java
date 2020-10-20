@@ -66,6 +66,7 @@ public class DataSourceServiceTest {
         // data source exits
         List<DataSource> dataSourceList = new ArrayList<>();
         DataSource dataSource = new DataSource();
+        dataSource.setCode("1");
         dataSource.setName(dataSourceName);
         dataSourceList.add(dataSource);
         PowerMockito.when(dataSourceMapper.queryDataSourceByName(dataSourceName.trim())).thenReturn(dataSourceList);
@@ -108,6 +109,7 @@ public class DataSourceServiceTest {
         Assert.assertEquals(Status.RESOURCE_NOT_EXIST, resourceNotExits.get(Constants.STATUS));
         // user no operation perm
         DataSource dataSource = new DataSource();
+        dataSource.setCode("1");
         dataSource.setUserId(0);
         PowerMockito.when(dataSourceMapper.selectById(dataSourceId)).thenReturn(dataSource);
         Map<String, Object> userNoOperationPerm = dataSourceService.updateDataSource(dataSourceId, loginUser, dataSourceName, dataSourceDesc, dataSourceType, parameter);
@@ -169,6 +171,7 @@ public class DataSourceServiceTest {
         // user no operation perm
         dataSourceService.putMsg(result, Status.USER_NO_OPERATION_PERM);
         DataSource dataSource = new DataSource();
+        dataSource.setCode("1");
         dataSource.setUserId(0);
         PowerMockito.when(dataSourceMapper.selectById(dataSourceId)).thenReturn(dataSource);
         Assert.assertEquals(result.getCode(), dataSourceService.delete(loginUser, dataSourceId).getCode());
@@ -249,6 +252,7 @@ public class DataSourceServiceTest {
 
     private DataSource getOracleDataSource() {
         DataSource dataSource = new DataSource();
+        dataSource.setCode("1");
         dataSource.setName("test");
         dataSource.setNote("Note");
         dataSource.setType(DbType.ORACLE);

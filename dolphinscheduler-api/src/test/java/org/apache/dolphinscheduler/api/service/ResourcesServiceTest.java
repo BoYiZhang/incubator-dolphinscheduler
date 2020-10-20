@@ -624,6 +624,7 @@ public class ResourcesServiceTest {
     private Resource getResource(){
 
         Resource resource = new Resource();
+        resource.setCode("1");
         resource.setParentCode("-1");
         resource.setUserId(1);
         resource.setDescription("ResourcesServiceTest.jar");
@@ -648,6 +649,7 @@ public class ResourcesServiceTest {
 
         UdfFunc udfFunc = new UdfFunc();
         udfFunc.setId(1);
+        udfFunc.setCode("1");
         return udfFunc;
     }
 

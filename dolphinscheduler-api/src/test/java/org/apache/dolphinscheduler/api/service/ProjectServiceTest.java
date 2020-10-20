@@ -363,6 +363,7 @@ public class ProjectServiceTest {
     private List<ProcessDefinition> getProcessDefinitions() {
         List<ProcessDefinition> list = new ArrayList<>();
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setProjectCode("1");
         list.add(processDefinition);
         return list;

@@ -665,11 +665,13 @@ public class ProcessDefinitionServiceTest {
     public void testGetTaskNodeListByDefinitionCode() {
         //process definition not exist
         Mockito.when(processDefineMapper.selectById(46)).thenReturn(null);
+
         Map<String, Object> processDefinitionNullRes = processDefinitionService.getTaskNodeListByDefinitionCode("46");
         Assert.assertEquals(Status.PROCESS_DEFINE_NOT_EXIST, processDefinitionNullRes.get(Constants.STATUS));
 
         //process data null
         ProcessDefinition processDefinition = getProcessDefinition();
+        Mockito.when(processDefineMapper.queryByCode("46")).thenReturn(processDefinition);
         Mockito.when(processDefineMapper.selectById(46)).thenReturn(processDefinition);
         Map<String, Object> successRes = processDefinitionService.getTaskNodeListByDefinitionCode("46");
         Assert.assertEquals(Status.DATA_IS_NOT_VALID, successRes.get(Constants.STATUS));
@@ -685,8 +687,8 @@ public class ProcessDefinitionServiceTest {
     public void testGetTaskNodeListByDefinitionIdList() {
         //process definition not exist
         String defineCodeList = "46";
-        Integer[] idArray = {46};
-        Mockito.when(processDefineMapper.queryDefinitionListByIdList(idArray)).thenReturn(null);
+        String[] codeArray = {"46"};
+        Mockito.when(processDefineMapper.queryDefinitionListByCodeList(codeArray)).thenReturn(null);
         Map<String, Object> processNotExistRes = processDefinitionService.getTaskNodeListByDefinitionCodeList(defineCodeList);
         Assert.assertEquals(Status.PROCESS_DEFINE_NOT_EXIST, processNotExistRes.get(Constants.STATUS));
 
@@ -695,7 +697,7 @@ public class ProcessDefinitionServiceTest {
         processDefinition.setProcessDefinitionJson(SHELL_JSON);
         List<ProcessDefinition> processDefinitionList = new ArrayList<>();
         processDefinitionList.add(processDefinition);
-        Mockito.when(processDefineMapper.queryDefinitionListByIdList(idArray)).thenReturn(processDefinitionList);
+        Mockito.when(processDefineMapper.queryDefinitionListByCodeList(codeArray)).thenReturn(processDefinitionList);
         Map<String, Object> successRes = processDefinitionService.getTaskNodeListByDefinitionCodeList(defineCodeList);
         Assert.assertEquals(Status.SUCCESS, successRes.get(Constants.STATUS));
     }
@@ -760,6 +762,7 @@ public class ProcessDefinitionServiceTest {
                 + "    {\n"
                 + "        \"projectName\": \"testProject\",\n"
                 + "        \"processDefinitionName\": \"shell-4\",\n"
+                + "        \"code\": \"shell-4-code\",\n"
                 + "        \"processDefinitionJson\": \"{\\\"tenantId\\\":1"
                 + ",\\\"globalParams\\\":[],\\\"tasks\\\":[{\\\"workerGroupId\\\":\\\"3\\\",\\\"description\\\""
                 + ":\\\"\\\",\\\"runFlag\\\":\\\"NORMAL\\\",\\\"type\\\":\\\"SHELL\\\",\\\"params\\\":{\\\"rawScript\\\""
@@ -770,7 +773,7 @@ public class ProcessDefinitionServiceTest {
                 + ",{\\\"taskInstancePriority\\\":\\\"MEDIUM\\\",\\\"name\\\":\\\"shell-5\\\",\\\"workerGroupId\\\""
                 + ":\\\"3\\\",\\\"description\\\":\\\"\\\",\\\"dependence\\\":{},\\\"preTasks\\\":[\\\"shell-4\\\"]"
                 + ",\\\"id\\\":\\\"tasks-87364\\\",\\\"runFlag\\\":\\\"NORMAL\\\",\\\"type\\\":\\\"SUB_PROCESS\\\""
-                + ",\\\"params\\\":{\\\"processDefinitionId\\\":46},\\\"timeout\\\":{\\\"enable\\\":false"
+                + ",\\\"params\\\":{\\\"processDefinitionCode\\\":46},\\\"timeout\\\":{\\\"enable\\\":false"
                 + ",\\\"strategy\\\":\\\"\\\"}}],\\\"timeout\\\":0}\",\n"
                 + "        \"processDefinitionDescription\": \"\",\n"
                 + "        \"processDefinitionLocations\": \"{\\\"tasks-84090\\\":{\\\"name\\\":\\\"shell-4\\\""
@@ -996,7 +999,7 @@ public class ProcessDefinitionServiceTest {
     @Test
     public void testGetResourceIds() throws Exception {
         // set up
-        Method testMethod = ReflectionUtils.findMethod(ProcessDefinitionServiceImpl.class, "getResourceIds", ProcessData.class);
+        Method testMethod = ReflectionUtils.findMethod(ProcessDefinitionServiceImpl.class, "getResourceCodes", ProcessData.class);
         assertThat(testMethod).isNotNull();
         testMethod.setAccessible(true);
 
@@ -1076,6 +1079,7 @@ public class ProcessDefinitionServiceTest {
     private DataSource getDataSource() {
         DataSource dataSource = new DataSource();
         dataSource.setId(2);
+        dataSource.setCode("1");
         dataSource.setName("test");
         return dataSource;
     }
@@ -1089,6 +1093,7 @@ public class ProcessDefinitionServiceTest {
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setId(46);
+        processDefinition.setCode("1");
         processDefinition.setName("test_pdf");
         processDefinition.setProjectCode("2");
         processDefinition.setTenantId(1);

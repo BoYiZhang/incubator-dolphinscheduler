@@ -25,6 +25,7 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Project;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
@@ -72,6 +73,8 @@ public class SchedulerServiceTest {
 
     @Mock
     private QuartzExecutors quartzExecutors;
+    @Mock
+    private ProcessDefinitionMapper processDefinitionMapper;
 
     @Before
     public void setUp() {
@@ -98,6 +101,7 @@ public class SchedulerServiceTest {
 
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
 
         Schedule schedule = new Schedule();
         schedule.setId(1);
@@ -112,6 +116,9 @@ public class SchedulerServiceTest {
         Mockito.when(projectMapper.queryByName(projectName)).thenReturn(project);
 
         Mockito.when(processService.findProcessDefineById(1)).thenReturn(processDefinition);
+
+        Mockito.when(processDefinitionMapper.queryByDefineCode("2")).thenReturn(null);
+        Mockito.when(processDefinitionMapper.queryByDefineCode("1")).thenReturn(processDefinition);
 
         //hash no auth
         result = schedulerService.setScheduleState(loginUser, projectName, 1, ReleaseState.ONLINE);

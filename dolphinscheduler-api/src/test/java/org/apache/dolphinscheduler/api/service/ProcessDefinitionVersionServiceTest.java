@@ -27,6 +27,7 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinitionVersion;
 import org.apache.dolphinscheduler.dao.entity.Project;
 import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionVersionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
 
@@ -60,6 +61,8 @@ public class ProcessDefinitionVersionServiceTest {
     @Mock
     private ProjectServiceImpl projectService;
 
+    @Mock
+    private ProcessDefinitionMapper processDefinitionMapper;
     @Test
     public void testAddProcessDefinitionVersion() {
         long expectedVersion = 5L;
@@ -138,6 +141,8 @@ public class ProcessDefinitionVersionServiceTest {
                 .thenReturn(new Page<ProcessDefinitionVersion>()
                         .setRecords(Lists.newArrayList(processDefinitionVersion)));
 
+        Mockito.when(processDefinitionMapper.selectById(66)).thenReturn(getProcessDefinition());
+
         Map<String, Object> resultMap4 = processDefinitionVersionService.queryProcessDefinitionVersions(
                 loginUser
                 , projectName
@@ -201,6 +206,8 @@ public class ProcessDefinitionVersionServiceTest {
         Mockito.when(projectService.checkProjectAndAuth(loginUser, project, projectName))
                 .thenReturn(res);
 
+
+        Mockito.when(processDefinitionMapper.selectById(processDefinitionId)).thenReturn(getProcessDefinition());
         Map<String, Object> resultMap2 = processDefinitionVersionService.deleteByProcessDefinitionIdAndVersion(
                 loginUser
                 , projectName
@@ -243,6 +250,7 @@ public class ProcessDefinitionVersionServiceTest {
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setId(66);
+        processDefinition.setCode("66");
         processDefinition.setName("test_pdf");
         processDefinition.setProjectCode("2");
         processDefinition.setTenantId(1);

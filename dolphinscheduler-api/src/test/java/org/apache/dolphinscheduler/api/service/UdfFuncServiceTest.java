@@ -84,7 +84,7 @@ public class UdfFuncServiceTest {
         logger.info(result.toString());
         Assert.assertEquals(Status.RESOURCE_NOT_EXIST.getMsg(),result.getMsg());
         // success
-        PowerMockito.when(resourceMapper.selectById(1)).thenReturn(getResource());
+        PowerMockito.when(resourceMapper.selectByCode("1")).thenReturn(getResource());
         result = udfFuncService.createUdfFunction(getLoginUser(), "1" ,"UdfFuncServiceTest", "org.apache.dolphinscheduler.api.service.UdfFuncServiceTest", "String", "UdfFuncServiceTest", "UdfFuncServiceTest", UdfType.HIVE, "1");
         logger.info(result.toString());
         Assert.assertEquals(Status.SUCCESS.getMsg(),result.getMsg());
@@ -129,6 +129,8 @@ public class UdfFuncServiceTest {
         Assert.assertEquals(Status.RESOURCE_NOT_EXIST,result.get(Constants.STATUS));
 
         //success
+
+        PowerMockito.when(resourceMapper.selectByCode("1")).thenReturn(getResource());
         result = udfFuncService.updateUdfFunc(11, "UdfFuncServiceTest", "org.apache.dolphinscheduler.api.service.UdfFuncServiceTest", "String", "UdfFuncServiceTest", "UdfFuncServiceTest", UdfType.HIVE, "1");
         logger.info(result.toString());
         Assert.assertEquals(Status.SUCCESS,result.get(Constants.STATUS));
@@ -198,6 +200,7 @@ public class UdfFuncServiceTest {
 
         Resource resource = new Resource();
         resource.setId(1);
+        resource.setCode("1");
         resource.setAlias("test");
         return resource;
     }
@@ -213,6 +216,7 @@ public class UdfFuncServiceTest {
      */
     private UdfFunc getUdfFunc(){
         UdfFunc udfFunc = new UdfFunc();
+        udfFunc.setCode("1");
         udfFunc.setFuncName("UdfFuncServiceTest");
         udfFunc.setClassName("org.apache.dolphinscheduler.api.service.UdfFuncServiceTest");
         udfFunc.setResourceCode("0");
