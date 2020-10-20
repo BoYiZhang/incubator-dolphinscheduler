@@ -120,11 +120,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
 
     private boolean checkCode(String code) {
         Project project = projectMapper.queryByCode(code);
-        if (null == project) {
-            return false;
-        } else {
-            return true;
-        }
+        return project!= null ;
     }
 
     /**

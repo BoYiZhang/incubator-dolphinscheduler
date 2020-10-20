@@ -24,6 +24,13 @@
         where id = #{id}
     </select>
 
+    <select id="selectUdfByCode" resultType="org.apache.dolphinscheduler.dao.entity.UdfFunc">
+        select *
+        from t_ds_udfs
+        where code = #{code}
+    </select>
+
+
     <select id="queryUdfByIdStr" resultType="org.apache.dolphinscheduler.dao.entity.UdfFunc">
         select *
         from t_ds_udfs

@@ -142,11 +142,8 @@ public class UdfFuncService extends BaseService{
     }
 
     private boolean checkCode(String code) {
-       Resource resource =  resourceMapper.selectByCode(code);
-       if (null == resource) {
-           return  true;
-       }
-       return  false;
+       UdfFunc udfFunc =   udfFuncMapper.selectUdfByCode(code);
+       return udfFunc!= null ;
     }
 
     /**

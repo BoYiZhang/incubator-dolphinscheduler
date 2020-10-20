@@ -164,10 +164,7 @@ public class ResourcesService extends BaseService {
 
     private boolean checkCode(String code) {
         Resource resource = resourcesMapper.selectByCode(code);
-        if (null == resource) {
-            return  false;
-        }
-        return true;
+        return resource!= null ;
     }
 
     /**

@@ -245,7 +245,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
 
     private boolean checkCode(String code,String projectCode) {
         ProcessDefinition processDefinition = processDefineMapper.verifyByDefineCode(projectCode,code);
-        return processDefinition == null ? false : true;
+        return processDefinition!=null;
     }
 
     /**

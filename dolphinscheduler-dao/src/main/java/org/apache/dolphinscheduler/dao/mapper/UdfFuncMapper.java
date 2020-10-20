@@ -36,6 +36,13 @@ public interface UdfFuncMapper extends BaseMapper<UdfFunc> {
     UdfFunc selectUdfById(@Param("id") int id);
 
     /**
+     * select udf by code
+     * @param code udf code
+     * @return UdfFunc
+     */
+    UdfFunc selectUdfByCode(@Param("code") String code);
+
+    /**
      * query udf function by ids and function name
      * @param ids ids
      * @param funcNames funcNames
