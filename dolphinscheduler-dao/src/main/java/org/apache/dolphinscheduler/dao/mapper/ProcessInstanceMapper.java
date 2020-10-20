@@ -137,7 +137,7 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
     List<ExecuteStatusCount> countInstanceStateByUser(
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime,
-            @Param("projectCodes") Integer[] projectIds);
+            @Param("projectIds") Integer[] projectIds);
 
     /**
      * query process instance by processDefinitionId
