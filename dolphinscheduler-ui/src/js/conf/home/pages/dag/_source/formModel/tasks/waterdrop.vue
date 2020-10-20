@@ -392,7 +392,7 @@
                 this.dataProcess(backResource)
               })
             } else {
-              let resCode = res.code + ""
+              let resCode = v.code + ""
               this.resourceList.push(resCode)
               this.dataProcess(backResource)
             }
