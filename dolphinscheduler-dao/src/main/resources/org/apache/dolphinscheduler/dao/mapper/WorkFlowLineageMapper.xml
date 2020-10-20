@@ -31,7 +31,7 @@
     <select id="queryByIds" resultType="org.apache.dolphinscheduler.dao.entity.WorkFlowLineage" databaseId="mysql">
         select tepd.id as work_flow_id,tepd.name as work_flow_name,
                (case when json_extract(tepd.process_definition_json, '$**.dependItemList') is not null then 1 else 0 end) as is_depend_work_flow,
-                          json_extract(tepd.process_definition_json, '$**.definitionId') as source_work_flow_id,
+                          json_extract(tepd.process_definition_json, '$**.definitionCode') as source_work_flow_id,
                           tepd.release_state as work_flow_publish_status,
                           tes.start_time as schedule_start_time,
                           tes.end_time as schedule_end_time,
@@ -62,7 +62,7 @@
          from (
                select tepd.id as work_flow_id,tepd.name as work_flow_name,
                       case when tepd.process_definition_json::json#>'{tasks,1,dependence}' is not null then 1 else 0 end as is_depend_work_flow,
-                      (json_array_elements(tepd.process_definition_json::json#>'{tasks}')#>>'{dependence,dependTaskList,0,dependItemList,0,definitionId}') as source_id,
+                      (json_array_elements(tepd.process_definition_json::json#>'{tasks}')#>>'{dependence,dependTaskList,0,dependItemList,0,definitionCode}') as source_id,
                       tepd.release_state as work_flow_publish_status,
                       tes.start_time as schedule_start_time,
                       tes.end_time as schedule_end_time,
@@ -87,7 +87,7 @@
         select id as target_work_flow_id,#{id} as source_work_flow_id
         from t_ds_process_definition t
         where json_extract(t.process_definition_json, '$**.dependItemList') is not null
-          and find_in_set(#{id}, replace(replace(replace(json_extract(t.process_definition_json, '$**.definitionId'), '[', ''),']', ''), ' ', '')) > 0
+          and find_in_set(#{id}, replace(replace(replace(json_extract(t.process_definition_json, '$**.definitionCode'), '[', ''),']', ''), ' ', '')) > 0
     </select>
 
     <select id="querySourceTarget" resultType="org.apache.dolphinscheduler.dao.entity.WorkFlowRelation" databaseId="pg">
@@ -95,7 +95,7 @@
                a.source_id as source_work_flow_id
          from (
                select tepd.id as work_flow_id,
-                      (json_array_elements(tepd.process_definition_json::json#>'{tasks}')#>>'{dependence,dependTaskList,0,dependItemList,0,definitionId}') as source_id
+                      (json_array_elements(tepd.process_definition_json::json#>'{tasks}')#>>'{dependence,dependTaskList,0,dependItemList,0,definitionCode}') as source_id
                  from t_ds_process_definition tepd
                  left join t_ds_schedules tes on tepd.code = tes.process_definition_code
                 where tepd.project_id = 1) a
