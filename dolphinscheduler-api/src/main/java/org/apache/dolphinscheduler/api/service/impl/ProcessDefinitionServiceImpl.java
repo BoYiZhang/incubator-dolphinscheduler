@@ -186,7 +186,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
             return result;
         }
 
-        if (checkCode(code)) {
+        if (checkCode(code,project.getCode())) {
             putMsg(result, Status.CODE_OCCUPIED);
             return result;
         }
@@ -243,8 +243,8 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
         return result;
     }
 
-    private boolean checkCode(String code) {
-        ProcessDefinition processDefinition = processDefineMapper.queryByCode(code);
+    private boolean checkCode(String code,String projectCode) {
+        ProcessDefinition processDefinition = processDefineMapper.verifyByDefineCode(code,projectCode);
         return processDefinition == null ? false : true;
     }
 

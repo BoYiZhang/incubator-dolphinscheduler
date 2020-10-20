@@ -24,6 +24,13 @@
         WHERE pd.project_code = #{projectCode}
         and pd.name = #{processDefinitionName}
     </select>
+
+    <select id="verifyByDefineCode" resultType="org.apache.dolphinscheduler.dao.entity.ProcessDefinition">
+        select pd.*
+        from t_ds_process_definition pd
+        WHERE pd.project_code = #{projectCode}
+        and pd.code = #{code}
+    </select>
     <select id="queryByDefineName" resultType="org.apache.dolphinscheduler.dao.entity.ProcessDefinition">
         select pd.*,u.user_name,p.name as project_name,t.tenant_code,t.tenant_name,q.queue,q.queue_name
         from t_ds_process_definition pd
@@ -140,4 +147,7 @@
         select * from t_ds_process_definition
         WHERE code = #{code}
     </select>
+
+
+
 </mapper>

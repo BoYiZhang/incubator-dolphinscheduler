@@ -45,6 +45,14 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
                                         @Param("processDefinitionName") String name);
 
     /**
+     * verify process definition by code
+     * @param code
+     * @param projectCode
+     * @return
+     */
+    ProcessDefinition verifyByDefineCode(String code, String projectCode);
+
+    /**
      * query process definition by name
      *
      * @param projectId projectId
