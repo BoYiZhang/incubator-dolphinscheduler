@@ -709,6 +709,7 @@ public class ProcessDefinitionServiceImpl extends BaseService implements
 
         //export process metadata
         ProcessMeta exportProcessMeta = new ProcessMeta();
+        exportProcessMeta.setProjectCode(processDefinition.getProjectCode());
         exportProcessMeta.setProjectName(processDefinition.getProjectName());
         exportProcessMeta.setCode(processDefinition.getCode());
         exportProcessMeta.setProcessDefinitionName(processDefinition.getName());
