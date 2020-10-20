@@ -145,6 +145,7 @@ public class DataxTaskTest {
 
     private DataSource getDataSource() {
         DataSource dataSource = new DataSource();
+        dataSource.setCode("1");
         dataSource.setType(DbType.MYSQL);
         dataSource.setConnectionParams(CONNECTION_PARAMS);
         dataSource.setUserId(1);

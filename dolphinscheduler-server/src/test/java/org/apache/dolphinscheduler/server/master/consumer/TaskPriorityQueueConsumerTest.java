@@ -109,6 +109,7 @@ public class TaskPriorityQueueConsumerTest {
         taskInstance.setProcessInstance(processInstance);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setUserId(2);
         processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
@@ -139,6 +140,7 @@ public class TaskPriorityQueueConsumerTest {
         taskInstance.setProcessInstance(processInstance);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setUserId(2);
         processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
@@ -147,6 +149,7 @@ public class TaskPriorityQueueConsumerTest {
 
         DataSource dataSource = new DataSource();
         dataSource.setId(1);
+        dataSource.setCode("1");
         dataSource.setName("sqlDatasource");
         dataSource.setType(DbType.MYSQL);
         dataSource.setUserId(2);
@@ -179,6 +182,7 @@ public class TaskPriorityQueueConsumerTest {
         taskInstance.setProcessInstance(processInstance);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setUserId(2);
         processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
@@ -189,6 +193,7 @@ public class TaskPriorityQueueConsumerTest {
 
         DataSource dataSource = new DataSource();
         dataSource.setId(80);
+        dataSource.setCode("1");
         dataSource.setName("datax");
         dataSource.setType(DbType.MYSQL);
         dataSource.setUserId(2);
@@ -219,6 +224,7 @@ public class TaskPriorityQueueConsumerTest {
         taskInstance.setProcessInstance(processInstance);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setUserId(2);
         processDefinition.setProjectCode("1");
         taskInstance.setProcessDefine(processDefinition);
@@ -228,6 +234,7 @@ public class TaskPriorityQueueConsumerTest {
 
         DataSource dataSource = new DataSource();
         dataSource.setId(1);
+        dataSource.setCode("1");
         dataSource.setName("datax");
         dataSource.setType(DbType.MYSQL);
         dataSource.setUserId(2);

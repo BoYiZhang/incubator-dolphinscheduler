@@ -91,6 +91,7 @@ public class ShellTaskTest {
 
     private DataSource getDataSource() {
         DataSource dataSource = new DataSource();
+        dataSource.setCode("1");
         dataSource.setType(DbType.MYSQL);
         dataSource.setConnectionParams(
                 "{\"user\":\"root\",\"password\":\"123456\",\"address\":\"jdbc:mysql://127.0.0.1:3306\",\"database\":\"test\",\"jdbcUrl\":\"jdbc:mysql://127.0.0.1:3306/test\"}");

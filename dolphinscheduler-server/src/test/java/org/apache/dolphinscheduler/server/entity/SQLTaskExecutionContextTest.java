@@ -126,6 +126,7 @@ public class SQLTaskExecutionContextTest {
     Map<UdfFunc, String> udfmap = new HashMap<>();
 
     UdfFunc udfFunc = new UdfFunc();
+    udfFunc.setCode("1");
     udfFunc.setArgTypes("1");
     udfFunc.setId(1);
     udfFunc.setResourceName("name1");
