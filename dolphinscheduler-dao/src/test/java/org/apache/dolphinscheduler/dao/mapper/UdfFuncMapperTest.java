@@ -61,6 +61,7 @@ public class UdfFuncMapperTest {
     private UdfFunc insertOne(){
         UdfFunc udfFunc = new UdfFunc();
         udfFunc.setUserId(1);
+        udfFunc.setCode("1");
         udfFunc.setFuncName("dolphin_udf_func");
         udfFunc.setClassName("org.apache.dolphinscheduler.test.mr");
         udfFunc.setType(UdfType.HIVE);
@@ -79,6 +80,7 @@ public class UdfFuncMapperTest {
     private UdfFunc insertOne(User user){
         UdfFunc udfFunc = new UdfFunc();
         udfFunc.setUserId(user.getId());
+        udfFunc.setCode("1");
         udfFunc.setFuncName("dolphin_udf_func");
         udfFunc.setClassName("org.apache.dolphinscheduler.test.mr");
         udfFunc.setType(UdfType.HIVE);

@@ -219,7 +219,8 @@ public class TaskInstanceMapperTest {
         TaskInstance task = insertOne();
 
         ProcessDefinition definition = new ProcessDefinition();
-        definition.setProjectCode("12345");
+        definition.setCode("1");
+        definition.setProjectCode("1");
         processDefinitionMapper.insert(definition);
         task.setProcessDefinitionId(definition.getId());
         taskInstanceMapper.updateById(task);
@@ -252,6 +253,7 @@ public class TaskInstanceMapperTest {
 
         TaskInstance task = insertOne();
         ProcessDefinition definition = new ProcessDefinition();
+        definition.setCode("1");
         definition.setProjectCode("12345");
         processDefinitionMapper.insert(definition);
         task.setProcessDefinitionId(definition.getId());
@@ -275,6 +277,7 @@ public class TaskInstanceMapperTest {
         TaskInstance task = insertOne();
 
         ProcessDefinition definition = new ProcessDefinition();
+        definition.setCode("1");
         definition.setProjectCode("12345");
         processDefinitionMapper.insert(definition);
 

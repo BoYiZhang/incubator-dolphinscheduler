@@ -209,6 +209,7 @@ public class CommandMapperTest {
     private ProcessDefinition createProcessDefinition(){
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setReleaseState(ReleaseState.ONLINE);
+        processDefinition.setCode("1");
         processDefinition.setName("ut test");
         processDefinition.setProjectCode("1");
         processDefinition.setFlag(Flag.YES);

@@ -350,6 +350,7 @@ public class DataSourceMapperTest {
         Random random = new Random();
         DataSource dataSource = new DataSource();
         dataSource.setUserId(userId);
+        dataSource.setCode("1");
         dataSource.setName(name);
         dataSource.setType(DbType.MYSQL);
         dataSource.setNote("mysql test");

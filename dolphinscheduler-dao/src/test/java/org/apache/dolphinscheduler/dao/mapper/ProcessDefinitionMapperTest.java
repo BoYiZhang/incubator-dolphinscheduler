@@ -73,6 +73,7 @@ public class ProcessDefinitionMapperTest {
         //insertOne
         ProcessDefinition processDefinition = new ProcessDefinition();
         processDefinition.setProjectCode("12345");
+        processDefinition.setCode("1");
         processDefinition.setName("def 1");
         processDefinition.setResourceCodes("1010");
         processDefinition.setUserId(101);
@@ -92,6 +93,7 @@ public class ProcessDefinitionMapperTest {
     private ProcessDefinition insertTwo() {
         //insertOne
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setName("def 2");
         processDefinition.setProjectCode("1010");
         processDefinition.setUserId(101);
@@ -166,6 +168,7 @@ public class ProcessDefinitionMapperTest {
 
         //insertOne
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setName("def 1");
         processDefinition.setProjectCode(project.getCode());
         processDefinition.setUpdateTime(new Date());

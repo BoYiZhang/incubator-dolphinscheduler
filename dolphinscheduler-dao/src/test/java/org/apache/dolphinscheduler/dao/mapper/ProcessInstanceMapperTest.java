@@ -168,6 +168,7 @@ public class ProcessInstanceMapperTest {
                 ExecutionStatus.SUCCESS.ordinal()};
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setProjectCode("1010");
         processDefinition.setReleaseState(ReleaseState.ONLINE);
         processDefinitionMapper.insert(processDefinition);
@@ -256,6 +257,7 @@ public class ProcessInstanceMapperTest {
         projectMapper.insert(project);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setProjectCode(project.getCode());
 
         processDefinitionMapper.insert(processDefinition);

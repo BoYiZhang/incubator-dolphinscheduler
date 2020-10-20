@@ -81,6 +81,7 @@ public class ErrorCommandMapperTest {
         projectMapper.insert(project);
 
         ProcessDefinition processDefinition = new ProcessDefinition();
+        processDefinition.setCode("1");
         processDefinition.setName("def 1");
         processDefinition.setProjectCode("1");
         processDefinition.setUserId(101);
